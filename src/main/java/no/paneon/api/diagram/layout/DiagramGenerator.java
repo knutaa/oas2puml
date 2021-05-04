@@ -449,7 +449,7 @@ public class DiagramGenerator
 	    createDirectory(target);
 	    
 	    String fileName = "Resource_" + resource + ".puml";
-	    if(!target.isEmpty() && !target.endsWith("/")) target = target + "/";
+	    if(!target.isEmpty() && !target.endsWith(File.separator)) target = target + File.separator;
 	    String destination = target + fileName;
 	    
 	    try(BufferedWriter writer = new BufferedWriter(new FileWriter(destination)) ) {    

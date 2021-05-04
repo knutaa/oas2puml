@@ -1,5 +1,6 @@
 package no.paneon.api.diagram;
 
+import java.io.File;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -71,7 +72,7 @@ public class GenerateDiagram extends GenerateCommon {
 	    	json.put(item);
 	    }); 
 		
-	    String fileName = target + "/" + "diagrams.yaml";
+	    String fileName = target + File.pathSeparator + "diagrams.yaml";
 	
     	JSONObject config = new JSONObject();
     	config.put("graphs", json);

@@ -1,5 +1,6 @@
 package no.paneon.api.gql;
 
+import java.io.File;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -59,7 +60,7 @@ public class GenerateGQLGraph extends GenerateCommon {
 	private void saveFile(String gql, String target, String filename) {
 	    LOG.debug("saveFile: gql={}",  gql);
 	    
-	    String fileName = target + "/" + filename;
+	    String fileName = target + File.separator + filename;
 	   	
 	    Utils.save(gql, fileName);
 	    

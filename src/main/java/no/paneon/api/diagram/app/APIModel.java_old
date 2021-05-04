@@ -188,7 +188,7 @@ public class APIModel {
 	    }
 	    if(specification!=null && specification.has(REF)) {
 	    	String ref=specification.getString(REF);
-	    	String[] parts=ref.split("/");
+	    	String[] parts=ref.split(File.separator);
 	    	res = parts[parts.length-1];
 	    }
 	    
@@ -197,7 +197,7 @@ public class APIModel {
 
 	@LogMethod(level=LogLevel.DEBUG)
 	String getTypeByReference(String ref) {
-    	String[] parts=ref.split("/");
+    	String[] parts=ref.split(File.separator);
     	return parts[parts.length-1];
 	}
 	
@@ -496,7 +496,7 @@ public class APIModel {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private boolean isPathForResource(String path, String prefix) {
-		return path.equalsIgnoreCase(prefix) || path.toUpperCase().startsWith(prefix+"/");
+		return path.equalsIgnoreCase(prefix) || path.toUpperCase().startsWith(prefix+File.separator);
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)

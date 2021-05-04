@@ -707,7 +707,7 @@ public class Utils {
 
 	@LogMethod(level=LogLevel.TRACE)
 	public static String getFileName(String workingDirectory, JSONObject config, String property) {
-		return workingDirectory + "/" + config.optString(property);				
+		return workingDirectory + File.separator + config.optString(property);				
 	}
 
 	// get InputStream from either the fileName or embedded through the property
@@ -736,7 +736,7 @@ public class Utils {
 		}
 		
 		if(directory!=null && !directory.isEmpty())	{
-			fileName = directory + "/" + fileName;
+			fileName = directory + File.separator + fileName;
 		}
 		
 		return new File(fileName);	
@@ -759,7 +759,7 @@ public class Utils {
 			String candFileName=iter.next();
 			
 			if(!candFileName.isEmpty()) {
-				candFileName = candFileName + "/";
+				candFileName = candFileName + File.separator;
 			}
 			
 			candFileName = candFileName + fileName;
@@ -809,7 +809,7 @@ public class Utils {
 			String candFileName=iter.next();
 			
 			if(!candFileName.isEmpty()) {
-				candFileName = candFileName + "/";
+				candFileName = candFileName + File.separator;
 			}
 			
 			candFileName = candFileName + fileName;

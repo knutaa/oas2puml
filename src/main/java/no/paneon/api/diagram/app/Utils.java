@@ -362,7 +362,7 @@ public class Utils {
 			return openFileStream(workingDirectory, fileName);
 		} else {
 			fileName = Config.getString(property); 
-			return new ClassPathResource("/" + fileName).getInputStream();
+			return new ClassPathResource(File.separator + fileName).getInputStream();
 		}
 	}
 
