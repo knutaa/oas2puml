@@ -5,7 +5,7 @@
 	<groupId>no.paneon.api.diagram</groupId>
 	<artifactId>apidiagram</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>TMForum OpenAPI Tools</name>
+	<name>API diagram generator</name>
 
 	<properties>
 		<jexcel.version>1.0.6</jexcel.version>

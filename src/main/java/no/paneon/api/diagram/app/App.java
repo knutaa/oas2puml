@@ -56,7 +56,6 @@ public class App {
 			app.run();
 		} catch(Exception ex) {
 			Out.println("error: " + ex.getLocalizedMessage());	
-			ex.printStackTrace();
 			System.exit(1);			
 		}
 		

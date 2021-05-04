@@ -478,31 +478,6 @@ public class DiagramGenerator
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private APIModel loadAPI(String file) {
-
-//		try {
-//			
-//			if(!file.endsWith(".json") && !file.endsWith(".yaml") && !file.endsWith(".yml")) {
-//				Out.println("file " + file + " is not of expected type (.json or .yaml/.yml)");
-//				System.exit(2);
-//			}
-//
-//			return new APIModel(file);
-//
-//		} catch(Exception ex) {
-//			Out.println("Exception: " + ex.getLocalizedMessage());
-//
-//			ex.printStackTrace();
-//
-//			System.exit(1);
-//		}
-//
-		return null;
-
-	}
-
-
-	@LogMethod(level=LogLevel.DEBUG)
 	public void displayComplexity() {
 		for(String resource : resources) {
 			displayComplexityForResource(resource);

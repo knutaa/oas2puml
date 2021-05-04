@@ -1115,9 +1115,6 @@ public class APIModel {
 
 		} catch(Exception ex) {
 			Out.println("Exception: " + ex.getLocalizedMessage());
-
-			ex.printStackTrace();
-
 			System.exit(1);
 		}
 
