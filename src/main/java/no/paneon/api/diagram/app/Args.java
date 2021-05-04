@@ -1,7 +1,6 @@
 package no.paneon.api.diagram.app;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.beust.jcommander.Parameter;
@@ -12,9 +11,6 @@ public class Args {
 		
 		@Parameter(description = "Files", arity=0)
 		public List<String> files = new ArrayList<>();
-
-//		@Parameter(names = { "-o", "--output" }, description = "Output file name for GQL graph (typically .gql)")
-//		public String outputFileName = null;
 		
 	}
 	

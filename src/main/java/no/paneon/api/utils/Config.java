@@ -298,29 +298,6 @@ public class Config {
 			Out.println("... configutation seen: " + config.toString(2));
 		}
 		
-//		if(LOG.isDebugEnabled()) {
-//			LOG.log(Level.DEBUG, "getObjectByPath: path={} config keys={}", path, config.keySet());
-//		}
-//		
-//		try {
-//			String[] parts = path.split("[.]");
-//			
-//			String main = parts[0];
-//			if(config.has(main)) {
-//				res = config.opt(main);
-//				if((res instanceof JSONObject) && parts.length>1) {
-//					String subPath = path.substring(main.length()+1);
-//					
-//					LOG.log(Level.DEBUG, "getObjectByPath: main={} subPath={}", main, subPath);
-//
-//					res = getObjectByPath((JSONObject)res, subPath);
-//				} 
-//			}
-//		} catch(Exception e) {
-//			if(LOG.isDebugEnabled())
-//				LOG.log(Level.DEBUG, "getObjectByPath: exception={}", e.getLocalizedMessage());
-//		}
-//		
 		return res;
 	}
 
@@ -362,22 +339,6 @@ public class Config {
 		return res;
 	}
 
-	@LogMethod(level=LogLevel.TRACE)
-	public static Map<String,JSONObject> getConfigByPattern(JSONObject json, String pattern) {
-		Map<String,JSONObject> res = new HashMap<>();
-		
-		if(json==null) return res;
-		
-		json.keySet().forEach(key -> {
-			if(key.contains(pattern)) {
-				JSONObject obj = json.optJSONObject(key);
-				String label = key.replace(pattern, "").trim();
-				if(label.startsWith("'")) label = label.replace("'", "");
-				if(obj!=null) res.put(label,obj);
-			}
-		});
-		return res;
-	}
 
 	public static void setBoolean(String key, boolean value) {
 		json.put(key, value);

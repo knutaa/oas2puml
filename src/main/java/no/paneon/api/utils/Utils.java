@@ -71,7 +71,7 @@ public class Utils {
 	}
 	
     private static final Map<String, Level> levelmap = new HashMap<>();
-	static final Map<String,String> stereoTypeMapping = new HashMap<>();
+	private static final Map<String,String> stereoTypeMapping = new HashMap<>();
 
     static {    	
  	    getLevelmap().put("verbose", AspectLogger.VERBOSE);
@@ -388,10 +388,10 @@ public class Utils {
 	private enum CopyStyle {
 		OVERWRITE,
 		KEEP_ORIGINAL
-	};
+	}
 	
-	public static CopyStyle OVERWRITE = CopyStyle.OVERWRITE;
-	public static CopyStyle KEEP_ORIGINAL = CopyStyle.KEEP_ORIGINAL;
+	public static final CopyStyle OVERWRITE = CopyStyle.OVERWRITE;
+	public static final CopyStyle KEEP_ORIGINAL = CopyStyle.KEEP_ORIGINAL;
 
 	@LogMethod(level=LogLevel.TRACE)
 	public static boolean copyFile(String sourceFile, String destinationFile, String destinationDirectory, String sourceDirectory) {
