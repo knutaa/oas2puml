@@ -1,0 +1,2135 @@
+openapi: 3.0.1
+info:
+  title: Quote Management
+  description: >+
+    **TMF API Reference : TMF 648 - Quote Management**
+
+
+    ** Spring 2021**
+
+
+    The Quote API provides a standardized mechanism for placing a quote with all of the necessary
+    parameters. The API consists of a simple set of operations that interact with CRM/Quote/Pricing
+    Negotiation systems in a consistent manner. A Quote is created based on product offering(s) that
+    is(are) defined in a catalog. The quote identifies the product or set of products that are
+    available to a customer for pricing request, and includes product characteristics.
+
+
+    The Quote references the product offer(s) which (future) customer request pricing.
+
+    Quote resource features authorization subclass to manage special pricing UC requiring
+    authorization tracking management
+
+
+    **Quote resource**
+
+    A Quote can be used to request pricing between a customer and a service provider or between a
+    service provider and a partner and vice versa. Main quote attributes are its identifier, state,
+    priority, related dates (requested, expected, valid, completion, etc.), related parties and
+    quote items. Main Quote Items attributes are the discribed offering and product characteristics
+    with the related action to be performed (e.g. add, change or delete the products), location
+    information, and product characteristics.
+
+
+    Quote API performs the following operations on Quote :
+
+
+    - Retrieval of a quote or a collection of quotes depending on filter criteria
+
+    - Partial update of a quote (including updating rules)
+
+    - Creation of a quote (including default values and creation rules)
+
+    - Deletion of quote (for administration purposes)
+
+    - Notification of events on quote.
+
+
+    Copyright © TM Forum 2019. All Rights Reserved
+
+  version: 5.0.0
+servers:
+  - url: 'https://serverRoot'
+tags:
+  - name: quote
+    description: Operations for Quote Resource
+  - name: notification listener
+    description: Notifications for Resource Lifecycle and event notifications
+  - name: events subscription
+    description: Endpoints to register and terminate an Event Listener
+paths:
+  /quote:
+    get:
+      tags:
+        - quote
+      summary: List or find Quote objects
+      description: >-
+        This operation retrieves a Quote entity. Attribute selection enabled for all first level
+        attributes.
+      operationId: listQuote
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200QuoteArray'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - quote
+      summary: Creates a Quote
+      description: This operation creates a Quote entity.
+      operationId: createQuote
+      requestBody:
+        $ref: '#/components/requestBodies/Quote_Create'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Quote'
+        default:
+          $ref: '#/components/responses/Error'
+  '/quote/{id}':
+    get:
+      tags:
+        - quote
+      summary: Retrieves a Quote by ID
+      description: List or find Quote objects
+      operationId: retrieveQuote
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Quote'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - quote
+      summary: Deletes a Quote
+      description: This operation deletes a Quote entity.
+      operationId: deleteQuote
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - quote
+      summary: Updates partially a Quote
+      description: This operation updates partially a Quote entity.
+      operationId: patchQuote
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/Quote_Update'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Quote'
+        default:
+          $ref: '#/components/responses/Error'
+  /listener/quoteCreateEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity QuoteCreateEvent
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      operationId: quoteCreateEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/QuoteCreateEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/quoteAttributevaluechangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity QuoteCreateEvent
+      description: Example of a client listener for receiving the notification QuoteAttributevaluechangeEvent
+      operationId: quoteAttributevaluechangeEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/QuoteAttributevaluechangeEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/quoteStatechangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity QuoteCreateEvent
+      description: Example of a client listener for receiving the notification QuoteStatechangeEvent
+      operationId: quoteStatechangeEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/QuoteStatechangeEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/quoteDeleteEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity QuoteCreateEvent
+      description: Example of a client listener for receiving the notification QuoteDeleteEvent
+      operationId: quoteDeleteEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/QuoteDeleteEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/quoteInformationrequiredEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity QuoteCreateEvent
+      description: Example of a client listener for receiving the notification QuoteInformationrequiredEvent
+      operationId: quoteInformationrequiredEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/QuoteInformationrequiredEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /hub:
+    post:
+      operationId: registerListener
+      summary: Register a listener
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver information
+        about its health state, execution state, failures and metrics.
+      tags:
+        - events subscription
+      requestBody:
+        $ref: '#/components/requestBodies/EventSubscriptionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/EventSubscription'
+        default:
+          $ref: '#/components/responses/Error'
+  '/hub/{id}':
+    delete:
+      operationId: unregisterListener
+      summary: Unregister a listener
+      description: >-
+        Resets the communication endpoint address the service instance must use to deliver
+        information about its health state, execution state, failures and metrics.
+      tags:
+        - events subscription
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    BaseEvent:
+      description: Base event with common attributes.
+      type: object
+      properties:
+        event:
+          type: object
+        eventId:
+          type: string
+          description: The identifier of the notification.
+        eventTime:
+          type: string
+          format: date-time
+          description: Time of the event occurrence.
+        eventType:
+          type: string
+          description: The type of the notification.
+        correlationId:
+          type: string
+          description: The correlation id for this event.
+        domain:
+          type: string
+          description: The domain of the event.
+        title:
+          type: string
+          description: The title of the event.
+        description:
+          type: string
+          description: An explanatory of the event.
+        priority:
+          type: string
+          description: A priority.
+        timeOcurred:
+          type: string
+          format: date-time
+          description: The time the event occured.
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BaseEvent: '#/components/schemas/BaseEvent'
+          QuoteInformationrequiredEvent: '#/components/schemas/QuoteInformationrequiredEvent'
+          QuoteDeleteEvent: '#/components/schemas/QuoteDeleteEvent'
+          QuoteStatechangeEvent: '#/components/schemas/QuoteStatechangeEvent'
+          QuoteAttributevaluechangeEvent: '#/components/schemas/QuoteAttributevaluechangeEvent'
+          QuoteCreateEvent: '#/components/schemas/QuoteCreateEvent'
+    Entity:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/Addressable'
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/Entity'
+    Addressable:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+    Extensible:
+      type: object
+      description: Base Extensible schema for use in TMForum Open-APIs
+      required:
+        - '@type'
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+    Quote:
+      type: object
+      description: >-
+        Quote can be used to negotiate service and product acquisition or modification between a
+        customer and a service provider. Quote contain list of quote items, a reference to customer
+        (partyRole), a list of productOffering and attached prices and conditions.
+      properties:
+        agreement:
+          type: array
+          description: A reference to an agreement defining the context of the quote
+          items:
+            $ref: '#/components/schemas/AgreementRef'
+        billingAccount:
+          type: array
+          description: 'A reference to a billing account to provide quote context information '
+          items:
+            $ref: '#/components/schemas/BillingAccountRef'
+        category:
+          type: string
+          description: >-
+            Used to categorize the quote from a business perspective that can be useful for the CRM
+            system (e.g. "enterprise", "residential", ...)
+        contactMedium:
+          type: array
+          description: Information contact related to the quote requester
+          items:
+            $ref: '#/components/schemas/ContactMedium'
+        description:
+          type: string
+          description: Description of the quote
+        effectiveQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: Date when the quote has been completed
+        expectedFulfillmentStartDate:
+          type: string
+          format: date-time
+          description: this is the date wished by the requester to have the requested quote item delivered
+        expectedQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: >-
+            This is expected date - from quote supplier - to be able to send back  a response for
+            this quote
+        externalId:
+          type: string
+          description: >-
+            ID given by the consumer and only understandable by him (to facilitate his searches
+            afterwards)
+        instantSyncQuote:
+          type: boolean
+          description: >-
+            An indicator which when the value is "true" means that requester expects to get quoting
+            result immediately in the response. If the indicator is true then the response code of
+            200 indicates the operation is successful otherwise a task is created with a response
+            201. 
+        note:
+          type: array
+          description: Free form text associated with the quote
+          items:
+            $ref: '#/components/schemas/Note'
+        authorization:
+          type: array
+          description: An authorization provided for the quote
+          items:
+            $ref: '#/components/schemas/Authorization'
+        quoteTotalPrice:
+          type: array
+          description: Quote total price
+          items:
+            $ref: '#/components/schemas/QuotePrice'
+        relatedParty:
+          type: array
+          description: 'A reference to a party playing a role in this quote (customer, seller, requester, etc.)'
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        productOfferingQualification:
+          type: array
+          description: A reference to a previously done product offering qualification
+          items:
+            $ref: '#/components/schemas/ProductOfferingQualificationRef'
+        requestedQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: >-
+            This is requested date - from quote requester - to get a complete response for this
+            quote
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        version:
+          type: string
+          description: >-
+            Quote version - if the customer rejected the quote but  negotiations still open a new
+            version of the quote is managed
+        quoteItem:
+          type: array
+          description: >-
+            A quote items describe an action to be performed on a productOffering or a product in
+            order to get pricing elements and condition.
+          items:
+            $ref: '#/components/schemas/QuoteItem'
+          minItems: 1
+      allOf:
+        - $ref: '#/components/schemas/GcQuote'
+        - $ref: '#/components/schemas/SchemaContext'
+    AgreementRef:
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcAgreementRef'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef'
+    BillingAccountRef:
+      description: BillingAccount reference. A BillingAccount is a detailed description of a bill structure.
+      type: object
+      properties:
+        ratingType:
+          type: string
+          description: >-
+            Indicates whether the account follows a specific payment option such as prepaid or
+            postpaid
+      allOf:
+        - $ref: '#/components/schemas/GcBillingAccountRef'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingAccountRef: '#/components/schemas/BillingAccountRef'
+    ContactMedium:
+      description: Indicates the contact medium that could be used to contact the party.
+      type: object
+      properties:
+        contactMediumIdentifier:
+          type: string
+          description: Identifier for this contact medium.
+        preferred:
+          type: boolean
+          description: 'If true, indicates that is the preferred contact medium'
+        contactType:
+          type: string
+          description: >-
+            Type of the contact medium to qualifiy it like pro email / personal email. This is not
+            used to define the contact medium used.
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+      allOf:
+        - $ref: '#/components/schemas/GcContactMedium'
+    Note:
+      description: Extra information about a given entity
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier of the note within its containing entity
+          example:
+            - afa9-3d90aaa8da0f
+        author:
+          type: string
+          description: Author of the note
+          example:
+            - Mr. N. Bene
+        date:
+          type: string
+          format: date-time
+          description: Date of the note
+          example:
+            - '2020-11-20T08:00:00Z'
+      allOf:
+        - $ref: '#/components/schemas/GcNote'
+        - $ref: '#/components/schemas/SchemaContext'
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Note: '#/components/schemas/Note'
+    Authorization:
+      description: >-
+        If special discount or special product offering price or specific condition need an approval
+        for ISP sale representative it is described here.
+      type: object
+      properties:
+        givenDate:
+          type: string
+          format: date-time
+          description: Date when the authorization (approved or declined) was done
+        name:
+          type: string
+          description: Name of the required authorization
+        requestedDate:
+          type: string
+          format: date-time
+          description: Date when the authorization is requested for
+        signatureRepresentation:
+          type: string
+          description: To describe a digital or manual signature
+        state:
+          type: string
+          description: 'State of the authorization, such as: approved or declined'
+        approver:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+      allOf:
+        - $ref: '#/components/schemas/GcAuthorizationRef'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Authorization: '#/components/schemas/Authorization'
+    QuotePrice:
+      description: Description of price and discount awarded
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the quote/quote item price
+        name:
+          type: string
+          description: Name of the quote /quote item price
+        productOfferingPrice:
+          $ref: '#/components/schemas/ProductOfferingPriceRef'
+        recurringChargePeriod:
+          type: string
+          description: 'Used for recurring charge to indicate period (month, week, etc..)'
+        unitOfMeasure:
+          type: string
+          description: 'Unit of Measure if price depending on it (Gb, SMS volume, etc..)'
+        price:
+          $ref: '#/components/schemas/Price'
+        priceAlteration:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceAlteration'
+      allOf:
+        - $ref: '#/components/schemas/GcQuotePrice'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          QuotePrice: '#/components/schemas/QuotePrice'
+    RelatedParty:
+      description: >-
+        Related Entity reference. A related party defines party or party role linked to a specific
+        entity.
+      type: object
+      properties:
+        role:
+          type: string
+          description: Role played by the related party
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/GcRelatedParty'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty'
+    ProductOfferingQualificationRef:
+      type: object
+      description: A productOfferingQualification that has been executed previously
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductOfferingQualificationRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductOfferingQualificationRef: '#/components/schemas/ProductOfferingQualificationRef'
+    TimePeriod:
+      description: 'A period of time, either as a deadline (endDateTime only) a startDateTime only, or both'
+      type: object
+      properties:
+        startDateTime:
+          description: 'Start of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+        endDateTime:
+          description: 'End of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+    QuoteItem:
+      type: object
+      description: >-
+        A quote items describe an action to be performed on a productOffering or a product in order
+        to get pricing elements and condition.
+      properties:
+        appointment:
+          type: array
+          description: A reference to appointment(s) associated with this quote item
+          items:
+            $ref: '#/components/schemas/AppointmentRef'
+        attachment:
+          type: array
+          description: A reference to attachment(s) associated with this quote item
+          items:
+            $ref: '#/components/schemas/AttachmentRefOrValue'
+        note:
+          type: array
+          description: Free form text associated with the quote item
+          items:
+            $ref: '#/components/schemas/Note'
+        product:
+          $ref: '#/components/schemas/ProductRefOrValue'
+        productOffering:
+          $ref: '#/components/schemas/ProductOfferingRef'
+        quantity:
+          type: integer
+          description: Quantity asked for this quote item
+        quoteItem:
+          type: array
+          description: A structure to embedded quote item within quote item
+          items:
+            $ref: '#/components/schemas/QuoteItem'
+        quoteItemAuthorization:
+          type: array
+          description: Authorization related to this quote item
+          items:
+            $ref: '#/components/schemas/Authorization'
+        quoteItemPrice:
+          type: array
+          description: Price for this quote item
+          items:
+            $ref: '#/components/schemas/QuotePrice'
+        quoteItemRelationship:
+          type: array
+          description: A relationship from item within a quote
+          items:
+            $ref: '#/components/schemas/QuoteItemRelationship'
+        productOfferingQualificationItem:
+          $ref: '#/components/schemas/ProductOfferingQualificationItemRef'
+        relatedParty:
+          type: array
+          description: A reference to a party playing a role in this quote item
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+      allOf:
+        - $ref: '#/components/schemas/GcQuoteItem'
+        - $ref: '#/components/schemas/SchemaContext'
+    GcQuote:
+      type: object
+      required:
+        - quoteItem
+        - creationDate
+        - state
+      description: Generic Contect schema for Quote.
+      properties:
+        creationDate:
+          type: string
+          format: date-time
+          description: Date and time when the quote was created
+        state:
+          $ref: '#/components/schemas/GcQuoteStateType'
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcQuote: '#/components/schemas/GcQuote'
+          Quote: '#/components/schemas/Quote'
+    SchemaContext:
+      type: object
+      description: SchemaContext schema for use in TMForum Open-APIs
+      properties:
+        '@schemaLocation':
+          type: string
+          format: uri
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+    GcAgreementRef:
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcAgreementRef: '#/components/schemas/GcAgreementRef'
+          AgreementRef: '#/components/schemas/AgreementRef'
+    GcBillingAccountRef:
+      description: BillingAccount reference. A BillingAccount is a detailed description of a bill structure.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcBillingAccountRef: '#/components/schemas/GcBillingAccountRef'
+          BillingAccountRef: '#/components/schemas/BillingAccountRef'
+    GcContactMedium:
+      description: Indicates the contact medium that could be used to contact the party.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcContactMedium: '#/components/schemas/GcContactMedium'
+          ContactMedium: '#/components/schemas/ContactMedium'
+    GcNote:
+      description: Extra information about a given entity
+      required:
+        - text
+      type: object
+      properties:
+        text:
+          type: string
+          description: Text of the note
+    GcAuthorizationRef:
+      description: >-
+        If special discount or special product offering price or specific condition need an approval
+        for ISP sale representative it is described here.
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the required authorization
+    ProductOfferingPriceRef:
+      description: >-
+        ProductPriceOffering reference. An amount, usually of money, that is asked for or allowed
+        when a ProductOffering is bought, rented, or leased
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductOfferingPriceRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductOfferingPriceRef: '#/components/schemas/ProductOfferingPriceRef'
+    Price:
+      description: >-
+        Provides all amounts (tax included, duty free, tax rate), used currency and percentage to
+        apply for Price Alteration.
+      type: object
+      properties:
+        dutyFreeAmount:
+          $ref: '#/components/schemas/Money'
+        percentage:
+          type: number
+          format: float
+          description: Percentage to apply for ProdOfferPriceAlteration
+        taxIncludedAmount:
+          $ref: '#/components/schemas/Money'
+        taxRate:
+          type: number
+          format: float
+          description: Tax rate
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Price: '#/components/schemas/Price'
+    PriceAlteration:
+      description: 'Is an amount, usually of money, that modifies the price charged for an order item.'
+      type: object
+      required:
+        - priceType
+        - price
+      properties:
+        applicationDuration:
+          type: integer
+          description: >-
+            Duration during which the alteration applies on the order item price (for instance 2
+            months free of charge for the recurring charge)
+        description:
+          type: string
+          description: A narrative that explains in detail the semantics of this order item price alteration
+        name:
+          type: string
+          description: Name of the order item price alteration
+        productOfferingPrice:
+          $ref: '#/components/schemas/ProductOfferingPriceRef'
+        priceType:
+          type: string
+          description: 'A category that describes the price such as recurring, one time and usage.'
+        priority:
+          type: integer
+          description: >-
+            Priority level for applying this alteration among all the defined alterations on the
+            order item price
+        recurringChargePeriod:
+          type: string
+          description: 'Could be month, week...'
+        unitOfMeasure:
+          type: string
+          description: 'Could be minutes, GB...'
+        price:
+          $ref: '#/components/schemas/Price'
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PriceAlteration: '#/components/schemas/PriceAlteration'
+    GcQuotePrice:
+      description: Description of price and discount awarded
+      type: object
+      required:
+        - priceType
+      properties:
+        priceType:
+          type: string
+          description: indicate if the price is for recurrent or no-recurrent charge
+    GcRelatedParty:
+      description: >-
+        Related Entity reference. A related party defines party or party role linked to a specific
+        entity.
+      type: object
+      required:
+        - '@referredType'
+      properties:
+        role:
+          type: string
+          description: Role played by the related party
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcRelatedParty: '#/components/schemas/GcRelatedParty'
+          RelatedParty: '#/components/schemas/RelatedParty'
+    GcProductOfferingQualificationRef:
+      description: >-
+        ProductOfferingQualification reference. A productOfferingQualification that has been
+        executed previously.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductOfferingQualificationRef: '#/components/schemas/GcProductOfferingQualificationRef'
+          ProductOfferingQualificationRef: '#/components/schemas/ProductOfferingQualificationRef'
+    EntityRef:
+      description: Entity reference schema to be use for all entityRef class.
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Hyperlink reference
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          EntityRef: '#/components/schemas/EntityRef'
+          PlaceRef: '#/components/schemas/PlaceRef'
+          ServiceRef: '#/components/schemas/ServiceRef'
+          ResourceRef: '#/components/schemas/ResourceRef'
+          ProductSpecificationRef: '#/components/schemas/ProductSpecificationRef'
+          ProductRef: '#/components/schemas/ProductRef'
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+          ProductOfferingRef: '#/components/schemas/ProductOfferingRef'
+          ProductOfferingPriceRef: '#/components/schemas/ProductOfferingPriceRef'
+          GcAgreementRef: '#/components/schemas/GcAgreementRef'
+          AgreementRef: '#/components/schemas/AgreementRef'
+    AppointmentRef:
+      description: 'Refers an appointment, such as a Customer presentation or internal meeting or site visit'
+      type: object
+      properties:
+        description:
+          type: string
+          description: An explanatory text regarding the appointment made with a party
+        href:
+          type: string
+          description: The reference of the appointment
+        id:
+          type: string
+          description: The identifier of the referred appointment
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation
+      allOf:
+        - $ref: '#/components/schemas/GcAppointmentRef'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AppointmentRef: '#/components/schemas/AppointmentRef'
+    AttachmentRefOrValue:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - $ref: '#/components/schemas/GcAttachmentRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+          Attachment: '#/components/schemas/Attachment'
+    ProductRefOrValue:
+      type: object
+      description: >-
+        A product to be created defined by value or existing defined by reference. The polymorphic
+        attributes @type, @schemaLocation & @referredType are related to the product entity and not
+        the RelatedProductRefOrValue class itself
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - $ref: '#/components/schemas/GcProductRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductRef: '#/components/schemas/ProductRef'
+          Product: '#/components/schemas/Product'
+    ProductOfferingRef:
+      description: >-
+        ProductOffering reference. A product offering represents entities that are orderable from
+        the provider of the catalog, this resource includes pricing information.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductOfferingRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductOfferingRef: '#/components/schemas/ProductOfferingRef'
+    QuoteItemRelationship:
+      description: >-
+        Used to describe relationship between quote item. These relationship could have an impact on
+        pricing and conditions
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcQuoteItemRelationship'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          QuoteItemRelationship: '#/components/schemas/QuoteItemRelationship'
+    ProductOfferingQualificationItemRef:
+      type: object
+      description: It's a productOfferingQualification item that has been executed previously.
+      properties:
+        productOfferingQualificationName:
+          type: string
+          description: Name of the related entity.
+        productOfferingQualificationHref:
+          type: string
+          description: Reference of the related entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/GcProductOfferingQualificationItemRef'
+    GcQuoteItem:
+      type: object
+      required:
+        - action
+        - id
+        - state
+      description: >-
+        A quote items describe an action to be performed on a productOffering or a product in order
+        to get pricing elements and condition.
+      properties:
+        action:
+          type: string
+          description: 'Action to be performed on this quote item (add, modify, remove, etc.)'
+        id:
+          type: string
+          description: 'Identifier of the quote item (generally it is a sequence number 01, 02, 03, ...)'
+        state:
+          $ref: '#/components/schemas/GcQuoteItemStateType'
+    GcQuoteStateType:
+      type: string
+      description: Possible values for the state of the quote
+      enum:
+        - acknowledged
+        - rejected
+        - pending
+        - inProgress
+        - cancelled
+        - approved
+        - accepted
+        - declined
+    GcEntityRef:
+      description: GCEntity reference schema .
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+    GcProductOfferingPriceRef:
+      description: >-
+        ProductPriceOffering reference. An amount, usually of money, that is asked for or allowed
+        when a ProductOffering is bought, rented, or leased
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductOfferingPriceRef: '#/components/schemas/GcProductOfferingPriceRef'
+          ProductOfferingPriceRef: '#/components/schemas/ProductOfferingPriceRef'
+    Money:
+      description: A base / value business entity used to represent money
+      type: object
+      properties:
+        unit:
+          type: string
+          description: Currency (ISO4217 norm uses 3 letters to define the currency)
+        value:
+          type: number
+          format: float
+          description: A positive floating point number
+    GcAppointmentRef:
+      description: 'Refers an appointment, such as a Customer presentation or internal meeting or site visit'
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcAppointmentRef: '#/components/schemas/GcAppointmentRef'
+          AppointmentRef: '#/components/schemas/AppointmentRef'
+    GcAttachmentRefOrValue:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcAttachmentRefOrValue: '#/components/schemas/GcAttachmentRefOrValue'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue'
+    AttachmentRef:
+      description: >-
+        Attachment reference. An attachment complements the description of an element (for instance
+        a product) through video, pictures
+      type: object
+      properties:
+        description:
+          type: string
+          description: A narrative text describing the content of the attachment
+        href:
+          type: string
+          description: URL serving as reference for the attachment resource
+          format: uri
+        id:
+          description: Unique-Identifier for this attachment
+          type: string
+        url:
+          description: Link to the attachment media/content
+          type: string
+          format: uri
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue'
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+    Attachment:
+      description: >-
+        Complements the description of an element (for instance a product) through video,
+        pictures...
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for this particular attachment
+          example: 4aafacbd-11ff-4dc8-b445-305f2215715f
+        href:
+          type: string
+          format: uri
+          description: URI for this Attachment
+          example: 'http://host/Attachment/4aafacbd-11ff-4dc8-b445-305f2215715f'
+        name:
+          type: string
+          description: The name of the attachment
+        description:
+          type: string
+          description: A narrative text describing the content of the attachment
+          example: Photograph of the Product
+        attachmentType:
+          type: string
+          description: 'Attachment type such as video, picture'
+          example: video
+        url:
+          type: string
+          format: uri
+          description: 'Uniform Resource Locator, is a web page address (a subset of URI)'
+          example: 'http://host/Content/4aafacbd-11ff-4dc8-b445-305f2215715f'
+        mimeType:
+          type: string
+          description: 'Attachment mime type such as extension file for video, picture and document'
+        content:
+          type: string
+          format: base64
+          description: 'The actual contents of the attachment object, if embedded, encoded as base64'
+        size:
+          $ref: '#/components/schemas/Quantity'
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment'
+    GcProductRefOrValue:
+      type: object
+      description: >-
+        A product to be created defined by value or existing defined by reference. The polymorphic
+        attributes @type, @schemaLocation & @referredType are related to the product entity and not
+        the RelatedProductRefOrValue class itself
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductRefOrValue: '#/components/schemas/GcProductRefOrValue'
+          ProductRefOrValue: '#/components/schemas/ProductRefOrValue'
+    ProductRef:
+      description: A Product reference
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductRef'
+        - $ref: '#/components/schemas/ProductRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductRef: '#/components/schemas/ProductRef'
+    Product:
+      type: object
+      description: >-
+        A product offering procured by a customer or other interested party playing a party role. A
+        product is realized as one or more service(s) and / or resource(s).
+      properties:
+        agreement:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgreementItemRef'
+        billingAccount:
+          $ref: '#/components/schemas/BillingAccountRef'
+        description:
+          type: string
+          description: >-
+            Is the description of the product. It could be copied from the description of the
+            Product Offering.
+        isBundle:
+          type: boolean
+          description: >-
+            If true, the product is a ProductBundle which is an instantiation of a
+            BundledProductOffering. If false, the product is a ProductComponent which is an
+            instantiation of a SimpleProductOffering.
+        isCustomerVisible:
+          type: boolean
+          description: 'If true, the product is visible by the customer.'
+        name:
+          type: string
+          description: Name of the product. It could be the same as the name of the product offering
+        orderDate:
+          type: string
+          format: date-time
+          description: Is the date when the product was ordered
+        productCharacteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/GcCharacteristic'
+        productOffering:
+          $ref: '#/components/schemas/ProductOfferingRef'
+        productOrderItem:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedProductOrderItem'
+        product:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductRefOrValue'
+        productPrice:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductPrice'
+        productRelationship:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductRelationship'
+        productSerialNumber:
+          type: string
+          description: >-
+            Is the serial number for the product. This is typically applicable to tangible products
+            e.g. Broadband Router.
+        productSpecification:
+          $ref: '#/components/schemas/ProductSpecificationRef'
+        productTerm:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductTerm'
+        realizingResource:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRef'
+        realizingService:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceRef'
+        relatedParty:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        place:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        startDate:
+          type: string
+          format: date-time
+          description: Is the date from which the product starts
+        terminationDate:
+          type: string
+          format: date-time
+          description: Is the date when the product was terminated
+      allOf:
+        - $ref: '#/components/schemas/GcProduct'
+    GcProductOfferingRef:
+      description: >-
+        ProductOffering reference. A product offering represents entities that are orderable from
+        the provider of the catalog, this resource includes pricing information.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductOfferingRef: '#/components/schemas/GcProductOfferingRef'
+          ProductOfferingRef: '#/components/schemas/ProductOfferingRef'
+    GcQuoteItemRelationship:
+      description: >-
+        Used to describe relationship between quote item. These relationship could have an impact on
+        pricing and conditions
+      type: object
+      required:
+        - id
+        - relationshipType
+      properties:
+        id:
+          type: string
+          description: Id of the related quote item (must be in the same quote)
+        relationshipType:
+          type: string
+          description: 'Relationship type as relies on, bundles, etc...'
+    GcProductOfferingQualificationItemRef:
+      type: object
+      description: It's a productOfferingQualification item that has been executed previously.
+      required:
+        - itemId
+        - productOfferingQualificationId
+      properties:
+        productOfferingQualificationId:
+          type: string
+          description: Unique identifier of a related entity.
+        itemId:
+          type: string
+          description: Id of an item of a product offering qualification
+    GcQuoteItemStateType:
+      type: string
+      description: Possible values for the state of the quote
+      enum:
+        - acknowledged
+        - declined
+        - pending
+        - inProgress
+        - approved
+    Quantity:
+      type: object
+      description: An amount in a given unit
+      properties:
+        amount:
+          type: number
+          format: float
+          default: 1
+          description: Numeric value in a given unit
+        units:
+          type: string
+          description: Unit
+    GcProductRef:
+      description: Product reference
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductRef: '#/components/schemas/GcProductRef'
+          ProductRef: '#/components/schemas/ProductRef'
+    AgreementItemRef:
+      type: object
+      description: It's a Agreement item that has been executed previously.
+      properties:
+        AgreementName:
+          type: string
+          description: Name of the related entity.
+        AgreementHref:
+          type: string
+          description: Reference of the related entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/GcAgreementItemRef'
+    GcCharacteristic:
+      description: Describes a given characteristic of an object or entity through a name/value pair.
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the characteristic
+        name:
+          type: string
+          description: Name of the characteristic
+        characteristicValue:
+          $ref: '#/components/schemas/GcCharacteristicValue'
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcCharacteristic: '#/components/schemas/GcCharacteristic'
+    RelatedProductOrderItem:
+      type: object
+      description: It's a RelatedProduct item that has been executed previously.
+      properties:
+        orderItemAction:
+          type: string
+          description: Action of the order item for this product.
+        productOrderHref:
+          type: string
+          description: Reference of the related entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      allOf:
+        - $ref: '#/components/schemas/GcRelatedProductOrderItem'
+    ProductPrice:
+      description: Description of price and discount awarded
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the Product price
+        name:
+          type: string
+          description: Name of the Product price
+        productOfferingPrice:
+          $ref: '#/components/schemas/ProductOfferingPriceRef'
+        recurringChargePeriod:
+          type: string
+          description: 'Used for recurring charge to indicate period (month, week, etc..).'
+        unitOfMeasure:
+          type: string
+          description: 'Unit of Measure if price depending on it (Gb, SMS volume, etc..)'
+        price:
+          $ref: '#/components/schemas/Price'
+        priceAlteration:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceAlteration'
+      allOf:
+        - $ref: '#/components/schemas/GcProductPrice'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductPrice: '#/components/schemas/ProductPrice'
+    ProductRelationship:
+      description: Used to describe relationship between product.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductRelationship'
+        - $ref: '#/components/schemas/Entity'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductRelationship: '#/components/schemas/ProductRelationship'
+    ProductSpecificationRef:
+      description: >-
+        ProductSpecification reference. A product Specification represents entities that are
+        orderable from the provider of the catalog.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcProductSpecificationRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductSpecificationRef: '#/components/schemas/ProductSpecificationRef'
+    ProductTerm:
+      description: >-
+        Description of a productTerm linked to this product. This represent a commitment with a
+        duration
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the productTerm
+        duration:
+          $ref: '#/components/schemas/Quantity'
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        name:
+          type: string
+          description: Name of the productTerm
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductTerm: '#/components/schemas/ProductTerm'
+    ResourceRef:
+      description: 'Resource reference, for when Resource is used by other entities.'
+      type: object
+      properties:
+        value:
+          type: string
+          description: Value used to identifiy this resource as a MSISDN or a VoIP number.
+      allOf:
+        - $ref: '#/components/schemas/GcResourceRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ResourceRef: '#/components/schemas/ResourceRef'
+    ServiceRef:
+      description: 'Service reference, for when Service is used by other entities.'
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcServiceRef'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ServiceRef: '#/components/schemas/ServiceRef'
+    RelatedPlaceRefOrValue:
+      description: >-
+        Related Entity reference. A related place defines a place described by reference or by value
+        linked to a specific entity. The polymorphic attributes @type, @schemaLocation &
+        @referredType are related to the place entity and not the RelatedPlaceRefOrValue class
+        itself
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcRelatedPlaceRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PlaceRef: '#/components/schemas/PlaceRef'
+          Place: '#/components/schemas/Place'
+    GcProduct:
+      type: object
+      description: >-
+        A product offering procured by a customer or other interested party playing a party role. A
+        product is realized as one or more service(s) and / or resource(s).
+      properties:
+        status:
+          $ref: '#/components/schemas/GcProductStatusType'
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProduct: '#/components/schemas/GcProduct'
+          Product: '#/components/schemas/Product'
+    GcAgreementItemRef:
+      type: object
+      description: Reference of an Agreement item.
+      required:
+        - itemId
+        - AgreementId
+      properties:
+        AgreementId:
+          type: string
+          description: Unique identifier of a related entity.
+        itemId:
+          type: string
+          description: Id of an item of a Agreement
+    GcCharacteristicValue:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcCharacteristicValue: '#/components/schemas/GcCharacteristicValue'
+    GcRelatedProductOrderItem:
+      type: object
+      description: Reference of a productOrder item that has been executed previously.
+      required:
+        - itemId
+        - productOrderId
+        - role
+      properties:
+        role:
+          type: string
+          description: Role played by the product Order
+        productOrderId:
+          type: string
+          description: Unique identifier of a related product Order.
+        itemId:
+          type: string
+          description: Id of an item of a product order
+    GcProductPrice:
+      description: Description of price and discount awarded
+      type: object
+      required:
+        - priceType
+      properties:
+        priceType:
+          type: string
+          description: indicate if the price is for recurrent or no-recurrent charge
+    GcProductRelationship:
+      description: Used to describe relationship between product.
+      type: object
+      required:
+        - id
+        - relationshipType
+      properties:
+        id:
+          type: string
+          description: Id of the related product
+        relationshipType:
+          type: string
+          description: 'Relationship type as relies on, bundles, etc...'
+    GcProductSpecificationRef:
+      description: >-
+        ProductSpecification reference. A product Specification represents entities that are
+        orderable from the provider of the catalog.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcProductSpecificationRef: '#/components/schemas/GcProductSpecificationRef'
+          ProductSpecificationRef: '#/components/schemas/ProductSpecificationRef'
+    GcResourceRef:
+      description: Resource reference
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcResourceRef: '#/components/schemas/GcResourceRef'
+          ResourceRef: '#/components/schemas/ResourceRef'
+    GcServiceRef:
+      description: Service reference
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcServiceRef: '#/components/schemas/GcServiceRef'
+          ServiceRef: '#/components/schemas/ServiceRef'
+    GcRelatedPlaceRefOrValue:
+      description: >-
+        Related Entity reference. A related place defines a place described by reference or by value
+        linked to a specific entity. The polymorphic attributes @type, @schemaLocation &
+        @referredType are related to the place entity and not the RelatedPlaceRefOrValue class
+        itself
+      type: object
+      properties:
+        role:
+          type: string
+      required:
+        - role
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcRelatedPlaceRefOrValue: '#/components/schemas/GcRelatedPlaceRefOrValue'
+          RelatedPlaceRefOrValue: '#/components/schemas/RelatedPlaceRefOrValue'
+    PlaceRef:
+      description: Place reference.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcPlaceRef'
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PlaceRef: '#/components/schemas/PlaceRef'
+    Place:
+      description: Place reference.
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcPlaceRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    GcProductStatusType:
+      type: string
+      description: Possible values for the status of the product
+      enum:
+        - created
+        - pendingActive
+        - cancelled
+        - active
+        - pendingTerminate
+        - terminated
+        - suspended
+        - 'aborted '
+    GcPlaceRef:
+      description: Place reference
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/GcEntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GcPlaceRef: '#/components/schemas/GcPlaceRef'
+          Place: '#/components/schemas/Place'
+          PlaceRef: '#/components/schemas/PlaceRef'
+    Quote_Create:
+      type: object
+      description: >-
+        Quote can be used to negotiate service and product acquisition or modification between a
+        customer and a service provider. Quote contain list of quote items, a reference to customer
+        (partyRole), a list of productOffering and attached prices and conditions.
+      properties:
+        agreement:
+          type: array
+          description: A reference to an agreement defining the context of the quote
+          items:
+            $ref: '#/components/schemas/AgreementRef'
+        billingAccount:
+          type: array
+          description: 'A reference to a billing account to provide quote context information '
+          items:
+            $ref: '#/components/schemas/BillingAccountRef'
+        category:
+          type: string
+          description: >-
+            Used to categorize the quote from a business perspective that can be useful for the CRM
+            system (e.g. "enterprise", "residential", ...)
+        contactMedium:
+          type: array
+          description: Information contact related to the quote requester
+          items:
+            $ref: '#/components/schemas/ContactMedium'
+        description:
+          type: string
+          description: Description of the quote
+        expectedFulfillmentStartDate:
+          type: string
+          format: date-time
+          description: this is the date wished by the requester to have the requested quote item delivered
+        externalId:
+          type: string
+          description: >-
+            ID given by the consumer and only understandable by him (to facilitate his searches
+            afterwards)
+        instantSyncQuote:
+          type: boolean
+          description: >-
+            An indicator which when the value is "true" means that requester expects to get quoting
+            result immediately in the response. If the indicator is true then the response code of
+            200 indicates the operation is successful otherwise a task is created with a response
+            201. 
+        note:
+          type: array
+          description: Free form text associated with the quote
+          items:
+            $ref: '#/components/schemas/Note'
+        authorization:
+          type: array
+          description: An authorization provided for the quote
+          items:
+            $ref: '#/components/schemas/Authorization'
+        relatedParty:
+          type: array
+          description: 'A reference to a party playing a role in this quote (customer, seller, requester, etc.)'
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        productOfferingQualification:
+          type: array
+          description: A reference to a previously done product offering qualification
+          items:
+            $ref: '#/components/schemas/ProductOfferingQualificationRef'
+        requestedQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: >-
+            This is requested date - from quote requester - to get a complete response for this
+            quote
+        version:
+          type: string
+          description: >-
+            Quote version - if the customer rejected the quote but  negotiations still open a new
+            version of the quote is managed
+        quoteItem:
+          type: array
+          description: >-
+            A quote items describe an action to be performed on a productOffering or a product in
+            order to get pricing elements and condition.
+          items:
+            $ref: '#/components/schemas/QuoteItem'
+          minItems: 1
+      allOf:
+        - $ref: '#/components/schemas/GcQuote'
+        - $ref: '#/components/schemas/SchemaContext'
+    Quote_Update:
+      type: object
+      description: >-
+        Quote can be used to negotiate service and product acquisition or modification between a
+        customer and a service provider. Quote contain list of quote items, a reference to customer
+        (partyRole), a list of productOffering and attached prices and conditions.
+      properties:
+        agreement:
+          type: array
+          description: A reference to an agreement defining the context of the quote
+          items:
+            $ref: '#/components/schemas/AgreementRef'
+        billingAccount:
+          type: array
+          description: 'A reference to a billing account to provide quote context information '
+          items:
+            $ref: '#/components/schemas/BillingAccountRef'
+        category:
+          type: string
+          description: >-
+            Used to categorize the quote from a business perspective that can be useful for the CRM
+            system (e.g. "enterprise", "residential", ...)
+        contactMedium:
+          type: array
+          description: Information contact related to the quote requester
+          items:
+            $ref: '#/components/schemas/ContactMedium'
+        description:
+          type: string
+          description: Description of the quote
+        effectiveQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: Date when the quote has been completed
+        expectedFulfillmentStartDate:
+          type: string
+          format: date-time
+          description: this is the date wished by the requester to have the requested quote item delivered
+        expectedQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: >-
+            This is expected date - from quote supplier - to be able to send back  a response for
+            this quote
+        externalId:
+          type: string
+          description: >-
+            ID given by the consumer and only understandable by him (to facilitate his searches
+            afterwards)
+        instantSyncQuote:
+          type: boolean
+          description: >-
+            An indicator which when the value is "true" means that requester expects to get quoting
+            result immediately in the response. If the indicator is true then the response code of
+            200 indicates the operation is successful otherwise a task is created with a response
+            201. 
+        note:
+          type: array
+          description: Free form text associated with the quote
+          items:
+            $ref: '#/components/schemas/Note'
+        authorization:
+          type: array
+          description: An authorization provided for the quote
+          items:
+            $ref: '#/components/schemas/Authorization'
+        quoteTotalPrice:
+          type: array
+          description: Quote total price
+          items:
+            $ref: '#/components/schemas/QuotePrice'
+        relatedParty:
+          type: array
+          description: 'A reference to a party playing a role in this quote (customer, seller, requester, etc.)'
+          items:
+            $ref: '#/components/schemas/RelatedParty'
+        productOfferingQualification:
+          type: array
+          description: A reference to a previously done product offering qualification
+          items:
+            $ref: '#/components/schemas/ProductOfferingQualificationRef'
+        requestedQuoteCompletionDate:
+          type: string
+          format: date-time
+          description: >-
+            This is requested date - from quote requester - to get a complete response for this
+            quote
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        version:
+          type: string
+          description: >-
+            Quote version - if the customer rejected the quote but  negotiations still open a new
+            version of the quote is managed
+        quoteItem:
+          type: array
+          description: >-
+            A quote items describe an action to be performed on a productOffering or a product in
+            order to get pricing elements and condition.
+          items:
+            $ref: '#/components/schemas/QuoteItem'
+          minItems: 1
+      allOf:
+        - $ref: '#/components/schemas/GcQuote'
+        - $ref: '#/components/schemas/SchemaContext'
+    QuoteCreateEvent:
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/QuoteEventPayload'
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+    QuoteAttributevaluechangeEvent:
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/QuoteEventPayload'
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+    QuoteStatechangeEvent:
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/QuoteEventPayload'
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+    QuoteDeleteEvent:
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/QuoteEventPayload'
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+    QuoteInformationrequiredEvent:
+      description: Example of a client listener for receiving the notification QuoteCreateEvent
+      type: object
+      properties:
+        event:
+          $ref: '#/components/schemas/QuoteEventPayload'
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+    QuoteEventPayload:
+      description: TBD
+      type: object
+      properties:
+        quote:
+          $ref: '#/components/schemas/Quote'
+    Error:
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Error: '#/components/schemas/Error'
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          required:
+            - code
+            - reason
+          properties:
+            code:
+              type: string
+              description: 'Application relevant detail, defined in the API or a common list.'
+            reason:
+              type: string
+              description: Explanation of the reason for the error which can be shown to a client user.
+            message:
+              type: string
+              description: >-
+                More details and corrective actions related to the error which can be shown to a
+                client user.
+            status:
+              type: string
+              description: HTTP Error code extension
+            referenceError:
+              type: string
+              description: URI of documentation describing the error.
+              format: uri
+      description: 'Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)'
+    EventSubscriptionInput:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - callback
+      properties:
+        callback:
+          type: string
+          description: The callback being registered.
+        query:
+          type: string
+          description: additional data to be passed
+    EventSubscription:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - id
+        - callback
+      properties:
+        id:
+          type: string
+          description: Id of the listener
+        callback:
+          type: string
+          description: The callback being registered.
+        query:
+          type: string
+          description: additional data to be passed
+  parameters:
+    Id:
+      name: id
+      required: true
+      schema:
+        type: string
+      in: path
+      description: Identifier of the Service
+    Fields:
+      name: fields
+      in: query
+      description: Comma-separated properties to be provided in response
+      schema:
+        type: string
+    Offset:
+      name: offset
+      in: query
+      description: Requested index for start of resources to be provided in response
+      schema:
+        type: integer
+    Limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response
+      schema:
+        type: integer
+  requestBodies:
+    Quote_Create:
+      description: The Quote to be created
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Quote_Create'
+      required: true
+    Quote_Update:
+      description: The Quote to be updated
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Quote_Update'
+      required: true
+    EventSubscriptionInput:
+      description: Data containing the callback endpoint to deliver the information
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/EventSubscriptionInput'
+      required: true
+  responses:
+    '204':
+      description: Deleted
+      content: {}
+    200QuoteArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json;charset=utf-8:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Quote'
+    200Quote:
+      description: Success
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Quote'
+    201Quote:
+      description: Created
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Quote'
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    EventSubscription:
+      description: Notified
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/EventSubscription'
+  headers:
+    X-Total-Count:
+      description: Total number of items matching criteria
+      schema:
+        type: integer
+    X-Result-Count:
+      description: Actual number of items returned in the response body
+      schema:
+        type: integer
+  securitySchemes: {}

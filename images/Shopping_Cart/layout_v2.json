@@ -1,0 +1,10 @@
+{
+   "ShoppingCart": {
+      "placeAbove":["ContactMedium"],
+      "placeRight": ["CartItem"] 
+   },
+   "CartItem": {
+      "placeAbove": ["CartItemRelationship"]
+   }
+
+}

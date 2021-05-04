@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  
+  
+  <CustomLevels>
+    <CustomLevel name="VERBOSE" intLevel="50" />
+  </CustomLevels>
+  
+  <Appenders>
+  
+    <Console name="Progress" target="SYSTEM_OUT">
+      <PatternLayout pattern="%m%n"/>
+      <ThresholdFilter level="VERBOSE" onMatch="ACCEPT" onMismatch="DENY"/>
+    </Console>
+ 
+    <Console name="Logging" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} :: %msg%n"/>
+      <ThresholdFilter level="VERBOSE" onMismatch="ACCEPT" onMatch="DENY"/>
+    </Console>
+    
+  </Appenders>
+  
+  <Loggers>
+  
+    <Root level="INFO">
+      <AppenderRef ref="Logging" />
+    </Root>
+         
+    <Logger name="no.paneon.api.utils.Out" level="VERBOSE">
+      <AppenderRef ref="Progress" level="VERBOSE" />
+    </Logger>
+          
+  </Loggers>
+</Configuration>
+

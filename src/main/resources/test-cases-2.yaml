@@ -1,0 +1,98 @@
+testscenarios:
+
+  variables:
+    ID1: "test"
+    ID2: "test2"
+ 
+  templates:
+    template 'Create with minimum required information':
+      id: TEMPLATE_CREATE_01
+      operation: POST
+      request: ${operation} ${RESOURCE} ${minimumClient}
+      expected:
+        httpCode: 
+          - OK: 200
+      validate:
+        - 'Retrieve by id'
+         
+    template 'Create with minimum set of parameters supported by server':
+      id: TEMPLATE_CREATE_02
+      operation: POST
+      request: ${operation} ${RESOURCE} ${minimumServer}
+      expected:
+        httpCode: 
+          - OK: 200
+      validate:
+        - 'Retrieve by id'
+
+    template  'Invalid Request - Missing mandatory parameter':
+      id: TEMPLATE_CREATE_03
+      operation: POST
+      argument: Property missing
+      request: ${operation} ${RESOURCE} DIFF( ${minimumServer}, $ARGS )
+      expected:
+        Error: 400
+
+    template 'Delete':
+      id: TEMPLATE_DELETE_01
+      operation: DELETE
+      argument: id
+      expected:
+        OK: 201
+
+    template 'Retrieve by id':
+      id: TEMPLATE_GET_01
+      operation: GET
+      argument: id
+      request: ${operation} ${RESOURCE} ? "id=" ${ARGS}
+      expected:
+        OK: 200 
+      
+    template 'Search for resource by specific properties':
+      id: TEMPLATE_GET_02
+      operation: GET
+      argument: Filter and projection
+      request: ${operation} ${RESOURCE} ? ${ARGS}
+      expected:
+        OK: 200 
+      
+    template  'Unknown identifier':
+      id: TEMPLATE_GET_03
+      operation: GET
+      arguments: 
+        id: dummy
+      request: ${operation} ${RESOURCE} $ARGS
+      expected:
+        Error: 404
+
+
+  testcases ProductOrder:
+    testcase N1:
+      template: 'Create with minimum required information'
+
+    testcase N2:
+      template: 'Create with minimum set of parameters supported by server'
+
+    testcase N3:
+      template:  'Search for resource with specific characteristics'
+
+    testcase N4:
+      template: 'Search for resource by specific properties'
+      arguments: 
+        externalId: Telco01
+        fields: id,state,category,description
+    
+    testcase E1:
+      template: 'Unknown identifier'
+
+    testcase E2:
+      template:  'Invalid Request – Missing mandatory parameter'
+      arguments: 
+        - note.text
+    
+    testcase E3:
+      template: 'Invalid Request – Missing mandatory parameter'
+      arguments: 
+        - channel
+        - billingAccount
+  

@@ -1,0 +1,295 @@
+@startuml
+hide circle
+hide methods
+hide stereotype
+show <<Enumeration>> stereotype
+skinparam class {
+   BackgroundColor<<Enumeration>> #E6F5F7
+   BackgroundColor<<Ref>> #FFFFE0
+   BackgroundColor<<Pivot>> #FFFFFFF
+   BackgroundColor #FCF2E3
+}
+
+class PartyAccount <<Pivot>> {
+    id : String
+    href : String
+    accountType : String
+    description : String
+    lastModified : DateTime
+    name : String
+    paymentStatus : String
+    state : String
+    creditLimit : Money
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountBalance {
+    balanceType : String
+    amount : Money
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountRelationship {
+    relationshipType : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountRef <<Ref>> {
+    id : String
+    href : String
+    description : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class BillStructure {
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class BillingCycleSpecificationRefOrValue {
+    id : String
+    href : String
+    billingDateShift : Integer
+    billingPeriod : String
+    chargeDateOffset : Integer
+    creditDateOffset : Integer
+    dateShift : Integer
+    description : String
+    frequency : String
+    isRef : Boolean
+    mailingDateOffset : Integer
+    name : String
+    paymentDueDateOffset : Integer
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class BillFormatRefOrValue {
+    id : String
+    href : String
+    description : String
+    isRef : Boolean
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class BillPresentationMediaRefOrValue {
+    id : String
+    href : String
+    description : String
+    isRef : Boolean
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class Contact {
+    contactName : String
+    contactType : String
+    partyRoleType : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class ContactMedium {
+    mediumType : String
+    preferred : Boolean
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class MediumCharacteristic {
+    city : String
+    country : String
+    emailAddress : String
+    faxNumber : String
+    phoneNumber : String
+    postCode : String
+    socialNetworkId : String
+    stateOrProvince : String
+    street1 : String
+    street2 : String
+    type : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class RelatedParty {
+    id : String
+    href : String
+    name : String
+    role : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class PaymentMethodRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class FinancialAccountRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class PaymentPlan {
+    numberOfPayments : Integer
+    paymentFrequency : String
+    planType : String
+    priority : Integer
+    status : String
+    totalAmount : Money
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountTaxExemption {
+    certificateNumber : String
+    issuingJurisdiction : String
+    reason : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+
+'processing edges for PartyAccount
+AccountTaxExemption "0..*" <-left-* PartyAccount : taxExemption
+' rule: L01
+PartyAccount *-right-> "0..*" Contact : contact
+' rule: R02
+PartyAccount *-->  "0..*" AccountBalance : accountBalance
+' rule: General below rule - either none already or unable to place left / right of currently placed
+PartyAccount *-->  "0..1" PaymentMethodRef : defaultPaymentMethod
+' rule: General below rule - either none already or unable to place left / right of currently placed
+PartyAccount *-->  "0..1" FinancialAccountRef : financialAccount
+' rule: General below rule - either none already or unable to place left / right of currently placed
+PartyAccount *-->  "0..*" PaymentPlan : paymentPlan
+' rule: General below rule - either none already or unable to place left / right of currently placed
+PartyAccount *-->  "0..*" RelatedParty : relatedParty
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for PartyAccount
+
+'processing edges for AccountBalance
+
+'processing edges for Contact
+'completed processing of edges for Contact
+
+'processing edges for RelatedParty
+
+'processing edges for PaymentMethodRef
+
+'processing edges for FinancialAccountRef
+'completed processing of edges for FinancialAccountRef
+
+'processing edges for PaymentPlan
+'completed processing of edges for PaymentPlan
+
+'processing edges for PartyAccount
+Contact *-->  "0..1" RelatedParty : relatedParty
+' rule: placeEdgesBetweenNodesAlreadyPlaced - Contact < RelatedParty
+FinancialAccountRef *-right-> "0..1" AccountBalance : accountBalance
+' rule: placeEdgesBetweenNodesAlreadyPlaced - AccountBalance < FinancialAccountRef
+PaymentPlan *-right-> "0..1" PaymentMethodRef : paymentMethod
+' rule: placeEdgesBetweenNodesAlreadyPlaced - PaymentMethodRef < PaymentPlan
+PartyAccount *-->  "0..*" AccountRelationship : accountRelationship
+' rule: General below rule - direction to right
+PartyAccount -[hidden]-> AccountRelationship
+AccountBalance -right[hidden]- AccountRelationship
+PartyAccount *-->  "0..1" BillStructure : billStructure
+' rule: General below rule - direction to right
+AccountRelationship -right[hidden]- BillStructure
+'completed processing of edges for PartyAccount
+
+'processing edges for AccountBalance
+
+'processing edges for AccountRelationship
+AccountRelationship *-->  "0..1" AccountRef : account
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for AccountRelationship
+
+'processing edges for AccountRef
+
+'processing edges for BillStructure
+BillStructure *-->  "0..1" BillingCycleSpecificationRefOrValue : cycleSpecification
+' rule: General below rule - either none already or unable to place left / right of currently placed
+BillStructure *-->  "0..1" BillFormatRefOrValue : format
+' rule: General below rule - either none already or unable to place left / right of currently placed
+BillStructure *-->  "0..*" BillPresentationMediaRefOrValue : presentationMedia
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for BillStructure
+
+'processing edges for BillingCycleSpecificationRefOrValue
+
+'processing edges for BillFormatRefOrValue
+
+'processing edges for BillPresentationMediaRefOrValue
+
+'processing edges for Contact
+Contact *-->  "0..*" ContactMedium : contactMedium
+' rule: General below rule - direction to right
+Contact -[hidden]-> ContactMedium
+RelatedParty -right[hidden]- ContactMedium
+'completed processing of edges for Contact
+
+'processing edges for ContactMedium
+ContactMedium *-->  "0..1" MediumCharacteristic : characteristic
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for ContactMedium
+
+'processing edges for MediumCharacteristic
+
+'processing edges for RelatedParty
+
+'processing edges for PaymentMethodRef
+
+'processing edges for FinancialAccountRef
+'completed processing of edges for FinancialAccountRef
+
+'processing edges for PaymentPlan
+'completed processing of edges for PaymentPlan
+
+'processing edges for AccountTaxExemption
+@enduml

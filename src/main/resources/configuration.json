@@ -1,0 +1,164 @@
+{
+	"###NOTE###": "This configuration is included in the jar file",
+		
+	"includeMetaProperties": false,
+	
+	"default_config": {
+	},
+	
+	"filterResourceDetails": true,
+
+	"resourceMapping": {
+		"EventSubscription": "Hub"
+	},
+
+	
+	"parentPresentCondition": " (if present)",
+	
+	"minimizeResourceDetails": true,
+	
+	"includeCommentsInRules": true,
+	
+	"onlyMandatoryForPost": true,
+	
+	"onlyMandatoryAsPatchable": true,
+	
+	"formatToType": {
+		"date-time": "DateTime",
+		"date": "Date",
+		"float": "Float",
+		"uri": "Uri",
+		"url": "Url",
+		"int32": "Integer32",
+		"int64": "Integer64",
+		"uint32": "UInteger32",
+		"uint64": "UInteger64",
+		"base64": "Base64"
+	},
+	
+	"typeMapping": {
+		"integer": "Integer",
+		"string": "String",
+		"boolean": "Boolean",
+		"number": "Number"
+	},
+	
+	"complexityLegend": [
+		"legend center",
+		"Sub-resources can be shown as properties of a containing resource for enhanced readability",
+		"endlegend"
+	],
+	
+	"defaultStereoType": "<<SubResource>>",
+	
+	"specialStereoType":  {
+		"RelatedParty": " <<Ref>>"
+	},
+	
+	"showDefaultCardinality": true,
+	
+	"defaultCardinality": "0..1",
+	
+	"requiredHighlighting": "<u>%s</u>",
+	
+	"inheritedFormatting": "<color:MediumBlue>%s</color>",
+	
+	"useRequiredHighlighting": true,
+	
+	"includeDescription": false,
+	
+	"showCardinalitySimpleProperties": true,
+	
+	"processComplexity": true,
+	
+	"simplifyRefOrValue": false,
+	
+	"simpleTypes": [
+		"TimePeriod",
+		"Money",
+		"Quantity",
+		"Duration",
+		"Tax",
+		"Value",
+		"Any",
+		"object",
+		"Number",
+		"Date"
+	],
+	
+	"simpleEndings": [
+		"Type",
+		"Error"
+	],
+	
+	"nonSimpleEndings": [
+		"RefType",
+		"TypeRef",
+		"RoleType"
+	],
+	
+	"puml": [
+		"@startuml",
+		"'",
+		"' Resource:  ${RESOURCE}",
+		"' Source:    ${FILE}",
+		"'",
+		"hide circle",
+		"hide methods",
+		"hide stereotype",
+		"show <<Enumeration>> stereotype",
+		"skinparam class {",
+		"   backgroundColor<<Enumeration>> #E6F5F7",
+		"   backgroundColor<<Ref>> #FFFFE0",
+		"   backgroundColor<<Pivot>> #FFFFFFF",
+		"   backgroundColor #FCF2E3",
+		"   backgroundColor<<SubResource>> MistyRose",
+		"}",
+		"",
+		"skinparam legend {",
+		"   borderRoundCorner 0",
+		"   borderColor red",
+		"   backgroundColor white",
+		"}",
+		"",
+		""
+	],
+		
+	"coreInheritanceTypes": [
+		"Entity",
+		"EntityRef",
+		"Extensible",
+		"Addressable",
+		"SchemaContext",
+		
+		"GcEntityRef",
+		
+		"Reference"
+		
+	],
+	
+	"coreInheritanceRegexp": [
+		"^Gc.*"
+	],
+	
+	"subClassExcludeRegexp": [
+		".*_Create$",
+		".*_Update$"
+	],
+	
+	"includeInherited": true,
+	
+	"expandInherited": false,
+	
+	"expandPropertiesFromAllOfs": false,
+	
+	"minimum_complexity" : 200,
+	
+	"includeDiscriminatorMapping": true,
+	
+	"diagramFileType": ".puml",
+	
+	"diagrams.yaml": "generated/diagrams/diagrams.yaml",
+	
+	
+}

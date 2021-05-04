@@ -1,0 +1,6 @@
+{
+   "ShoppingCart": {
+      "placeAbove":["ContactMedium"],
+      "placeRight": ["CartItem"] 
+   }
+}

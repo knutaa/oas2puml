@@ -1,0 +1,20 @@
+{
+   "ShoppingCart": {
+      "placeLeft":["ContactMedium"],
+      "placeRight": ["CartItem"] 
+   },
+
+   "CartItem": {
+      "placeAbove": ["CartItemRelationship"]
+   },
+
+   "BaseProductRefOrValue": {
+      "placeBelow": ["Characteristic", "ResourceRef", "ServiceRef", "RelatedPlaceRefOrValue"]
+   },
+
+   "ContactMedium": {
+      "placeBelow": ["MediumCharacteristic"]
+   } 
+
+
+}

@@ -1,0 +1,1069 @@
+package no.paneon.swagger2confspec;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import no.paneon.swagger2confspec.AspectLogger.LogLevel;
+
+public class APIModel {
+	
+    static final Logger LOG = LogManager.getLogger(APIModel.class);
+    
+	private static final List<String> ALL_OPS = Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH");
+
+    private static JSONObject swagger;
+       
+	private static JSONObject resourceMapping;
+	private static JSONObject reverseMapping;
+
+    APIModel() {
+    }
+ 
+    APIModel(JSONObject api) {
+    	setSwagger(api);
+    }
+ 
+    APIModel(String swaggerSource) {
+    	setSwagger(Utils.readJSONOrYaml(swaggerSource));
+    }
+    
+	@LogMethod(level=LogLevel.DEBUG)
+    public static void init() {
+    	resourceMapping = Config.getObject("resourceMapping");
+    	reverseMapping = generateReverseMapping(resourceMapping);
+    }
+    
+	@LogMethod(level=LogLevel.DEBUG)
+    public static void setSwagger(JSONObject api) {
+    	swagger = api;
+    }
+        
+	@LogMethod(level=LogLevel.DEBUG)
+	public static void setSwaggerSource(String swaggerSource) {
+		setSwagger(Utils.readJSONOrYaml(swaggerSource));
+	}
+
+	private static Map<String,String> formatToType = new HashMap<>();
+	private static Map<String,String> typeMapping = new HashMap<>();
+
+	static {
+		formatToType.put("date-time", "DateTime");
+		formatToType.put("date", "Date");
+		formatToType.put("float", "Float");
+		formatToType.put("uri", "Uri");
+		formatToType.put("url", "Url");
+	
+		typeMapping.put("integer", "Integer");
+		typeMapping.put("string", "String");
+		typeMapping.put("boolean", "Boolean");
+	}
+	
+	private static final String FORMAT = "format";
+	private static final String TYPE = "type";
+	private static final String ARRAY = "array";
+	private static final String OBJECT = "object";
+	private static final String REF = "$ref";
+	private static final String ITEMS = "items";
+	private static final String PATHS = "paths";
+	private static final String PROPERTIES = "properties";
+	private static final String ENUM = "enum";
+	private static final String RESPONSES = "responses";
+	private static final String SCHEMA = "schema";
+	private static final String DESCRIPTION = "description";
+	
+	private static final String NOTIFICATIONS = "notifications";
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	String getType(JSONObject property, String ref) {
+		String res="";
+	    if(ref!=null) {
+	        res = ref;
+	    } else {		        
+	    	String format = property.optString(FORMAT);
+	    	String type = property.getString(TYPE);
+	        if(!format.isEmpty()) {
+	            String formatMapping = formatToType.get(format);
+	            if(formatMapping!=null) {
+	                res = formatMapping;
+	            } else {
+	            	LOG.log(AspectLogger.VERBOSE, "format: {} has no mapping, using type and format", format);
+	            	res = type + '/' + format;
+	            }
+	        } else if(typeMapping.get(type)!=null) {
+	            res = typeMapping.get(type);
+	        } else {
+	        	res = type;
+	        }
+	    }
+	    return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	boolean isSimpleType(String type, String property) {
+	    boolean res=true;
+	    JSONObject propertySpecification = getPropertySpecification(type,property);
+
+        if(propertySpecification==null) return res;
+	    
+	    if(propertySpecification.has(TYPE)) {
+	    	String jsonType = propertySpecification.getString(TYPE);
+	        res = !jsonType.equals(OBJECT) && !jsonType.equals(ARRAY);
+	    } 
+	    
+	    if(propertySpecification.has(ITEMS)) propertySpecification=propertySpecification.getJSONObject(ITEMS);
+	    
+	    if(propertySpecification.has(REF)) {
+	    	String referencedType = getReferencedType(type, property);
+	        res = isSimpleType(referencedType);
+	    }
+	    
+	    return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public boolean isSimpleType(String type) {
+	    boolean res=true;
+	    JSONObject definition = getDefinition(type);
+	    	    
+	    if(definition.has(TYPE)) {
+	    	String jsonType = definition.getString(TYPE);
+	        if(jsonType.equals(OBJECT)) return false;
+	    } 
+	    
+	    if(definition.has(ITEMS)) definition=definition.getJSONObject(ITEMS);
+	    
+	    if(definition.has(REF)) {
+	    	String referencedType = getTypeByReference(definition.getString(REF));
+	        res = isSimpleType(referencedType);
+	    }
+	    
+	    return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	boolean isArrayType(String type, String property) {
+	    boolean res=false;
+	    JSONObject propertySpecification = getPropertySpecification(type,property);
+	    
+	    if(propertySpecification!=null && propertySpecification.has(TYPE)) {
+	    	String jsonType = propertySpecification.getString(TYPE);
+	        res = jsonType.equals(ARRAY);
+	    }
+	    return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getReferencedType(String type, String property) {
+	    JSONObject specification = getPropertySpecification(type,property);
+	    return getReferencedType(specification,property);	    	    
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getReferencedType(JSONObject specification, String property) {
+	    String res="";
+	    
+	    if(specification!=null && specification.has(property)) specification = specification.optJSONObject(property);
+
+	    if(specification!=null && specification.has(ITEMS)) {
+	    	specification = specification.getJSONObject(ITEMS);
+	    }
+	    if(specification!=null && specification.has(REF)) {
+	    	String ref=specification.getString(REF);
+	    	String[] parts=ref.split("/");
+	    	res = parts[parts.length-1];
+	    }
+	    
+	    return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	String getTypeByReference(String ref) {
+    	String[] parts=ref.split("/");
+    	return parts[parts.length-1];
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	protected JSONObject getPropertySpecification(String resource, String property) {
+		JSONObject res=getPropertyObjectForResource(resource);
+		if(res!=null) {
+			res = res.optJSONObject(property);
+		}
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	protected JSONObject getPropertySpecification(JSONObject resource, String property) {
+		JSONObject res=null;
+		if(resource.has(PROPERTIES)) resource=resource.optJSONObject(PROPERTIES);
+		if(resource!=null) res = resource.optJSONObject(property);
+		return res;
+	}
+	
+	private static Map<String, JSONObject> resourcePropertyMap = new HashMap<>();
+	
+	@LogMethod(level=LogLevel.DEBUG) 
+	public JSONObject getPropertyObjectForResource(String coreResource) {
+		JSONObject res=null;
+		if(resourcePropertyMap.containsKey(coreResource)) {
+			res = resourcePropertyMap.get(coreResource);
+		} else {
+			res = getDefinition(coreResource, PROPERTIES);
+			if(res!=null) {
+				resourcePropertyMap.put(coreResource, res);
+			}
+		}
+		if(res==null) res=new JSONObject();
+
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG) 
+	public JSONObject getPropertyObjectForResource(JSONObject resource) {
+		if(resource!=null && resource.has(PROPERTIES)) resource=resource.optJSONObject(PROPERTIES);
+		
+		if(resource==null) resource=new JSONObject();
+		return resource;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public Set<String> getPropertiesForResource(String resource) {
+		JSONObject obj = getPropertyObjectForResource(resource);
+		if(obj!=null)
+			return obj.keySet();
+		else
+			return new HashSet<>();
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getSortedProperties(JSONObject properties) {
+		List<String> sorted = new LinkedList<>();
+
+		if(properties!=null) {
+			if(Config.getBoolean("includeMetaProperties")) {
+				List<String> props1 = properties.keySet().stream()
+						.filter(x->x.startsWith("@"))
+						.sorted().collect(Collectors.toList());
+				sorted.addAll(props1);
+			}
+			
+			List<String> props2 = properties.keySet().stream()
+					.filter(x->!x.startsWith("@"))
+					.sorted().collect(Collectors.toList());	        	
+	
+			sorted.addAll(props2);
+		}
+		
+		return sorted;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	protected Set<String> getProperties(String resource) {
+		Set<String> res = new HashSet<>();
+		JSONObject obj = getPropertyObjectForResource(resource);
+		if(obj!=null) res.addAll(obj.keySet());
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	protected Set<String> getProperties(JSONObject obj) {
+		Set<String> res = new HashSet<>();
+		
+		if (obj == null){
+			return res;
+		}
+		if(obj.has(PROPERTIES)) obj=obj.optJSONObject(PROPERTIES);
+		if(obj!=null) res = obj.keySet();
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private JSONObject getDefinition(String ... args) {
+		JSONObject res = null;
+		if(args.length>0) {
+			res = getDefinition(args[0]);
+			int idx=1;
+			while(res!=null && idx<args.length) {
+				res = res.optJSONObject(args[idx]);
+				idx++;
+			}
+		}
+		
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	boolean isEnumType(String type) {
+	    boolean res=false;
+		JSONObject definition = getDefinition(type);
+		if(definition!=null) {
+	        res = definition.has(ENUM);
+	    }
+	    return res;
+	}
+		
+		
+	@LogMethod(level=LogLevel.DEBUG)
+	private List<String> extractResources() {
+		
+		List<String> resources = getAllResponses()
+									.map(APIModel::getNormalResponses)
+									.flatMap(List::stream)
+									.map(APIModel::getResourceFromResponse)
+									.flatMap(List::stream)
+									.collect(Collectors.toList());
+		
+		resources = resources.stream()
+						.distinct()
+						.map(APIModel::getMappedResource)
+						.collect(Collectors.toList());
+				
+		return resources;
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public static String getMappedResource(String resource) {
+		String res=resource;
+		if(resourceMapping!=null && resourceMapping.has(resource) && resourceMapping.optString(resource)!=null) {
+			res = resourceMapping.getString(resource);
+		}
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public static String getReverseResourceMapping(String resource) {
+		String res=resource;
+		if(reverseMapping!=null && reverseMapping.has(resource) && reverseMapping.optString(resource)!=null) {
+			res = reverseMapping.getString(resource);
+		}
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public static JSONObject generateReverseMapping(JSONObject map) {
+		JSONObject res = new JSONObject();
+		
+		for(String key : map.keySet()) {
+			if(map.optString(key)!=null) {
+				res.put(map.getString(key), key);
+			}
+		}
+		return res;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public static Set<String> getPaths() {
+		if(swagger!=null && swagger.has(PATHS))
+			return swagger.getJSONObject(PATHS).keySet();
+		else
+			return new HashSet<>();
+	}
+
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private static List<JSONObject> getChildElements(JSONObject obj) {
+		return new JSONObjectHelper(obj).getChildElements();
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static List<JSONObject> getNormalResponses(JSONObject respObj) {
+		if(respObj==null) return new LinkedList<>();
+				
+		Set<String> keys = respObj.keySet().stream()
+							.filter(resp -> !"default".equals(resp) && Integer.parseInt(resp)<300)
+							.collect(Collectors.toSet());
+						
+		return new JSONObjectHelper(respObj, keys).getChildElements(); 
+		
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static List<String> getResourceFromResponse(JSONObject obj) {
+		List<String> res = new LinkedList<>();
+
+		JSONObject schema = getSchemaFromResponse(obj);
+
+		if(schema!=null) {
+			if(schema.has(REF)) {
+				res.add(schema.getString(REF));
+			} else if(schema.has(ITEMS) && schema.getJSONObject(ITEMS).has(REF)) {
+				res.add(schema.getJSONObject(ITEMS).getString(REF));
+			}
+		}
+		
+		res = res.stream().map(str -> str.replaceAll("[^/]+/","")).collect(Collectors.toList());
+		
+		return res;
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static JSONObject getPathObjectByKey(String path) {
+		return swagger.getJSONObject(PATHS).getJSONObject(path);
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static boolean hasResponses(JSONObject obj) {
+		return obj.has(RESPONSES);
+	}
+	
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private boolean isOpenAPIv2(JSONObject swagger) {
+		return swagger!=null && !swagger.has("openapi");
+	}
+
+
+	@LogMethod(level=LogLevel.DEBUG)
+	Collection<String> getAllDefinitions(JSONObject swagger) {
+		return getDefinitions().keySet();
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public JSONObject getDefinition(String node) {
+		
+		node = getReverseResourceMapping(node);
+		JSONObject res=null;
+		JSONObject definitions = getDefinitions();
+		if(definitions!=null) {
+			res = definitions.optJSONObject(node);
+		}
+		return res;	
+	}
+
+	JSONObject allDefinitions = null;
+	@LogMethod(level=LogLevel.DEBUG)
+	public JSONObject getDefinitions() {
+		if(swagger!=null && allDefinitions==null) {		
+			JSONObject res=null;
+			if(isOpenAPIv2(swagger))
+				res=swagger.getJSONObject("definitions");
+			else {
+				JSONObject components = swagger.optJSONObject("components");
+				if(components!=null) res = components.optJSONObject("schemas");
+			}
+			allDefinitions = res;
+		}
+		return allDefinitions;
+	}
+	
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getPaths(String resource, String operation) {
+		List<String> res = new LinkedList<>();
+		
+		if(swagger==null) return res;
+		
+		JSONObject allpaths = swagger.optJSONObject(PATHS);
+
+		String prefix = "/" + resource.toUpperCase();
+		
+		List<String> paths = allpaths.keySet().stream()
+								.filter(path -> isPathForResource(path,prefix))
+								.collect(Collectors.toList());
+		
+		paths.forEach(path -> {
+			JSONObject allOps = allpaths.optJSONObject(path);
+			if(allOps!=null && allOps.has(operation.toLowerCase())) res.add(path); 
+		});
+		
+		return res;
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private boolean isPathForResource(String path, String prefix) {
+		return path.equalsIgnoreCase(prefix) || path.toUpperCase().startsWith(prefix+"/");
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getOperationDescription(String path, String operation) {
+		String res="";
+		try {
+			res = getPathObjectByKey(path).optJSONObject(operation.toLowerCase()).getString(DESCRIPTION);
+		} catch(Exception e) {
+			LOG.debug(String.format("Unable to find description for path=%s and operation=%s", path, operation));
+		}
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public static String getPath(String resource, String operation) {
+		String res = "";
+						
+		Optional<String> found = getPaths().stream().filter(path -> isPathForResourceAndOperation(path,resource,operation)).findFirst();
+
+		if(found.isPresent()) {
+			res  = found.get();
+			res = res.replaceAll("/\\{[a-zA-Z0-9]+\\}$", "");
+		}
+		
+		return res;
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static boolean isPathForResourceAndOperation(String pathKey, String resource, String operation) {
+		return getPathObjectByKey(pathKey).keySet().stream()
+					.filter(method -> method.equals(operation))
+					.map(method -> getOperationsByPathAndMethod(pathKey,method))
+					.map(APIModel::getRegularResponses)
+					.flatMap(List::stream)
+					.map(APIModel::getResourceFromResponse)
+					.flatMap(List::stream)
+					.anyMatch(schema -> schema.endsWith(resource));			
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static List<JSONObject> getRegularResponses(JSONObject opObj) {
+		Set<String> relevant = opObj.keySet().stream().filter(key -> key.matches("-?\\d+")).collect(Collectors.toSet());
+				
+		return new JSONObjectHelper(opObj,relevant).getChildElements();
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static JSONObject getOperationsByPathAndMethod(String path, String op) {
+		return getPathObjectByKey(path).getJSONObject(op);
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private static List<String> getOperationsForPath(String path) {
+		List<String> res=new LinkedList<>();
+		JSONObject pathObj = getPathObjectByKey(path);
+		if(pathObj!=null) {
+			res.addAll( pathObj.keySet().stream()
+						  .map(String::toUpperCase)
+						  .collect(Collectors.toList()) );
+		}
+		return res;
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public Map<String, List<String>> getAllNotifications(List<String> resources, JSONObject rules) {
+		Map<String,List<String>> res = new HashMap<>();
+				
+		if(rules==null) {
+			Out.println("... API rules not found - unable to process notification conformance");
+			return res;
+		}
+				
+		for( String resource : resources) {
+			String key = "rules " + resource;
+			JSONObject rule = rules.optJSONObject(key);
+			if(rule!=null) {
+				JSONArray notif = rule.optJSONArray(NOTIFICATIONS);
+				if(notif!=null) {
+					res.put(resource, notif.toList().stream().map(Object::toString).collect(Collectors.toList()));
+				}
+			}
+		}
+		return res;
+	}
+	
+	private static boolean firstAPImessage=true;
+	private static void setSeenAPImessage() {
+		firstAPImessage=false;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getNotificationsByResource(String resource, JSONObject rules) {
+		List<String> res = new LinkedList<>();
+						
+		if(rules==null || rules.isEmpty()) {
+			if(firstAPImessage) Out.println("... API rules not found - extracting notification support from API");
+			setSeenAPImessage();
+			return getNotificationsFromSwagger(resource);
+		}
+		
+		String key = "rules " + resource;
+		
+		JSONObject rule = rules.optJSONObject(key);
+		if(rule!=null) {
+			JSONArray notif = rule.optJSONArray(NOTIFICATIONS);
+			if(notif!=null) {
+				res.addAll(notif.toList().stream().map(Object::toString).collect(Collectors.toList()));
+			} else {
+				String list = rule.optString(NOTIFICATIONS);
+				if(!list.isEmpty()) {
+					String[] parts = list.split(",");
+					if(parts.length>0) {
+						res.addAll(Arrays.asList(parts));
+					}
+				}
+			}
+		}
+
+		res = res.stream()
+				.map(notification -> getNotificationLabel(resource, notification))
+				.collect(Collectors.toList());
+		
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private List<String> getNotificationsFromSwagger(String resource) {				
+		return getAllDefinitions().stream().filter(x -> x.startsWith(resource) && x.endsWith("Event")).collect(Collectors.toList());			
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private Collection<String> getAllDefinitions() {
+		return getDefinitions().keySet().stream().map(APIModel::getMappedResource).collect(Collectors.toList());
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private String getNotificationLabel(String resource, String notification) {
+		return resource + notification.substring(0,1).toUpperCase() + notification.substring(1) + "Event";
+	}
+
+	private List<String> allResources = null;
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getResources() {
+		
+		if(allResources==null) {				
+			allResources = extractResources().stream()
+								.map(x -> x.replaceAll(".*/([A-Za-z0-9.]*)", "$1"))
+								.distinct()
+								.collect(Collectors.toList());
+		}
+				
+		return allResources;
+	}
+	
+		
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getAllNotifications() {								
+		return getPaths().stream()
+				.filter(x -> x.startsWith("/listener/"))
+				.map(x -> x.replaceAll(".*/([A-Za-z0-9.]*)", "$1"))
+				.distinct()
+				.map(Utils::upperCaseFirst)
+				.collect(Collectors.toList());
+	}
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getResponseForOperation(String pathSuffix) {								
+		return getResponseForOperation(pathSuffix,"200");
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getResponseForOperation(String pathSuffix, String responseCode) {				
+		
+	 	Optional<String> res = getAllResponses()
+								.filter(obj -> obj.keySet().contains(responseCode))
+								.map(obj -> {
+									obj = obj.getJSONObject(responseCode);
+									return getResourceFromResponse(obj);
+								})
+								.flatMap(List::stream)
+								.findFirst();
+	
+		 	return res.isPresent() ? res.get() : "";
+	}
+		
+	@LogMethod(level=LogLevel.DEBUG)
+	private Stream<JSONObject> getAllResponses() {
+		return getPaths().stream()
+			.map(APIModel::getPathObjectByKey)
+			.map(APIModel::getChildElements)
+			.flatMap(List::stream)
+			.filter(APIModel::hasResponses)
+			.map(APIModel::getResponseEntity);
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getAllOperations() {
+		List<String> res = new LinkedList<>();
+				
+		if(swagger==null) {
+			LOG.info("... missing API specification (swagger)");
+			return res;
+		}
+		
+		swagger.getJSONObject(PATHS).keySet().forEach( path ->  {
+			JSONObject pathObj = swagger.getJSONObject(PATHS).getJSONObject(path);
+			pathObj.keySet().forEach( op -> 
+				res.add(op.toUpperCase())
+			);
+		});
+			
+		return res.stream().distinct().collect(Collectors.toList());
+		
+	}
+
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public Map<String,String> getMandatoryOptional(JSONObject resource) {	
+		Map<String,String> res = new HashMap<>();
+
+		JSONObject core = getPropertyObjectForResource( resource );
+		
+		for(String property : core.keySet()) {		
+			String coreCondition = getMandatoryOptionalHelper(resource, property);
+			if(coreCondition.contains("M")) {
+				res.put(property, coreCondition);
+			
+			} 
+		}
+
+		return res;
+	}
+		
+	@LogMethod(level=LogLevel.DEBUG)
+	public Map<String,String> getMandatoryOptional(String resource) {	
+		Map<String,String> res = new HashMap<>();
+		
+		JSONObject coreResource = getDefinition(resource);
+		
+		JSONObject core = getPropertyObjectForResource( coreResource );
+				
+		if(core==null) return res;
+
+		JSONObject createResource = getDefinition( getReverseResourceMapping(resource) + "_Create");
+		JSONObject inputResource = getDefinition( getReverseResourceMapping(resource) + "Input");
+	
+		createResource = (createResource!=null) ? createResource : inputResource;
+		
+		JSONObject create = getPropertyObjectForResource( createResource );
+		
+		Set<String> coreProperties = getPropertyKeys( core ); 
+		Set<String> createProperties = getPropertyKeys( create );
+				
+		for(String property : core.keySet()) {
+			
+			String coreCondition = getMandatoryOptionalHelper(coreResource, property);
+			String createCondition = getMandatoryOptionalHelper(createResource, property);
+			
+			if(coreCondition.contains("M")) {
+				res.put(property, coreCondition);
+			
+			} else if(createCondition.contains("M")) {
+				res.put(property, createCondition);
+			
+			} else if(createProperties!=null && !createProperties.isEmpty()) {
+
+				Set<String> setByServer = Utils.difference(coreProperties, createProperties);	
+				List<String> globals = Config.get("globalsSetByServer");  // Arrays.asList("href", "id");		
+				
+				if(setByServer.contains(property) && globals.contains(property)) {
+					res.put(property, Config.getString("setByServerRule")); 
+				}
+			}
+		}
+				
+		return res;
+	}
+	
+	private Set<String> getPropertyKeys(JSONObject obj) {
+		Set<String> res = new HashSet<>();
+		if(obj!=null) res=obj.keySet();
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getMandatoryOptionalHelper(JSONObject definition, String property) {
+		boolean required = false;
+		
+		String res="O";
+		
+		if(definition==null) return res;
+				
+		if(definition.optJSONArray("required")!=null) {
+
+			JSONArray requiredProperties = definition.optJSONArray("required");
+			
+			required = requiredProperties.toList().stream()
+					.map(Object::toString)
+					.anyMatch(s -> s.equals(property));
+
+		}
+		
+		if(!required) {
+			JSONObject propertyDef = getPropertySpecification(definition, property);			
+			if(propertyDef!=null && propertyDef.optInt("minItems")>0) required=true;
+		}
+
+		return required ? "M" : "O";
+		
+	}
+		
+	class Counter {
+		Map<String,Integer> counts; 
+		
+		Counter() {
+			this.counts=new HashMap<>();
+		}
+		
+		void increment(String label) {
+			if(!counts.containsKey(label)) counts.put(label,0);
+			counts.put(label,1+counts.get(label));
+		}
+		
+	}
+	
+	Map<String,Counter> operationCounter = null;
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private Map<String,Counter> extractAllOperationsForResources(JSONObject swagger) {
+		
+		// map of counters per operation / method
+		Map<String,Counter>  res = ALL_OPS.stream().collect(Collectors.toMap(p -> p, p -> new Counter()));
+
+		if(swagger==null) {
+			LOG.info("... missing API specification (swagger)");
+			return res;
+		}
+				
+		for(JSONObject pathObj : getPathObjs() ) {
+			for(String op : pathObj.keySet()) {
+				
+				JSONObject opObj = pathObj.getJSONObject(op);
+				
+				List<String> resources = getChildStream(opObj)
+											.filter(APIModel::hasResponses)
+											.map(APIModel::getResponseEntity)
+											.map(APIModel::getNormalResponses)
+											.flatMap(List::stream)
+											.map(APIModel::getResourceFromResponse)
+											.flatMap(List::stream)
+											.map(APIModel::getMappedResource)
+											.collect(Collectors.toList());
+				
+				for(String resource : resources) {
+					res.get(op).increment(resource);
+				}
+				
+			}
+		}
+				
+		return res;
+				
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static JSONObject getResponseEntity(JSONObject obj) {
+		return obj.optJSONObject(RESPONSES);
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private Stream<JSONObject> getChildStream(JSONObject obj) {
+		return new JSONObjectHelper(obj).getChildStream();
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private List<JSONObject> getPathObjs() {
+		return getPaths().stream().map(APIModel::getPathObjectByKey).collect(Collectors.toList());
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public Set<String> getResourcesByOperation(String operation) {
+		Set<String> res = new HashSet<>();
+		
+		if(operationCounter==null) {
+			operationCounter = extractAllOperationsForResources(swagger);
+		}
+		
+		if(operationCounter.containsKey(operation)) {
+			res.addAll(operationCounter.get(operation).counts.keySet());
+		}
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public List<String> getOperationsByResource(String resource) {			
+		
+		List<String> allPaths = getPathsForResource(resource);
+		
+		List<String> res = allPaths.stream()
+								.map(APIModel::getPath)
+								.map(JSONObject::keySet)
+								.flatMap(Set::stream)
+								.map(String::toUpperCase)
+								.distinct()
+								.collect(Collectors.toList());
+				
+		// the first part will not find DELETE operations
+		// look for paths of the form /.../{..} where we have seen the first part, i.e. /.../
+		getPaths().forEach( path ->  {
+			String corePath = path.replaceAll("/\\{[^}]+\\}$", "");
+			
+			if(!allPaths.contains(corePath)) return;
+			
+			res.addAll( getOperationsForPath(path) );
+			
+		});
+				
+		return res.stream().distinct().collect(Collectors.toList());
+		
+	}
+
+
+	Map<String,List<String>> pathsForResources = new HashMap<>();
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private List<String> getPathsForResource(String resource) {
+		
+		if(!pathsForResources.containsKey(resource)) {
+			pathsForResources.put(resource, new LinkedList<>());
+				
+			getPaths().forEach( path ->  {
+				
+				List<String> foundResources = getResponseResourcesByPath(path);
+		
+				foundResources.forEach(found -> {
+					if(!pathsForResources.containsKey(found)) {
+						pathsForResources.put(found, new LinkedList<>());
+					}
+					pathsForResources.get(found).add(path);
+				});
+					
+			});
+			
+		}		
+		
+		return pathsForResources.get(resource);
+	
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private List<String> getResponseResourcesByPath(String path) {
+		
+		return getChildStream(getPathObjectByKey(path))
+				.filter(APIModel::hasResponses)
+				.map(APIModel::getResponseEntity)
+				.map(APIModel::getNormalResponses)
+				.flatMap(List::stream)
+				.map(APIModel::getResourceFromResponse)
+				.flatMap(List::stream)
+				.map(APIModel::getMappedResource)
+				.collect(Collectors.toList());
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String getResourceByPath(String path) {
+		String res=null;
+							
+		Optional<String> optResource = getResponseResourcesByPath(path).stream().distinct().findFirst();
+			
+		if(optResource.isPresent()) res = optResource.get().replace("#/definitions/", "").replace("#/components/schemas/","");
+		
+		return res;
+		
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private static JSONObject getSchemaFromResponse(JSONObject respObj) {
+		JSONObject res=null;
+		// V3 navigation
+		if(respObj.has("content")) respObj=respObj.getJSONObject("content");
+		Optional<String> application = respObj.keySet().stream().filter(key -> key.startsWith("application/json")).findFirst();
+		if(application.isPresent()) {
+			respObj=respObj.getJSONObject(application.get());
+		}
+		
+		if(respObj.has(SCHEMA)) res=respObj.getJSONObject(SCHEMA);
+		return res;
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private static JSONObject getPath(String path) {
+		return swagger.getJSONObject(PATHS).optJSONObject(path);
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	public JSONObject getDocumentDetails() {
+		JSONObject res = new JSONObject();
+		JSONObject variables = new JSONObject();
+			
+		if(swagger==null) return res;
+		
+		JSONObject info = swagger.optJSONObject("info");
+		
+		if(info!=null) {
+			variables.put("ApiName", info.get("title"));
+			variables.put("DocumentVersion", info.get("version"));
+			
+			String description = info.optString(DESCRIPTION);
+
+			String documentNumber = "";
+		
+			Pattern pattern = Pattern.compile("[^:]*[ ]*TMF[^0-9]*([0-9]+)[.]*");
+			Matcher matcher = pattern.matcher(description);
+			if (matcher.find()) {
+			    documentNumber = matcher.group(1);
+			}
+			
+			if(!documentNumber.isEmpty()) variables.put("DocumentNumber", "TMF" + documentNumber);
+			
+			LocalDate localDate = LocalDate.now();
+			int year  = localDate.getYear();
+			String month = Utils.pascalCase(localDate.getMonth().name());
+			String date = month + " " + year;
+			
+			variables.put("Year", year);
+			variables.put("Date", date);
+
+			pattern = Pattern.compile("Release[^0-9]*([0-9]+.[0-9]+.?[0-9]?)");
+			matcher = pattern.matcher(description);
+			if (matcher.find()) {
+			    String release = matcher.group(1).trim();
+			    if(!release.isEmpty()) 	variables.put("Release", release);
+
+			}
+		
+		}
+		
+		String basePath = swagger.optString("basePath");
+		if(!basePath.isEmpty()) variables.put("basePath", basePath);
+				
+		if(!variables.isEmpty()) res.put("variables", variables);
+		
+		return res;
+		
+	}
+
+	public JSONObject getResourceForPost(String resource) {
+		JSONObject res = null;
+		
+		res = getDefinition( getReverseResourceMapping(resource) + "_Create");
+		
+		if(res==null) res = getDefinition( getReverseResourceMapping(resource) + "Input");
+
+		return res;
+	}
+	
+	public JSONObject getResourceForPatch(String resource) {		
+		return getDefinition( getReverseResourceMapping(resource) + "_Update");
+	}
+
+	
+}

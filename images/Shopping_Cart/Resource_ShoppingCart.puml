@@ -1,0 +1,355 @@
+@startuml
+hide circle
+hide methods
+hide stereotype
+show <<Enumeration>> stereotype
+skinparam class {
+   BackgroundColor<<Enumeration>> #E6F5F7
+   BackgroundColor<<Ref>> #FFFFE0
+   BackgroundColor<<Pivot>> #FFFFFFF
+   BackgroundColor #FCF2E3
+}
+
+class ShoppingCart <<Pivot>> {
+    id : String
+    href : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class CartItem {
+    id : String
+    action : String
+    quantity : Integer
+    status : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class CartPrice {
+    description : String
+    name : String
+    priceType : String
+    recurringChargePeriod : String
+    unitOfMeasure : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class Price {
+    percentage : Float
+    taxRate : Float
+    dutyFreeAmount : Money
+    taxIncludedAmount : Money
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class PriceAlteration {
+    applicationDuration : Integer
+    description : String
+    name : String
+    priceType : String
+    priority : Integer
+    recurringChargePeriod : String
+    unitOfMeasure : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class CartItemRelationship {
+    id : String
+    relationshipType : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class CartItemRef {
+    id : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class CartTerm {
+    description : String
+    name : String
+    duration : Quantity
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class Note {
+    id : String
+    author : String
+    date : DateTime
+    text : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class BaseProductRefOrValue {
+    id : String
+    href : String
+    isBundle : Boolean
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class Characteristic {
+    name : String
+    valueType : String
+    value : Any
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class ProductRelationship {
+    relationshipType : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class ProductSpecificationRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    version : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class TargetProductSchema {
+    @baseType : String
+    @schemaLocation : String
+    @type : String
+}
+
+class ResourceRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class ServiceRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class RelatedParty {
+    id : String
+    href : String
+    name : String
+    role : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class RelatedPlaceRefOrValue {
+    id : String
+    href : String
+    isRef : Boolean
+    name : String
+    role : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class ProductOfferingRef <<Ref>> {
+    id : String
+    href : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class ContactMedium {
+    mediumType : String
+    preferred : Boolean
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class MediumCharacteristic {
+    city : String
+    country : String
+    emailAddress : String
+    faxNumber : String
+    phoneNumber : String
+    postCode : String
+    socialNetworkId : String
+    stateOrProvince : String
+    street1 : String
+    street2 : String
+    type : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+
+'processing edges for ShoppingCart
+ContactMedium "0..*" <-left-* ShoppingCart : contactMedium
+' rule: Configuration override: placeLeft
+ShoppingCart *-right-> "0..*" CartItem : cartItem
+' rule: Configuration override: placeRight
+ShoppingCart *-->  "0..*" CartPrice : cartTotalPrice
+' rule: B01
+CartItem *-->  "0..*" CartPrice : ItemTotalPrice
+CartItem *-->  "0..*" CartPrice : itemPrice
+' rule: B01
+ShoppingCart *-->  "0..*" RelatedParty : relatedParty
+' rule: General below rule - direction to left
+ShoppingCart -[hidden]-> RelatedParty
+RelatedParty -right[hidden]- CartPrice
+'completed processing of edges for ShoppingCart
+
+'processing edges for CartItem
+CartItemRelationship "0..*" <--* CartItem : cartItemRelationship
+' rule: Configuration override: placeAbove
+CartItem *-right-> "0..*" CartItem : cartItem
+' rule: Recursive (self-reference)
+RelatedParty "0..*" <--* BaseProductRefOrValue : relatedParty
+' rule: placeBetween - RelatedParty < CartItem placing BaseProductRefOrValue
+CartItem *-->  "0..1" BaseProductRefOrValue : product
+' rule: placeBetween - RelatedParty < CartItem placing BaseProductRefOrValue
+'completed processing of edges for CartItem
+
+'processing edges for CartPrice
+CartPrice *-right-> "0..*" PriceAlteration : priceAlteration
+' rule: R02
+CartPrice *-->  "0..1" Price : price
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for CartPrice
+
+'processing edges for Price
+
+'processing edges for PriceAlteration
+'completed processing of edges for PriceAlteration
+
+'processing edges for BaseProductRefOrValue
+BaseProductRefOrValue *-->  "0..*" Characteristic : productCharacteristic
+' rule: Configuration override: placeBelow
+BaseProductRefOrValue *-->  "0..*" ResourceRef : realizingResource
+' rule: Configuration override: placeBelow
+BaseProductRefOrValue *-->  "0..*" ServiceRef : realizingService
+' rule: Configuration override: placeBelow
+BaseProductRefOrValue *-->  "0..*" RelatedPlaceRefOrValue : relatedPlace
+' rule: Configuration override: placeBelow
+BaseProductRefOrValue *-right-> "0..*" BaseProductRefOrValue : product
+' rule: Recursive (self-reference)
+BaseProductRefOrValue *-->  "0..*" ProductRelationship : productRelationship
+' rule: General below rule - direction to right
+BaseProductRefOrValue -[hidden]-> ProductRelationship
+Characteristic -right[hidden]- ProductRelationship
+'completed processing of edges for BaseProductRefOrValue
+
+'processing edges for ProductRelationship
+'completed processing of edges for ProductRelationship
+
+'processing edges for RelatedParty
+
+'processing edges for ShoppingCart
+'completed processing of edges for ShoppingCart
+
+'processing edges for CartItem
+BaseProductRefOrValue "0..1" <--* ProductRelationship : product
+' rule: placeEdgesBetweenNodesAlreadyPlaced - ProductRelationship < BaseProductRefOrValue
+CartTerm "0..*" <--* CartItem : itemTerm
+' rule: General above rule - direction: right
+Note "0..*" <--* CartItem : note
+' rule: General above rule - direction: right
+ProductOfferingRef "0..1" <--* CartItem : productOffering
+' rule: General above rule - direction: right
+'completed processing of edges for CartItem
+
+'processing edges for CartPrice
+PriceAlteration *-->  "0..1" Price : price
+' rule: placeEdgesBetweenNodesAlreadyPlaced - Price < PriceAlteration
+'completed processing of edges for CartPrice
+
+'processing edges for Price
+
+'processing edges for PriceAlteration
+'completed processing of edges for PriceAlteration
+
+'processing edges for CartItemRelationship
+CartItemRelationship *-right-> "0..*" CartItemRef : cartItem
+' rule: R04
+'completed processing of edges for CartItemRelationship
+
+'processing edges for CartItemRef
+
+'processing edges for CartTerm
+
+'processing edges for Note
+
+'processing edges for BaseProductRefOrValue
+BaseProductRefOrValue *-->  "0..1" ProductSpecificationRef : productSpecification
+' rule: General below rule - direction to right
+BaseProductRefOrValue -[hidden]-> ProductSpecificationRef
+Characteristic -right[hidden]- ProductSpecificationRef
+'completed processing of edges for BaseProductRefOrValue
+
+'processing edges for Characteristic
+
+'processing edges for ProductRelationship
+'completed processing of edges for ProductRelationship
+
+'processing edges for ProductSpecificationRef
+ProductSpecificationRef *-->  "0..1" TargetProductSchema : targetProductSchema
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for ProductSpecificationRef
+
+'processing edges for TargetProductSchema
+
+'processing edges for ResourceRef
+
+'processing edges for ServiceRef
+
+'processing edges for RelatedParty
+
+'processing edges for RelatedPlaceRefOrValue
+
+'processing edges for ProductOfferingRef
+
+'processing edges for ContactMedium
+ContactMedium *-->  "0..1" MediumCharacteristic : characteristic
+' rule: Configuration override: placeBelow
+'completed processing of edges for ContactMedium
+
+'processing edges for MediumCharacteristic
+@enduml

@@ -1,0 +1,164 @@
+@startuml
+hide circle
+hide methods
+hide stereotype
+show <<Enumeration>> stereotype
+skinparam class {
+   BackgroundColor<<Enumeration>> #E6F5F7
+   BackgroundColor<<Ref>> #FFFFE0
+   BackgroundColor<<Pivot>> #FFFFFFF
+   BackgroundColor #FCF2E3
+}
+
+class FinancialAccount <<Pivot>> {
+    id : String
+    href : String
+    accountType : String
+    description : String
+    lastModified : DateTime
+    name : String
+    state : String
+    creditLimit : Money
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountBalance {
+    balanceType : String
+    amount : Money
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountRelationship {
+    relationshipType : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class AccountRef <<Ref>> {
+    id : String
+    href : String
+    description : String
+    name : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class Contact {
+    contactName : String
+    contactType : String
+    partyRoleType : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class ContactMedium {
+    mediumType : String
+    preferred : Boolean
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class MediumCharacteristic {
+    city : String
+    country : String
+    emailAddress : String
+    faxNumber : String
+    phoneNumber : String
+    postCode : String
+    socialNetworkId : String
+    stateOrProvince : String
+    street1 : String
+    street2 : String
+    type : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+class RelatedParty {
+    id : String
+    href : String
+    name : String
+    role : String
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+    @referredType : String
+}
+
+class AccountTaxExemption {
+    certificateNumber : String
+    issuingJurisdiction : String
+    reason : String
+    validFor : TimePeriod
+    @baseType : String
+    @schemaLocation : Uri
+    @type : String
+}
+
+
+'processing edges for FinancialAccount
+AccountBalance "0..*" <-left-* FinancialAccount : accountBalance
+' rule: L01
+FinancialAccount *-right-> "0..*" Contact : contact
+' rule: R02
+FinancialAccount *-->  "0..*" RelatedParty : relatedParty
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for FinancialAccount
+
+'processing edges for Contact
+'completed processing of edges for Contact
+
+'processing edges for RelatedParty
+
+'processing edges for FinancialAccount
+Contact *-->  "0..1" RelatedParty : relatedParty
+' rule: placeEdgesBetweenNodesAlreadyPlaced - RelatedParty < Contact
+AccountTaxExemption "0..*" <--* FinancialAccount : taxExemption
+' rule: General above rule - direction: right
+FinancialAccount *-->  "0..*" AccountRelationship : accountRelationship
+' rule: General below rule - direction to left
+FinancialAccount -[hidden]-> AccountRelationship
+AccountRelationship -right[hidden]- RelatedParty
+'completed processing of edges for FinancialAccount
+
+'processing edges for AccountBalance
+
+'processing edges for AccountRelationship
+AccountRelationship *-->  "0..1" AccountRef : account
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for AccountRelationship
+
+'processing edges for AccountRef
+
+'processing edges for Contact
+Contact *-->  "0..*" ContactMedium : contactMedium
+' rule: General below rule - direction to right
+Contact -[hidden]-> ContactMedium
+RelatedParty -right[hidden]- ContactMedium
+'completed processing of edges for Contact
+
+'processing edges for ContactMedium
+ContactMedium *-->  "0..1" MediumCharacteristic : characteristic
+' rule: General below rule - either none already or unable to place left / right of currently placed
+'completed processing of edges for ContactMedium
+
+'processing edges for MediumCharacteristic
+
+'processing edges for RelatedParty
+
+'processing edges for AccountTaxExemption
+@enduml

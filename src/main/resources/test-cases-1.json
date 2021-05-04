@@ -1,0 +1,417 @@
+{
+
+	"template": "API_Conformance_Profile_Template.docx",
+	
+	"textFragments": {
+		"TEST-CASES": {
+			"reference": "INSERT-TEST-CASES"
+		},
+		"API-INTRO": {
+	    	"reference": "INSERT-API-INTRODUCTION"
+	    }
+	},
+	
+	"tableFragments": {
+		"INSERT-RESOURCES-CONFORMANCE": {
+			"type": "resource",
+			"config": "resourceOverview",
+			"values": "mandatoryOptionalResources"
+		},
+		
+		"INSERT-RESOURCES-DETAILED-CONFORMANCE": {
+			"type": "resource-details",
+			"config": "resourceDetails",
+			"heading": "%s Resource Mandatory And Optional Attributes"
+		},
+		
+		
+		"INSERT-NOTIFICATIONS-CONFORMANCE": {
+			"type": "notification",
+			"config": "notificationOverview",
+			"values": "mandatoryOptionalNotifications"
+		
+		},
+		
+		"INSERT-API-OPERATION-CONFORMANCE": {
+			"type": "operation",
+			"config": "operationOverview",
+			"values": "mandatoryOptionalOperations"
+		
+		},
+		
+		"INSERT-GET-RESOURCE-OPERATION-CONFORMANCE": {
+			"type": "operation-details",
+			"operation": "GET",
+			"heading": "GET %s?fields=...&{filtering}",
+			"textAfter": [
+				"Attribute selection is mandatory for all first level attributes.",
+	    		"Filtering on sub-resources is optional for all compliance levels."
+			]
+		},
+			
+		"INSERT-POST-RESOURCE-OPERATION-CONFORMANCE": {
+			"type": "operation-details",
+			"config": ["resourcePostMandatory", "resourcePostOptional" ],
+			"operation": "POST",
+			"heading": "POST %s",
+			"intro": "The following tables provides the list of mandatory and non mandatory attributes when creating a RESOURCE, including any possible rule conditions and applicable default values. Notice that it is up to an implementer to add additional mandatory attributes."
+		},
+		
+		"INSERT-DELETE-RESOURCE-OPERATION-CONFORMANCE": {
+			"type": "operation-details",
+			"operation": "DELETE",
+			"heading": "DELETE %s"	
+		},
+		
+		"INSERT-PUT-RESOURCE-OPERATION-CONFORMANCE": {
+			"type": "operation-details",
+			"operation": "PUT",
+			"heading": "PUT %s"	
+		},
+		
+		"INSERT-PATCH-RESOURCE-OPERATION-CONFORMANCE": {
+			"type": "operation-details",
+			"operation": "PATCH",
+			"heading": "PATCH %s",
+			"config": ["resourcePatchMandatory", "resourcePatchOptional"],
+			"textBefore": [
+				"This operation allows partial updates of a RESOURCE entity.",
+				"Support of json/merge (https://tools.ietf.org/html/rfc7386) is mandatory, support of json/patch (http://tools.ietf.org/html/rfc5789) is optional.",
+				"Note: If the update operation yields to the creation of sub-resources or relationships, the same rules concerning mandatory sub-resource attributes and default value settings in the POST operation applies to the PATCH operation.  Hence these tables are not repeated here.",
+				"The tables below provide the list of patchable and non patchable attributes, including constraint rules on their usage."
+			]	
+		}
+		
+	},
+	
+	"resourceOverview" : {
+		"defaults": {
+			"color": "B3B3B3",
+			"spacingBefore": 120,
+			"spacingAfter": 120
+		},
+		
+		"header": [
+			{
+				"label": "Resource Name", 
+				"color": "B3B3B3",
+				"width": "36.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Mandatory / Optional",
+				"color": "B3B3B3",
+				"width": "23.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Comment",
+				"color": "B3B3B3",
+				"width": "41.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		],
+		"rows": [
+			{
+			},
+			{
+				"alignment": "center"
+			}
+		]
+	},
+	
+	"resourceDetails" : {
+		"defaults": {
+			"color": "B3B3B3",
+			"spacingBefore": 120,
+			"spacingAfter": 120
+		},
+		
+		"header": [
+			{
+				"label": "Parameter", 
+				"color": "B3B3B3",
+				"width": "41.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Mandatory / Optional",
+				"color": "B3B3B3",
+				"width": "23.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Comment",
+				"color": "B3B3B3",
+				"width": "36.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		],
+		
+		"rows": [
+			{
+			},
+			{
+				"alignment": "center"
+			}
+		]
+	},
+	
+	"notificationOverview" : {
+		"defaults": {
+			"color": "B3B3B3",
+			"spacingBefore": 120,
+			"spacingAfter": 120
+		},
+		
+		"header": [
+			{
+				"label": "Notification Name", 
+				"color": "B3B3B3",
+				"width": "46.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Mandatory / Optional",
+				"color": "B3B3B3",
+				"width": "23.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Comment",
+				"color": "B3B3B3",
+				"width": "31.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		],
+		"rows": [
+			{
+			},
+			{
+				"alignment": "center"
+			}
+		]
+	},
+	
+	"operationOverview" : {
+		"defaults": {
+			"color": "B3B3B3",
+			"spacingBefore": 120,
+			"spacingAfter": 120
+		},
+		
+		"header": [
+			{
+				"label": "Uniform API Operation", 
+				"color": "B3B3B3",
+				"width": "25.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Mandatory / Optional",
+				"color": "B3B3B3",
+				"width": "30.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Comments",
+				"color": "B3B3B3",
+				"width": "45.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		],
+		"rows": [
+			{
+			},
+			{
+				"alignment": "center"
+			}
+		]
+	},
+	
+	"resourcePostMandatory" : {		
+		"header": [
+			{
+				"label": "Mandatory Attributes", 
+				"color": "B3B3B3",
+				"width": "46.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Rule",
+				"color": "B3B3B3",
+				"width": "54.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		]
+	},
+	
+	"resourcePostOptional" : {		
+		"header": [
+			{
+				"label": "Non Mandatory Attributes", 
+				"color": "B3B3B3",
+				"width": "46.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Default Value",
+				"color": "B3B3B3",
+				"width": "20.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Rule",
+				"color": "B3B3B3",
+				"width": "34.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		]
+	},
+	
+	
+	"resourcePatchMandatory" : {		
+		"header": [
+			{
+				"label": "Patchable Attributes", 
+				"color": "B3B3B3",
+				"width": "46.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Rule",
+				"color": "B3B3B3",
+				"width": "54.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		]
+	},
+	
+	"resourcePatchOptional" : {		
+		"header": [
+			{
+				"label": "Non Patchable Attributes", 
+				"color": "B3B3B3",
+				"width": "46.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			},
+			{
+				"label": "Rule",
+				"color": "B3B3B3",
+				"width": "54.00%",
+				"spacingBefore": 120,
+				"spacingAfter": 120
+			}
+		]
+	},
+	
+	"extract": [
+	
+		{
+			"header": "API MANDATORY AND OPTIONAL RESOURCES",
+			"destination": "mandatoryOptionalResources",
+			"ordering": true,
+			"columns": [
+				{"index": 0
+				},
+				{"index": 1, 
+				 "label": "condition"
+				},
+				{"index": 2, 
+				 "label": "comment"
+				}
+			] 
+			
+		},
+		{
+			"header": "RESOURCE MANDATORY AND OPTIONAL ATTRIBUTES",
+			"pattern": "^([^ ]+)",
+			"columns": [
+				{"index": -3
+				},
+				{"index": -2, 
+				 "label": "condition"
+				},
+				{"index": -1, 
+				 "label": "comment"
+				}
+			] 
+		},
+		{
+			"header": "API GET FILTERING OPERATION CONFORMANCE",
+			"pattern": "^([^ ]+)",
+			"columns": [
+				{"index": 0,
+				 "label": "Attribute name"
+				}, 
+				{ "index": 1, 
+				  "label": "Filtered search\nFirst Level"
+				}, 
+				{ "index": 2, 
+				  "label": "Filtered search\nN Level"
+				}, 
+				{ "index": 3, 
+				  "label": "Attribute Selection\nFirst Level"
+				}, 
+				{ "index": 4, 
+				  "label": "Attribute Selection\nN Level"
+				} 								
+			] 
+			
+		},
+		{
+			"header": "API MANDATORY AND OPTIONAL NOTIFICATIONS",
+			"destination": "mandatoryOptionalNotifications",
+			"ordering": true,
+			"columns": [
+				{"index": 0
+				},
+				{"index": 1, 
+				 "label": "condition"
+				},
+				{"index": 2, 
+				 "label": "comment"
+				}
+			] 
+		},
+		{
+			"header": "API MANDATORY AND OPTIONAL OPERATIONS",
+			"destination": "mandatoryOptionalOperations",
+			"ordering": true,
+			"columns": [
+				{"index": 0
+				},
+				{"index": 1, 
+				 "label": "condition"
+				},
+				{"index": 2, 
+				 "label": "comment"
+				}
+			] 
+		}
+		
+		
+		
+	]
+		
+}
