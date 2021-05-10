@@ -96,3 +96,21 @@ jobs:
            asset_path: ${{ env.ARTIFACT_NAME }}
            asset_name: ${{ env.ARTIFACT_NAME }}
            asset_content_type: application/gzip
+
+  package:
+    runs-on: ubuntu-latest
+    name: publish package
+    needs: [test]
+    permissions: 
+      contents: read
+      packages: write 
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
