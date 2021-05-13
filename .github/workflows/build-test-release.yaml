@@ -26,8 +26,8 @@ jobs:
          run: |
             mvn -B -Pgithub install --file pom.xml
             env:
-              GITHUB_USER_REF: ${{ 'knutaa' }}
-              GITHUB_TOKEN_REF: ${{ secrets.GITHUB_TOKEN }}
+              GITHUB_USER_REF: ${{ secrets.REPO_USER_NAME }}
+              GITHUB_TOKEN_REF: ${{ secrets.REPO_PACKAGE_TOKEN }}
          
        - name: OpenAPItools - Copy the resulting jar
          run: |
