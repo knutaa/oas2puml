@@ -24,7 +24,7 @@ jobs:
        
        - name: OpenAPItools - Build with Maven
          run: |
-            mvn -B -Pgithub-packages install --file pom.xml
+            mvn -B -Pgithub install --file pom.xml
             env:
               GITHUB_USER_REF: ${{ 'knutaa' }}
               GITHUB_TOKEN_REF: ${{ secrets.GITHUB_TOKEN }}

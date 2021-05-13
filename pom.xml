@@ -23,12 +23,25 @@
 	    </repository>
 	</distributionManagement>
 
-	<repositories>
-		<repository>
-			<id>github-packages</id>
-			<url>https://maven.pkg.github.com/knutaa/*</url>
-		</repository>
-	</repositories>
+    <profiles>
+        <profile>
+            <id>github</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+				<repository>
+					<id>github</id>
+					<url>https://maven.pkg.github.com/knutaa/*</url>
+                    <snapshots><enabled>true</enabled></snapshots>
+                    <releases><enabled>true</enabled></releases>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 
 	<dependencies>
 
