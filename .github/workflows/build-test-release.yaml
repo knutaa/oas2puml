@@ -28,7 +28,9 @@ jobs:
             env:
               GITHUB_USER_REF: ${{ secrets.REPO_USER_NAME }}
               GITHUB_TOKEN_REF: ${{ secrets.REPO_PACKAGE_TOKEN }}
-         
+              USER_NAME: ${{ secrets.REPO_USER_NAME }}
+              ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
+
        - name: OpenAPItools - Copy the resulting jar
          run: |
            ls -l
