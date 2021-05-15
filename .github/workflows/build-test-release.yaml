@@ -99,12 +99,12 @@ jobs:
           asset_name: ${{ env.ARTIFACT_NAME }}
           asset_content_type: application/gzip
 
-      - name: Publish package
-        run: |
-          find . -name settings.xml -exec cat {} \;
-          mvn --batch-mode deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish package
+      #   run: |
+      #     find . -name settings.xml -exec cat {} \;
+      #     mvn --batch-mode deploy
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # package:
   #   runs-on: ubuntu-latest
