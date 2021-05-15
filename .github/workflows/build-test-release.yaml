@@ -19,12 +19,12 @@ jobs:
            java-version: 1.11
        
        - name: OpenAPItools - Build with Maven
+         env:
+            USER_NAME: ${{ secrets.REPO_USER_NAME }}
+            ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
          run: |
             mvn install --settings=settings.xml
-            env:
-              USER_NAME: ${{ secrets.REPO_USER_NAME }}
-              ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
-
+ 
        - name: OpenAPItools - Copy the resulting jar
          run: |
            ls -l
