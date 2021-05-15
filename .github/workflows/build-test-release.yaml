@@ -100,26 +100,28 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: |
+          find . -name settings.xml -exec cat {} \;
+          mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  package:
-    runs-on: ubuntu-latest
-    name: publish package
-    needs: [test]
-    permissions: 
-      contents: read
-      packages: write 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: Publish package
-        run: mvn --batch-mode deploy --settings=settings.xml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USER_NAME: ${{ secrets.REPO_USER_NAME }}
-          ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
+  # package:
+  #   runs-on: ubuntu-latest
+  #   name: publish package
+  #   needs: [test]
+  #   permissions: 
+  #     contents: read
+  #     packages: write 
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-java@v2
+  #       with:
+  #         java-version: '11'
+  #         distribution: 'adopt'
+  #     - name: Publish package
+  #       run: mvn --batch-mode deploy --settings=settings.xml
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         USER_NAME: ${{ secrets.REPO_USER_NAME }}
+  #         ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}

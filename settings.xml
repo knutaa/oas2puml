@@ -32,5 +32,10 @@
       <username>${env.USER_NAME}</username>
       <password>${env.ACCESS_TOKEN}</password>
     </server>
+    <server>
+      <id>packages</id>
+      <username>${env.USER_NAME}</username>
+      <password>${env.GITHUB_TOKEN}</password>
+    </server>
   </servers>
 </settings>
