@@ -60,21 +60,24 @@ jobs:
     runs-on: ubuntu-latest
     name: publish release
     needs: [test]
-     
+    permissions: 
+      contents: read
+      packages: write  
+
     steps:       
-       - name: Download Artifacts
+      - name: Download Artifacts
          uses: actions/download-artifact@master
          with:
            name: ${{ env.ARTIFACT_NAME }}
            path: ./
 
-       - name: Get timestamp
+      - name: Get timestamp
          run: |
            echo "NOW=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
            echo "NOW=" ${NOW}
            ls -l
        
-       - name: Create Release
+      - name: Create Release
          id: create_release
          uses: actions/create-release@v1
          env:
@@ -85,7 +88,7 @@ jobs:
            draft: false
            prerelease: false
 
-       - name: Upload Release Asset
+      - name: Upload Release Asset
          id: upload-release-asset 
          uses: actions/upload-release-asset@v1
          env:
@@ -95,6 +98,13 @@ jobs:
            asset_path: ${{ env.ARTIFACT_NAME }}
            asset_name: ${{ env.ARTIFACT_NAME }}
            asset_content_type: application/gzip
+
+      - name: Publish package
+        run: mvn --batch-mode deploy --settings=settings.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USER_NAME: ${{ secrets.REPO_USER_NAME }}
+          ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
 
   package:
     runs-on: ubuntu-latest
