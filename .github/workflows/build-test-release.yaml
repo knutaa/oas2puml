@@ -100,11 +100,9 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Publish package
-        run: mvn --batch-mode deploy --settings=settings.xml
+        run: mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USER_NAME: ${{ secrets.REPO_USER_NAME }}
-          ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
 
   package:
     runs-on: ubuntu-latest
@@ -125,4 +123,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USER_NAME: ${{ secrets.REPO_USER_NAME }}
           ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
-          
