@@ -18,16 +18,10 @@ jobs:
          with:
            java-version: 1.11
        
-       - name: OpenAPItools - Validate version
-         run: |
-           mvn -B validate
-       
        - name: OpenAPItools - Build with Maven
          run: |
-            mvn -B -Pgithub install --file pom.xml
+            mvn install --settings=settings.xml
             env:
-              GITHUB_USER_REF: ${{ secrets.REPO_USER_NAME }}
-              GITHUB_TOKEN_REF: ${{ secrets.REPO_PACKAGE_TOKEN }}
               USER_NAME: ${{ secrets.REPO_USER_NAME }}
               ACCESS_TOKEN: ${{ secrets.REPO_PACKAGE_TOKEN }}
 

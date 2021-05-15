@@ -12,27 +12,25 @@
       <id>github</id>
       <repositories>
         <repository>
+          <id>central</id>
+          <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
           <id>github</id>
-          <url>https://maven.pkg.github.com/knutaa</url>
-          <releases>
-              <enabled>true</enabled>
-          </releases>
+          <url>https://maven.pkg.github.com/knutaa/*</url>
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
         </repository>
       </repositories>
     </profile>
-
   </profiles>
 
   <servers>
-     <server>
-         <id>github</id>
-         <username>${env.USER_NAME}</username>
-         <password>${env.ACCESS_TOKEN}</password>
-     </server>
+    <server>
+      <id>github</id>
+      <username>${env.USER_NAME}</username>
+      <password>${env.ACCESS_TOKEN}</password>
+    </server>
   </servers>
-
-
 </settings>
