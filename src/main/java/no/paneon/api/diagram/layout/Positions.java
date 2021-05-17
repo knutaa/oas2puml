@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import no.paneon.api.graph.Node;
-import no.panoen.api.logging.LogMethod;
-import no.panoen.api.logging.AspectLogger.LogLevel;
+import no.paneon.api.logging.LogMethod;
+import no.paneon.api.logging.AspectLogger.LogLevel;
 
 
 public class Positions {

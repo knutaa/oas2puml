@@ -35,12 +35,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
+import no.paneon.api.logging.AspectLogger.LogLevel;
+import no.paneon.api.logging.LogMethod;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.InvalidJsonYamlException;
 import no.paneon.api.utils.Out;
-import no.panoen.api.logging.AspectLogger;
-import no.panoen.api.logging.LogMethod;
-import no.panoen.api.logging.AspectLogger.LogLevel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +55,7 @@ public class Utils {
 
     static {
     	
-	    levelmap.put("verbose", AspectLogger.VERBOSE);
+	    levelmap.put("verbose", no.paneon.api.logging.AspectLogger.VERBOSE);
 	    levelmap.put("info", Level.INFO);
 		levelmap.put("error", Level.ERROR);
 		levelmap.put("debug", Level.DEBUG);

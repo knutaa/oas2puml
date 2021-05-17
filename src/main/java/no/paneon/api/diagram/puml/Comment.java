@@ -1,7 +1,7 @@
 package no.paneon.api.diagram.puml;
 
-import no.panoen.api.logging.LogMethod;
-import no.panoen.api.logging.AspectLogger.LogLevel;
+import no.paneon.api.logging.LogMethod;
+import no.paneon.api.logging.AspectLogger.LogLevel;
 
 public class Comment extends Core {
 	

@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>no.paneon.api.diagram</groupId>
 	<artifactId>apidiagram</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>API diagram generator</name>
 
 	<properties>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>no.paneon.api</groupId>
 			<artifactId>apicore</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
+			<version>1.0.7-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

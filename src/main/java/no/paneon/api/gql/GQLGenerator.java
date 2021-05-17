@@ -3,46 +3,24 @@ package no.paneon.api.gql;
 import org.json.JSONObject;
 
 import no.paneon.api.diagram.app.Args;
-import no.paneon.api.diagram.puml.Comment;
-import no.paneon.api.diagram.puml.Diagram;
-import no.paneon.api.graph.APIGraph;
-import no.paneon.api.graph.APISubGraph;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Edge;
-import no.paneon.api.graph.EnumNode;
 import no.paneon.api.graph.Node;
-import no.paneon.api.graph.OneOf;
 import no.paneon.api.graph.Property;
-import no.paneon.api.graph.complexity.Complexity;
-import no.paneon.api.graph.complexity.ComplexityAdjustedAPIGraph;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
-import no.paneon.api.utils.Out;
-import no.paneon.api.utils.Utils;
-import no.panoen.api.logging.LogMethod;
-import no.panoen.api.logging.AspectLogger.LogLevel;
+import no.paneon.api.logging.LogMethod;
+import no.paneon.api.logging.AspectLogger.LogLevel;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jgrapht.Graph;
 
 public class GQLGenerator 
 {

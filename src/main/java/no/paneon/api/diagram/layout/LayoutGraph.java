@@ -43,8 +43,8 @@ import no.paneon.api.graph.complexity.GraphAlgorithms;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Utils;
-import no.panoen.api.logging.LogMethod;
-import no.panoen.api.logging.AspectLogger.LogLevel;
+import no.paneon.api.logging.LogMethod;
+import no.paneon.api.logging.AspectLogger.LogLevel;
 
 import org.apache.logging.log4j.LogManager;
 import org.jgrapht.alg.cycle.CycleDetector;
