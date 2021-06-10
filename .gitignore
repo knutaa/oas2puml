@@ -31,3 +31,4 @@ hs_err_pid*
 .settings
 /org.junit.rules.TemporaryFolder*
 *.gql
+*.puml
