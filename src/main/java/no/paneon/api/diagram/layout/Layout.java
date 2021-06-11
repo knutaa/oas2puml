@@ -103,7 +103,7 @@ public class Layout {
 					
 				ClassProperty.Visibility visibility = getClassPropertyVisibility(p);
 				
-				properties.add( new ClassProperty(p.getName(), p.getType(), p.getCardinality(), p.isRequired(), p.getValues(), p.isEnum(), visibility));
+				properties.add( new ClassProperty(p,visibility));
 
 				if(!APIModel.isSimpleType(p.getType()) || APIModel.isEnumType(p.getType())) incomplete.add(node.getName());
 				
@@ -113,7 +113,7 @@ public class Layout {
 		
 			ClassProperty.Visibility visibility = ClassProperty.VISIBLE;
 
-			properties.add( new ClassProperty(prop.getName(),prop.getValue(), prop.isRequired(), visibility));
+			properties.add( new ClassProperty(prop, visibility));
 		
 		});	 
 		
@@ -1727,12 +1727,12 @@ public class Layout {
   	
 		// TBD
 		
-//    	EnumNode enode = new EnumNode(orphanEnum);
-//    	enode.addValues(APIModel.getEnumValues(orphanEnum));
+//    	EnumNode enode = new EnumNode(orphanEnum.getName());
+//    	enode.addValues(APIModel.getEnumValues(orphanEnum.getName()));
 //    	apiGraph.addEnum(orphanEnum, enode);
 //
-//    	ClassEntity entity = diagram.getClassEntityForResource(resource);
-//    	generateForEnum(entity, orphanEnum);
+//    	ClassEntity entity = diagram.getClassEntityForResource(resource.getName());
+//    	generateForEnum(entity, enode);
 		
 	}
 

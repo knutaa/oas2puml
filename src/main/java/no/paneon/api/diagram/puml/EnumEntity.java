@@ -15,18 +15,21 @@ public class EnumEntity extends Entity {
 
 	String type;
 	List<String> values;
+	boolean nullable;
 	
 	private EnumEntity(String type) {
 		super();
 		this.type = type;
 		this.values = new LinkedList<>();
+		this.nullable = false;
 	}
 	
 	public EnumEntity(EnumNode enode) {
 		super();
 		this.type = enode.getType();
 		this.values = new LinkedList<>();
-
+		this.nullable = enode.getNullable();
+		
 		addValue(enode.getValues());
 		
 	}
@@ -56,6 +59,14 @@ public class EnumEntity extends Entity {
 	    	res.append( INDENT + v);
 	    	res.append( NEWLINE );
 	    }
+	    
+	    if(this.nullable) {
+	    	res.append("--------");
+			res.append( NEWLINE );
+	    	res.append(INDENT + "nullable");
+			res.append( NEWLINE );
+	    }
+	    
 	    res.append("}");
 	    res.append( NEWLINE );
 	    	

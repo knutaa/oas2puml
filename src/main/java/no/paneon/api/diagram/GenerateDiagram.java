@@ -30,6 +30,8 @@ public class GenerateDiagram extends GenerateCommon {
 		super(args);
 		this.args = args;
 		
+		Config.setBoolean("keepInheritanceDecoractions",this.args.keepInheritanceDecoractions);
+	
 	}
 	
 	@Override

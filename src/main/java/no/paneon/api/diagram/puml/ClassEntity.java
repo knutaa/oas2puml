@@ -128,7 +128,7 @@ public class ClassEntity extends Entity {
 			.flatMap(List::stream)
 	    	.map(p -> INDENT + p.toString() + NEWLINE )
 	    	.forEach(res::append);
-	
+		    
 	    List<String> customSimple = classProperties.stream()
 	    		.map(ClassProperty::getType)
 	    		.filter(APIModel::isCustomSimple)
@@ -160,6 +160,17 @@ public class ClassEntity extends Entity {
 	    	this.discriminatorMapping.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
 	    }
 	    
+	    List<String> nullableProperties = classProperties.stream()
+		    	.filter(ClassProperty::isNullable)
+				.map(ClassProperty::getName)
+		    	.collect(Collectors.toList());
+	    
+	    if(!nullableProperties.isEmpty()) {
+	    	res.append( INDENT + "--" + NEWLINE);
+	    	nullableProperties.forEach(label -> res.append(INDENT + label + " is nullable" + NEWLINE));
+	    }
+
+	    
 	    res.append( "}" + NEWLINE );
 	    
 	    return res.toString();
@@ -168,7 +179,7 @@ public class ClassEntity extends Entity {
 
 	@LogMethod(level=LogLevel.DEBUG)
 	private String generateInheritance() {	
-		if(!Config.getBoolean("excludeInheritance")) {
+		if(Config.getBoolean("keepInheritanceDecoractions")) {
 			StringBuilder res = new StringBuilder();
 			if(!this.inheritance.isEmpty()) {
 				res.append(" <extends  ");

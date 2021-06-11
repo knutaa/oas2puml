@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.paneon.api.graph.OtherProperty;
+import no.paneon.api.graph.Property;
 import no.paneon.api.graph.Property.Visibility;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
@@ -19,6 +21,9 @@ public class ClassProperty extends Entity {
 	String cardinality;
 	boolean required;
 	Visibility visibility;
+	List<String> values;
+
+	boolean isNullable;
 	
 	public enum Visibility {
 		VISIBLE,
@@ -30,30 +35,40 @@ public class ClassProperty extends Entity {
 	public static Visibility INHERITED = Visibility.INHERITED;
 	public static Visibility HIDDEN = Visibility.HIDDEN;
 	
-	public ClassProperty(String name, String type, String cardinality, boolean required, Visibility visibility) {
+	
+	public ClassProperty(Property property, Visibility visibility) {
 		super();
-		this.name = name;
-		this.type = type;
-		this.cardinality = cardinality;
-		this.required=required;
+		
+		this.name = property.getName();
+		this.type = property.getType();
+		this.cardinality = property.getCardinality();
+		this.required = property.isRequired();
+		this.isNullable = property.isNullable();
+		
+		this.values = new LinkedList<>();
+		this.enumStatus = property.isEnum();
+		
+		this.addValues(property.getValues());
+
 		this.visibility=visibility;
 	}
-
-	public ClassProperty(String name, String type, Visibility visibility) {
-		this(name, type, "", false, visibility);
+	
+	public ClassProperty(OtherProperty property, Visibility visibility) {
+		super();
+		
+		this.name = property.getName();
+		this.type = property.getValue();
+		this.cardinality = "";
+		this.required = property.isRequired();
+		
+		this.isNullable = property.isNullable();
+		this.values = new LinkedList<>();
+		this.enumStatus = false;
+		
+		this.visibility=visibility;
 	}
-
-	public ClassProperty(String name, String value, boolean required, Visibility visibility) {
-		this(name, value, "", required, visibility);
-	}
-
-	public ClassProperty(String name, String type, String cardinality, boolean required, List<String> values, boolean enumStatus, Visibility visibility) {
-		this(name, type, cardinality, required, visibility);
-		this.addValues(values);
-		this.enumStatus=enumStatus;
-
-	}
-
+	
+	
 	@Override
 	@LogMethod(level=LogLevel.DEBUG)
 	public String getName() {
@@ -141,7 +156,6 @@ public class ClassProperty extends Entity {
 	}
 	
 	
-	List<String> values = new LinkedList<>();
 	public void addValues(List<String> val) {
 		values.addAll(val);
 	}
@@ -150,6 +164,10 @@ public class ClassProperty extends Entity {
 	
 	public void setEnumStatus(boolean status) {
 		this.enumStatus = status;
+	}
+	
+	public boolean isNullable() {
+		return this.isNullable;
 	}
 
 }

@@ -168,6 +168,10 @@ public class DiagramGenerator
 					label = resource + "_" + pivot;
 				} 
 				
+				if(!args.keepTechnicalEdges) { 
+					apiGraph.removeTechnicalAllOfs();
+				}
+				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph);
 							
 				Out.printAlways("... generated diagram for " + pivot);

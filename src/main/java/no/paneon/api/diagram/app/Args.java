@@ -121,6 +121,12 @@ public class Args {
 
 		@Parameter(description = "Files", arity=0)
 		public List<String> files = new ArrayList<>();
+		
+		@Parameter(names = { "--keep-technical-edges" }, description = "Keep technical allOf edges (reverse of oneOfs)")
+		public boolean keepTechnicalEdges = false;
+		
+		@Parameter(names = { "--keep-inheritance-decorations" }, description = "Keep inheritance decoractions")
+		public boolean keepInheritanceDecoractions = false;
 
 	}
 
