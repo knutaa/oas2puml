@@ -280,6 +280,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.ABOVE, Arrays.asList(
 				
+				EdgeAnalyzer::notIfBelowPivot,
+
 				EdgeAnalyzer::notIfLongPath,
 
 				EdgeAnalyzer::notIfOneOf,
@@ -370,6 +372,21 @@ public class EdgeAnalyzer {
 			if(!edgeOptions.containsKey(place)) edgeOptions.put(place, new HashSet<>());
 			if(!edgesPlaced.containsKey(place)) edgesPlaced.put(place, new HashSet<>());
 	    }
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfBelowPivot(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+		
+		boolean singleInboundAndOutbound = apiGraph.getNeighbours(from).size()==2;
+		boolean isBelowPivot      = apiGraph.getAllNeighbours(from).contains(apiGraph.getResourceNode());
+		
+		boolean res = singleInboundAndOutbound && isBelowPivot;
+		
+		LOG.debug("notIfBelowPivot: from={} to={} hasManyNodes={} isBelowPivot={} res={}",  from, to, singleInboundAndOutbound, isBelowPivot, res);
+		
+		return rejectIfTrue( res );
+
+
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
