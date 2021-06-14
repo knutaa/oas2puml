@@ -74,7 +74,7 @@ public class GenerateDiagram extends GenerateCommon {
 	    	json.put(item);
 	    }); 
 		
-	    String fileName = target + File.pathSeparator + "diagrams.yaml";
+	    String fileName = target + File.separator + "diagrams.yaml";
 	
     	JSONObject config = new JSONObject();
     	config.put("graphs", json);

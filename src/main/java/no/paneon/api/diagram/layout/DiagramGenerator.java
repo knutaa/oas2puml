@@ -65,9 +65,17 @@ public class DiagramGenerator
 		this.file = file;    
 		this.target = target;
 		
-		this.resources = getResources(args); 
+		this.resources = new LinkedList<>();
 		
-		LOG.debug("DiagramGenerator() resources={}", this.resources);
+				
+		if(args.resource==null || args.resource.isEmpty()) {
+			this.resources.addAll(getResources(args));
+		} else {
+			this.resources.add(args.resource);
+		}
+	
+		
+		Out.debug("DiagramGenerator() resources={}", this.resources);
 		
 	}
 		
@@ -131,31 +139,6 @@ public class DiagramGenerator
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph);
-
-//				Set<Node> currentGraphNodes = currentGraph.vertexSet();
-//				
-//				for(Node currentNode : currentGraphNodes) {
-//					Set<String> mapping = currentNode.getDiscriminatorMapping();
-//					if(!mapping.isEmpty()) {
-//						Out.debug("generateDiagramGraph: pivot={} currentNode={} mapping={}", pivot, currentNode.getName(), mapping);
-//						Set<Node> mappingNodes = mapping.stream()
-//													.map(node -> CoreAPIGraph.getNodeByName(coreGraph.getCompleteGraph(),node))
-//													.filter(Optional::isPresent)
-//													.map(Optional::get)
-//													.collect(toSet());
-//					
-//						// mappingNodes.removeAll(currentGraphNodes);
-//
-//						for(Node mappingNode : mappingNodes) {
-//							
-//							Out.debug("generateDiagramGraph: pivot={} node={} mappingNode={}", pivot, currentNode.getName(), mappingNode);
-//
-//							currentGraph.removeAllEdges(currentGraph.outgoingEdgesOf(mappingNode));
-//						}
-//						
-//						
-//					}
-//				}
 				
 				String label; 
 				APIGraph apiGraph;
