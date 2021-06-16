@@ -75,7 +75,7 @@ public class DiagramGenerator
 		}
 	
 		
-		Out.debug("DiagramGenerator() resources={}", this.resources);
+		LOG.debug("DiagramGenerator() resources={}", this.resources);
 		
 	}
 		
