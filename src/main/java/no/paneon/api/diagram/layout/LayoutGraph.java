@@ -28,6 +28,7 @@ import no.paneon.api.diagram.puml.AllOfEdge;
 import no.paneon.api.diagram.puml.ClassEntity;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
+import no.paneon.api.diagram.puml.DiscriminatorEdge;
 import no.paneon.api.diagram.puml.EdgeEntity;
 import no.paneon.api.diagram.puml.EnumEdge;
 import no.paneon.api.diagram.puml.EnumEntity;
@@ -36,6 +37,7 @@ import no.paneon.api.diagram.puml.HiddenEdge;
 import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.AllOf;
 import no.paneon.api.graph.CoreAPIGraph;
+import no.paneon.api.graph.Discriminator;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.EnumNode;
 import no.paneon.api.graph.Node;
@@ -252,6 +254,8 @@ public class LayoutGraph extends Positions {
 	    
 	    if(edge instanceof AllOf) {
 	    	cls.addEdge(new AllOfEdge(direction,edge, rule));
+	    } else if(edge instanceof Discriminator) {
+	    	cls.addEdge(new DiscriminatorEdge(direction,edge, rule));
 	    } else {
 	    	cls.addEdge(new EdgeEntity(direction,edge, rule));
 	    }

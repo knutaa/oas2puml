@@ -123,9 +123,9 @@ public class ClassProperty extends Entity {
 		}
 		
 		LOG.debug("property: name={} visibility={}",  this.name, this.visibility);
-		if(this.visibility==INHERITED && !Config.getString("inheritedFormatting").isEmpty()) {
+		if(this.visibility==INHERITED && Config.getBoolean("keepInheritanceDecoractions")) {
 			String format = Config.getString("inheritedFormatting");
-			res = String.format(format,res);
+			if(!format.isEmpty()) res = String.format(format,res);
 		}
 			
 		if(!cardinality.isEmpty() && !Config.hideCardinaltyForProperty(cardinality)) res = res + " [" + cardinality + "]";

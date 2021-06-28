@@ -24,7 +24,7 @@ public class App {
 	Args.Usage  	   argsUsage         ;
 
 	App(String ... argv) {
-		     		
+		     				
 		args = new Args();
 				
 		argsDiagram        = args.new Diagram();
@@ -60,13 +60,12 @@ public class App {
 		}
 		
 		Timestamp.timeStamp("finished", Timestamp.FROM_START);
-
 		
 	}
 
 
 	void run() {
-						
+								
 		if (commandLine.getParsedCommand()==null) {
             commandLine.usage();
             return;

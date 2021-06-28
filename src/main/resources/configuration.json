@@ -160,5 +160,6 @@
 	
 	"diagrams.yaml": "generated/diagrams/diagrams.yaml",
 	
+	"keepInheritanceDecoractions": false
 	
 }

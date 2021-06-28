@@ -6,8 +6,9 @@ import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Timestamp;
 import no.paneon.api.utils.Utils;
-import no.paneon.api.logging.AspectLogger;
+
 import no.paneon.api.logging.LogMethod;
+import no.paneon.api.logging.AspectLogger;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 import java.util.LinkedList;
@@ -15,9 +16,14 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+
+//import org.apache.logging.log4j.core.LoggerContext;
+//import org.apache.logging.log4j.core.config.Configuration;
+//import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class GenerateCommon {
 	
@@ -69,12 +75,24 @@ public class GenerateCommon {
 
 	@LogMethod(level=LogLevel.DEBUG)
 	protected void setLogLevel(org.apache.logging.log4j.Level level) {
+//		LoggerContext context = (LoggerContext) LogManager.getContext(false);
+//		Configuration config = context.get
+//		LoggerConfig rootConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+//		rootConfig.setLevel(level);	
+//		
+		
 		LoggerContext context = (LoggerContext) LogManager.getContext(false);
 		Configuration config = context.getConfiguration();
 		LoggerConfig rootConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-		rootConfig.setLevel(level);	
-		
+		rootConfig.setLevel(level);
+
+//		LogManager.getRootLogger().atLevel(level);
+
+//		Configurator.setAllLevels(LogManager.getRootLogger().getName(), level);
+
 		AspectLogger.setGlobalDebugLevel(level);
+		
+		
 		
 	}
 

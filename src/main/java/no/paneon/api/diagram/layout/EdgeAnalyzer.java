@@ -83,6 +83,8 @@ public class EdgeAnalyzer {
 
 				EdgeAnalyzer::notIfOneOf,
 
+				EdgeAnalyzer::notIfDiscriminator,
+
 				EdgeAnalyzer::notIfFromPivotAndFewOutbound,
 
 				EdgeAnalyzer::notIfComplexAndLeafExists,
@@ -161,6 +163,8 @@ public class EdgeAnalyzer {
 		edgeConditions.put(Place.RIGHT, Arrays.asList( 
 				
 				EdgeAnalyzer::notIfBidirectional,
+
+				EdgeAnalyzer::notIfDiscriminator,
 
 				EdgeAnalyzer::notIfOneOf,
 
@@ -287,6 +291,10 @@ public class EdgeAnalyzer {
 				EdgeAnalyzer::notIfOneOf,
 				
 				EdgeAnalyzer::notIfContainedOneOf,
+
+				EdgeAnalyzer::notIfDiscriminator,
+
+				EdgeAnalyzer::notIfContainedDiscriminator,
 
 				EdgeAnalyzer::ifPlacedAboveAndLeafNode,
 
@@ -432,6 +440,16 @@ public class EdgeAnalyzer {
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfDiscriminator(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
+		boolean isDiscriminator = apiGraph.getEdges(from, to).stream().anyMatch(Edge::isDiscriminator);
+		
+		LOG.debug("notIfDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
+
+		return rejectIfTrue( isDiscriminator );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfOneOf(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		boolean isOneOf = apiGraph.getEdges(from, to).stream().anyMatch(Edge::isOneOf);
 		
@@ -451,6 +469,16 @@ public class EdgeAnalyzer {
 
 	}
 	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfContainedDiscriminator(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
+		boolean isDiscriminator = apiGraph.getNeighbours(to).stream().map(child -> apiGraph.getEdges(to,child)).flatMap(Set::stream).anyMatch(Edge::isDiscriminator); 
+		
+		LOG.debug("notIfContainedDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
+
+		return rejectIfTrue( isDiscriminator );
+
+	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfPartOfCircle(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {

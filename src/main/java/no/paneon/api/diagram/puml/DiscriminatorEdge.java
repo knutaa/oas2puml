@@ -12,26 +12,26 @@ import no.paneon.api.logging.LogMethod;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 
-public class AllOfEdge extends HiddenEdge {
+public class DiscriminatorEdge extends HiddenEdge {
 	
-	public AllOfEdge(Node from, Place place, Node to, boolean first) {
+	public DiscriminatorEdge(Node from, Place place, Node to, boolean first) {
 		super(from, place, to, first);
 	}
 
-	public AllOfEdge(Node from, Place place, Node to) {
+	public DiscriminatorEdge(Node from, Place place, Node to) {
 		super(from, place, to, false);
 	}
 
-	public AllOfEdge(Place place, Edge edge) {
+	public DiscriminatorEdge(Place place, Edge edge) {
 		super(place, edge);
 	}
 	
-	public AllOfEdge(Node from, Place place, Node to, boolean required, String id, String rule) {
+	public DiscriminatorEdge(Node from, Place place, Node to, boolean required, String id, String rule) {
 		this(from,place,to);
 		addComment(new Comment("'rule: " + rule));
 	}
 
-	public AllOfEdge(Place direction, Edge edge, String rule) {
+	public DiscriminatorEdge(Place direction, Edge edge, String rule) {
 		this(direction, edge);
 		addComment(new Comment("'rule: " + rule));
 	}
@@ -41,7 +41,9 @@ public class AllOfEdge extends HiddenEdge {
 	public String toString() {
 		String res="";
 		
-		String label = edge!=null ? edge.relation : "";
+		// if(true) return res;
+		
+		String label = edge!=null ? edge.relation : "{xor}";
 			
 		String strLabel = label;
 		if(required) {
@@ -49,36 +51,37 @@ public class AllOfEdge extends HiddenEdge {
 			strLabel = String.format(format,strLabel);
 		} 
 	
+		// TBD strLabel = "";
+		
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:
-			// res = to + " <|-left- " + from + " : " + strLabel + '\n';
-			res = from + " <|-left- " + to + " : " + strLabel + '\n';
+			res = from + " -left- " + to + " : " + strLabel + '\n';
 
 		    break;
 			
 		case RIGHT:
 		case FORCERIGHT:
-		    res = from + " -right-|> " + to + " : " + strLabel + '\n';
+		    res = from + " -right- " + to + " : " + strLabel + '\n';
 
 		    break;
 			
 		case ABOVE:
 		case FORCEABOVE:
-		    res = to + " <|-- " + from + " : " + strLabel + '\n';
+		    res = to + " -- " + from + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW:
 		case FORCEBELOW:
-		    res = from + " --|> " + to + " : " + strLabel + '\n';
+		    res = from + " -- " + to + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW_LONG:
-		    res = from + " ---|> " + to + " : " + strLabel + '\n';
+		    res = from + " --- " + to + " : " + strLabel + '\n';
 			break;
 
 		case ABOVE_LONG:
-		    res = to + " <|--- " + from + " : " + strLabel + '\n';
+		    res = to + " --- " + from + " : " + strLabel + '\n';
 			break;
 
 		default:

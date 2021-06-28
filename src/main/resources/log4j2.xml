@@ -10,24 +10,24 @@
   
     <Console name="Progress" target="SYSTEM_OUT">
       <PatternLayout pattern="%m%n"/>
-      <ThresholdFilter level="VERBOSE" onMatch="ACCEPT" onMismatch="DENY"/>
+      <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
     </Console>
  
     <Console name="Logging" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} :: %msg%n"/>
-      <ThresholdFilter level="VERBOSE" onMismatch="ACCEPT" onMatch="DENY"/>
+      <ThresholdFilter level="INFO" onMismatch="ACCEPT" onMatch="DENY"/>
     </Console>
     
   </Appenders>
   
   <Loggers>
   
-    <Root level="INFO">
+    <Root level="error">
       <AppenderRef ref="Logging" />
     </Root>
          
-    <Logger name="no.paneon.api.utils.Out" level="VERBOSE">
-      <AppenderRef ref="Progress" level="VERBOSE" />
+    <Logger name="no.paneon.api.utils.Out" level="INFO">
+      <AppenderRef ref="Progress" level="INFO" />
     </Logger>
           
   </Loggers>
