@@ -1,4 +1,4 @@
-package no.paneon.api.diagram.layout;
+  package no.paneon.api.diagram.layout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
@@ -79,11 +80,17 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.LEFT, Arrays.asList(
 				
+				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
+
+				EdgeAnalyzer::notIfFromRightAndSingleTo,
+								
 				EdgeAnalyzer::notIfBidirectional,
 
 				EdgeAnalyzer::notIfOneOf,
 
 				EdgeAnalyzer::notIfDiscriminator,
+
+				EdgeAnalyzer::notIfAllOf,
 
 				EdgeAnalyzer::notIfFromPivotAndFewOutbound,
 
@@ -162,6 +169,14 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.RIGHT, Arrays.asList( 
 				
+				EdgeAnalyzer::notIfToSingleAndLargeSubgraph,
+
+				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
+
+				EdgeAnalyzer::notIfFromRightAndBelow,
+				
+				EdgeAnalyzer::notIfFromRightAndSingleTo,
+				
 				EdgeAnalyzer::notIfBidirectional,
 
 				EdgeAnalyzer::notIfDiscriminator,
@@ -172,7 +187,13 @@ public class EdgeAnalyzer {
 
 				EdgeAnalyzer::notIfMultipleEdges,
 
-				EdgeAnalyzer::notIfBelowAndFewOutbounds,
+				(toNode, node, apiGraph, layoutGraph) ->  { 
+										
+					return acceptWhenTrue(true);
+
+				},
+				
+				// EdgeAnalyzer::notIfBelowAndFewOutbounds,
 
 				EdgeAnalyzer::notIfInheritance,
 				
@@ -284,10 +305,30 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.ABOVE, Arrays.asList(
 				
+				// EdgeAnalyzer::notIfBelowAndFewOutbounds,
+				
+				EdgeAnalyzer::notFromCircleNodeAndBelowInCircle,
+
+				EdgeAnalyzer::notIfFromRightAndSingleTo,
+				
+				EdgeAnalyzer::notIfFromBelowAndFewOutbound,
+
+				EdgeAnalyzer::notIfFromBelowAndToIsLeaf,
+
+				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
+				
+				EdgeAnalyzer::ifFromIsSingleNeighbourOfTo,
+				
+				EdgeAnalyzer::notIfFromLeftRightAndTwoOutbound,
+
+				EdgeAnalyzer::notIfLargeSubGraph,
+
+				EdgeAnalyzer::notFromCircleNode,
+
 				EdgeAnalyzer::notIfBelowPivot,
 
 				EdgeAnalyzer::notIfLongPath,
-
+				
 				EdgeAnalyzer::notIfOneOf,
 				
 				EdgeAnalyzer::notIfContainedOneOf,
@@ -298,7 +339,7 @@ public class EdgeAnalyzer {
 
 				EdgeAnalyzer::ifPlacedAboveAndLeafNode,
 
-				EdgeAnalyzer::notIfDirectInheritance,
+//				EdgeAnalyzer::notIfDirectInheritance,
 
 				EdgeAnalyzer::notIfPartOfCircle,
 
@@ -382,6 +423,173 @@ public class EdgeAnalyzer {
 	    }
 	}
 	
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notFromCircleNodeAndBelowInCircle(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = !from.getCircleNodes().isEmpty() && !from.equals(apiGraph.getResourceNode()) && layoutGraph.isPlaced(from);
+		
+		Set<Node> nodes = apiGraph.getGraphNodes();
+		nodes.retainAll(from.getCircleNodes());
+		nodes.remove(from);
+		
+		OptionalInt topY = nodes.stream().filter(layoutGraph::isPlaced).map(layoutGraph::getPosition).map(Position::getY).mapToInt(v->v).min();
+
+		if(res && topY.isPresent()) {
+				
+			res = topY.getAsInt()<layoutGraph.getPosition(from).getY();
+			
+			if(res) LOG.debug("notFromCircleNodeAndBelowInCircle: from={} to={} topY={} fromY={} res={}",  from, to, topY, layoutGraph.getPosition(from).getY(), res);
+		
+		} else {
+			
+			res=false;
+		
+		}
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromBelowAndFewOutbound(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedBelow(from) && !from.equals(apiGraph.getResourceNode());
+		
+		if(res) LOG.debug("notIfFromBelowAndFewOutbound: from={} to={} #1 res={}",  from, to, res);
+
+		res = res && apiGraph.getOutboundEdges(to).isEmpty();
+		
+		if(res) LOG.debug("notIfFromBelowAndFewOutbound: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromBelowAndToIsLeaf(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedBelow(from) && !from.equals(apiGraph.getResourceNode());
+		
+		LOG.debug("notIfFromBelowAndToIsLeaf: from={} to={} #1 res={}",  from, to, res);
+
+		res = res && apiGraph.getInboundEdges(from).size() > apiGraph.getOutboundEdges(from).size();
+		
+		if(res) LOG.debug("notIfFromBelowAndToIsLeaf: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfToSingleAndLargeSubgraph(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = apiGraph.getInboundNeighbours(to).size()==1;
+		
+		if(res) LOG.debug("notIfToSingleAndLargeSubgraph: from={} to={} #1 res={}",  from, to, res);
+
+		res = res && apiGraph.getSubGraph(to).size()>=5;
+		
+		if(res) LOG.debug("notIfToSingleAndLargeSubgraph: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}	
+	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromBelowAndTwoOthers(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedAt(from,Place.ABOVE) && !from.equals(apiGraph.getResourceNode());
+		
+		if(res) LOG.debug("notIfFromBelowAndTwoOthers: from={} to={} #1 res={}",  from, to, res);
+
+		res = res && apiGraph.getOutboundNeighbours(from).size()==2;
+		
+		if(res) LOG.debug("notIfFromBelowAndTwoOthers: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromLeftRightAndTwoOutbound(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedAt(from,Place.LEFT) && layoutGraph.isPlacedAt(from,Place.RIGHT);
+		
+		if(res) LOG.debug("notIfFromLeftRightAndTwoOutbound: from={} to={} #1 res={}",  from, to, res);
+
+		res = res && apiGraph.getOutboundNeighbours(to).size()<=2;
+		
+		if(res) LOG.debug("notIfFromLeftRightAndTwoOutbound: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status ifFromIsSingleNeighbourOfTo(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = apiGraph.getNeighbours(to).size()==1;
+		
+		LOG.debug("ifFromIsSingleNeighbourOfTo: from={} to={} res={}",  from, to, res);
+		
+		return acceptWhenTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromRightAndBelow(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedAt(from,Place.LEFT) && layoutGraph.isPlacedAt(from,Place.BELOW);
+		
+		LOG.debug("notIfFromRightAndBelow: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromRightAndSingleTo(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedAt(from,Place.LEFT)&& apiGraph.getOutboundNeighbours(from).size()==1; 
+		
+		res = res || layoutGraph.isPlacedAt(from,Place.ABOVE)&& apiGraph.getOutboundNeighbours(from).size()==1;
+
+		LOG.debug("notIfFromRightAndSingleTo: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfFromLeftAndSingleTo(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = layoutGraph.isPlacedAt(from,Place.RIGHT)&& apiGraph.getOutboundNeighbours(from).size()==1;
+		
+		res = res || layoutGraph.isPlacedAt(from,Place.ABOVE)&& apiGraph.getOutboundNeighbours(from).size()==1;
+		
+		LOG.debug("notIfFromLeftAndSingleTo: from={} to={} res={}",  from, to, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfLargeSubGraph(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+		
+		int subGraphSize = apiGraph.getSubGraph(to).size();
+		
+		boolean res = subGraphSize >= 4;
+		
+		LOG.debug("notIfLargeSubGraph: from={} to={} subGraphSize={} res={}",  from, to, subGraphSize, res);
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfBelowPivot(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
 		
@@ -430,6 +638,20 @@ public class EdgeAnalyzer {
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notFromCircleNode(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
+		boolean isFromCircleNode = from.isPartOfCircle();
+		
+		Predicate<Node> isAbove = n -> layoutGraph.isPositionedAbove(n,from);
+		
+		isFromCircleNode = isFromCircleNode && from.getCircleNodes().stream().anyMatch(isAbove);
+		
+		if(isFromCircleNode) LOG.debug("notFromCircleNode: from={} to={} circle={} res={}", from, to, from.getCircleNodes(), isFromCircleNode);
+		
+		return rejectIfTrue( isFromCircleNode );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfBidirectional(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		boolean bidirectional = !apiGraph.getEdges(from, to).isEmpty() && !apiGraph.getEdges(to, from).isEmpty(); 
 		
@@ -441,13 +663,26 @@ public class EdgeAnalyzer {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfDiscriminator(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
-		boolean isDiscriminator = apiGraph.getEdges(from, to).stream().anyMatch(Edge::isDiscriminator);
+		boolean isDiscriminator = apiGraph.getEdges(from, to).stream().anyMatch(Edge::isDiscriminator); // TBD
 		
-		LOG.debug("notIfDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
+		isDiscriminator = isDiscriminator && apiGraph.getOutboundEdges(from).stream().count() < 4;  // filter(Edge::isDiscriminator).count() < 4;
+		
+		if(isDiscriminator) LOG.debug("notIfDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
 
 		return rejectIfTrue( isDiscriminator );
 
 	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfAllOf(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
+		boolean isAllOf = apiGraph.getEdges(from, to).stream().anyMatch(Edge::isAllOf);
+		
+		LOG.debug("notIfAllOf: from={} to={} isOneOf={}", from, to, isAllOf);
+
+		return rejectIfTrue( isAllOf );
+
+	}
+	
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfOneOf(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
@@ -474,7 +709,7 @@ public class EdgeAnalyzer {
 	private static Status notIfContainedDiscriminator(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		boolean isDiscriminator = apiGraph.getNeighbours(to).stream().map(child -> apiGraph.getEdges(to,child)).flatMap(Set::stream).anyMatch(Edge::isDiscriminator); 
 		
-		LOG.debug("notIfContainedDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
+		if(isDiscriminator) LOG.debug("notIfContainedDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
 
 		return rejectIfTrue( isDiscriminator );
 
@@ -701,7 +936,7 @@ public class EdgeAnalyzer {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status ifPlacedAboveAndLeafNode(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {	
-		return acceptWhenTrue( layoutGraph.isPlacedAt(from, Place.BELOW) && apiGraph.isLeafNode(to) );   
+		return acceptWhenTrue( layoutGraph.isPlacedAt(from, Place.BELOW) && apiGraph.isLeafNode(to) );   // TBD BELOW
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)

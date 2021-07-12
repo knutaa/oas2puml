@@ -56,32 +56,32 @@ public class DiscriminatorEdge extends HiddenEdge {
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:
-			res = from + " -left- " + to + " : " + strLabel + '\n';
+			res = from + " .left. " + to + " : " + strLabel + '\n';
 
 		    break;
 			
 		case RIGHT:
 		case FORCERIGHT:
-		    res = from + " -right- " + to + " : " + strLabel + '\n';
+		    res = from + " .right. " + to + " : " + strLabel + '\n';
 
 		    break;
 			
 		case ABOVE:
 		case FORCEABOVE:
-		    res = to + " -- " + from + " : " + strLabel + '\n';
+		    res = to + " .. " + from + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW:
 		case FORCEBELOW:
-		    res = from + " -- " + to + " : " + strLabel + '\n';
+		    res = from + " .. " + to + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW_LONG:
-		    res = from + " --- " + to + " : " + strLabel + '\n';
+		    res = from + " ... " + to + " : " + strLabel + '\n';
 			break;
 
 		case ABOVE_LONG:
-		    res = to + " --- " + from + " : " + strLabel + '\n';
+		    res = to + " ... " + from + " : " + strLabel + '\n';
 			break;
 
 		default:

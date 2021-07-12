@@ -74,35 +74,13 @@ public class DiagramGenerator
 			this.resources.add(args.resource);
 		}
 	
-		
+	    createDirectory(target);
+	    removeExistingFiles(target, ".puml");
+
 		LOG.debug("DiagramGenerator() resources={}", this.resources);
 		
 	}
 		
-
-//	@LogMethod(level=LogLevel.DEBUG)
-//	private Map<String,String> generateDiagram() {
-//		Map<String,String> diagramConfig = new HashMap<>();
-//		
-//		Set<String> generated = new HashSet<>();
-//		
-//		for(String resource : this.resources) {
-//			Diagram diagram = processDiagramForResource(resource, generated);
-//			
-//			Out.printAlways("... generated diagram for " + resource);
-//			
-//			diagramConfig = writeDiagram(diagram, resource, target);
-//			
-//			Set<String> incompleteTypes = diagram.getSubResourcesWithIncompleteDiagram();
-//			generated.removeAll(incompleteTypes);
-//			
-//			diagramConfig.putAll( writeDiagramsForSubResources(diagram,resource,generated) );
-//						
-//		}
-//		
-//		return diagramConfig;
-//
-//	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public Map<String,String> generateDiagramGraph() {
@@ -116,7 +94,7 @@ public class DiagramGenerator
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
-		LOG.debug("generateDiagramGraph: coreGraph resources={}", resources);
+		LOG.debug("generateDiagramGraph: coreGraph resources={}", this.resources);
 
 		for(String resource : this.resources) {
 			
@@ -138,7 +116,7 @@ public class DiagramGenerator
 								
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
 				
-				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph);
+				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
 				
 				String label; 
 				APIGraph apiGraph;
@@ -179,14 +157,10 @@ public class DiagramGenerator
 			
 			String subResource = subDiagram.getLabel();
 			String subDiagramLabel = resource + "_" + subResource;
-							
-			//if(!generated.contains(subResource) && diagram.isUsedAsSimpleType(subResource)) {	
-				
-				config.putAll( writeDiagram(subDiagram, subDiagramLabel, target) );
-				generated.add(subResource);
-				
-			//}	
-				
+			
+			config.putAll( writeDiagram(subDiagram, subDiagramLabel, target) );
+			generated.add(subResource);
+								
 			writeDiagramsForSubResources(subDiagram, resource, generated);
 		}	
 		
@@ -257,13 +231,15 @@ public class DiagramGenerator
 	            	    	    
 	    List<Node> nodesInGraph = getSequenceOfNodesInGraph(apiGraph,resource);
 	    	   
+	    LOG.debug("generateDiagramForGraph: resource={} nodes={}",  resource, nodesInGraph);
+	    
 	    for(Node node: nodesInGraph ) {
 	    	if(!(node instanceof EnumNode)) {
 	    		layout.generateUMLClasses(diagram, node, resource);
 	    	}
 	    }
 	            	    	
-	    layout.processEdgesForInheritance(diagram);
+	    // layout.processEdgesForInheritance(diagram);
 
 	    layout.processEdgesForCoreGraph(diagram);
         
@@ -432,8 +408,6 @@ public class DiagramGenerator
 		Map<String,String> config = new HashMap<>();
 		
 	    String puml = diagram.toString();
-
-	    createDirectory(target);
 	    
 	    String fileName = "Resource_" + resource + ".puml";
 	    if(!target.isEmpty() && !target.endsWith(File.separator)) target = target + File.separator;
@@ -463,6 +437,15 @@ public class DiagramGenerator
 		return f.mkdirs();		
 	}
 
+	@LogMethod(level=LogLevel.DEBUG)
+	private void removeExistingFiles(String target, String fileType) {
+		File dir = new File(target);
+		
+		for(File file: dir.listFiles()) 
+		    if (!file.isDirectory() && file.getName().endsWith(fileType)) 
+		        file.delete();
+	}
+	
 
 	@LogMethod(level=LogLevel.DEBUG)
 	public void displayComplexity() {

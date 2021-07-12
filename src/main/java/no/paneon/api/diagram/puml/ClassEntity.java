@@ -89,6 +89,8 @@ public class ClassEntity extends Entity {
 		if(c!=null) {
 			edges.add(c);
 			c.setContainingEntity(this);		
+			
+			LOG.debug("addEdge: {}", c);
 		}
 		return c!=null;
 	}

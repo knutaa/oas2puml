@@ -147,15 +147,20 @@ public class LayoutGraph extends Positions {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	boolean forceLeftRight(ClassEntity cls, Place horizonalDirection, Node pivot, Node toNode) {
+	boolean forceLeftRight(ClassEntity cls, Place horizonalDirection, Node fromNode, Node toNode) {
 		boolean res=false;
 		// Place place = Place.getMapping().get(horizonalDirection);
 		Place place = horizonalDirection;
 		// placeAt(toNode,place,pivot);
-		placeAt(pivot,place,toNode);	
-		String rule="forceLeftRight";
-		res = cls.addEdge(new HiddenEdge(pivot,place,toNode,rule));
+		
+		placeAt(fromNode,place,toNode);	
+		
+		String rule="forceLeftRight - function " + place;
+		
+		res = cls.addEdge(new HiddenEdge(fromNode,place,toNode,rule));
+		
 		return res;
+	
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
@@ -187,14 +192,16 @@ public class LayoutGraph extends Positions {
 	        boolean d = placeEdges(cls, node, toNode, placeDirection, rule);
 	        res = res || d;
 	        if(d && pivot!=null) {
-//	            if(first) {
-//	                cls.addEdge(new HiddenEdge(toNode, Place.ABOVE, node, rule + " - first"));
-//	                first=false;
-//	            }
-	            forceLeftRight(cls, horizonalDirection, pivot, toNode);
-//	            placeAt(toNode, Place.BELOW, pivot);
-//	            pivot=toNode;
-	            pivot=null;
+////	            if(first) {
+////	                cls.addEdge(new HiddenEdge(toNode, Place.ABOVE, node, rule + " - first"));
+////	                first=false;
+////	            }
+//	        	if(this.isAtSameLevel(pivot,  toNode)) {
+//		            forceLeftRight(cls, horizonalDirection, pivot, toNode);
+//	//	            placeAt(toNode, Place.BELOW, pivot);
+//	//	            pivot=toNode;
+//		            pivot=null;
+//	        	}
 	        }
 	        if(prev!=null) {
 	        	// this.position(toNode, prev, horizonalDirection==Place.LEFT ? Place.RIGHT : Place.LEFT);
@@ -250,7 +257,7 @@ public class LayoutGraph extends Positions {
 	    placeAt(from, direction, to);
 	    // position(from, to, direction);
 	    
-	    LOG.debug("placeEdgeHelper: from={} to={} direction={}", from, to, direction);
+	    LOG.debug("placeEdgeHelper: from={} to={} direction={} edge={} rule={}", from, to, direction, edge.getClass(), rule);
 	    
 	    if(edge instanceof AllOf) {
 	    	cls.addEdge(new AllOfEdge(direction,edge, rule));
@@ -300,8 +307,12 @@ public class LayoutGraph extends Positions {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	void placeAtHelperReverse(Node node, Place direction, Node pivot) {	
-		LayoutEdge edge = new LayoutEdge(Place.getMapping().get(direction), pivot, node);
+		Place reverse = Place.getMapping().get(direction);
+		LayoutEdge edge = new LayoutEdge(reverse, pivot, node);
 		layoutGraph.addEdge(pivot,node,edge);
+		
+	    if(!node.equals(pivot)) position(node, pivot, reverse);
+
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -769,6 +780,12 @@ public class LayoutGraph extends Positions {
 	    	nodeB = tmp;
 	    }
 
+      	LOG.debug("placeBetween nodeA={} nodeB={} toNode={}", nodeA, nodeB, toNode);
+
+       	LOG.debug("nodeA  = {} pos={} isPlaced={}", nodeA, this.getPosition(nodeA), this.isPlaced(nodeA));
+    	LOG.debug("nodeB  = {} pos={} isPlaced={}", nodeB, this.getPosition(nodeB), this.isPlaced(nodeA));
+    	LOG.debug("toNode = {} pos={} isPlaced={}", toNode, this.getPosition(toNode), this.isPlaced(nodeA));
+
 	    boolean multipleBetween = apiGraph.isMultipleBetween(nodeA, nodeB);
 	    boolean placedBetween = isPlacedBetween(nodeA, nodeB);
 	    boolean directConnection = hasDirectConnection(nodeA, nodeB);
@@ -794,9 +811,8 @@ public class LayoutGraph extends Positions {
 	    String rule = "placeBetween - " + nodeA + " < " + nodeB + " placing " + toNode + 
 	    			  " multipleBetween=" + multipleBetween + " placedBetween=" + placedBetween + " directConnection=" + directConnection;
 
-    	LOG.debug("nodeA = {} posA={}", nodeA, this.getPosition(nodeA));
-    	LOG.debug("nodeB = {} posB={}", nodeB, this.getPosition(nodeB));
-
+    	LOG.debug("toNode = {} rule={}", toNode, rule);
+    	
         List<Place> func;
         
 	    if(!placedBetween && !directConnection ) {
@@ -834,6 +850,10 @@ public class LayoutGraph extends Positions {
 	        }
 	    } else {
 	        // something between
+	    	
+	      	LOG.debug("#1 nodeA = {} posA={}", nodeA, this.getPosition(nodeA));
+	    	LOG.debug("#1 nodeB = {} posB={}", nodeB, this.getPosition(nodeB));
+
 	        if(isAtSameLevel(nodeA,nodeB)) {
 	            // something already between and the two nodes are at the same level
 	        	// place below unless there is also another path between
@@ -885,26 +905,27 @@ public class LayoutGraph extends Positions {
 	                     		        
 	            res = placeEdgePackage(cls, nodeA,toNode,func,ruleDetails);
 
-	            LOG.debug("not placebetween #4-1: res={}", res);	   
+	            LOG.debug("#1 not placebetween #4-1: res={}", res);	   
 
-	            if(res && !multipleBetween) {
-	                Node finalA = nodeA;
-		            Set<Node> candidates = apiGraph.getInboundNeighbours(finalA).stream()
-		            							.map(apiGraph::getOutboundNeighbours)
-		            							.flatMap(Set::stream)
-		            							.filter(n -> !n.equals(toNode) && !n.equals(finalA))
-		            							.filter(n -> placedAtLevel(finalA).contains(n))
-		            							.collect(toSet());
-		            
-		   		    LOG.debug("not placebetween #4-1: candidates={}", candidates);
-
-		   		    
-	            }
+//	            if(res && !multipleBetween) {
+//	                Node finalA = nodeA;
+//		            Set<Node> candidates = apiGraph.getInboundNeighbours(finalA).stream()
+//		            							.map(apiGraph::getOutboundNeighbours)
+//		            							.flatMap(Set::stream)
+//		            							.filter(n -> !n.equals(toNode) && !n.equals(finalA))
+//		            							.filter(n -> placedAtLevel(finalA).contains(n))
+//		            							.collect(toSet());
+//		            
+//		   		    LOG.debug("not placebetween #4-1: candidates={}", candidates);
+//
+//		   		    
+//	            }
 	            
 	            // func = isPositionedAbove(nodeA, nodeB) ? funcAboveBelow : funcBelowAbove;
 	            
 	        	if(multipleBetween) {
 		            func = isPositionedAbove(nodeA, nodeB) ? funcBelowAbove : funcAboveBelow; 
+		            LOG.debug("#1 func={}", func);	   
 	        	} else if(isPositionedAbove(nodeA, nodeB)) {
 		            // func = funcRightLeft; 
 	        		if(isPlacedAt(nodeB,Place.LEFT) && !isPlacedAt(nodeB,Place.RIGHT))
@@ -914,12 +935,19 @@ public class LayoutGraph extends Positions {
 	        		else
 			            func = funcBelowAbove; 
 
+		            LOG.debug("#2 func={}", func);	   
+
 	        	} else {
 	        		func = funcAboveBelow;
+	        		
+		            LOG.debug("#3 func={}", func);	   
+
 	        	}
 	        	
 	        	ruleDetails = ruleDetails + "#4-2";
            
+	            LOG.debug("#4 nodeB={} toNode={} func={} res={}", nodeB, toNode, func, res);	   
+
 				LOG.debug("not placebetween #4-2");		
 				boolean placed = placeEdgePackage(cls, nodeB,toNode,func,ruleDetails);
 	            res = res || placed;
@@ -1939,6 +1967,10 @@ public class LayoutGraph extends Positions {
 		
 		return res;
 		
+	}
+
+	public boolean isPlacedBelow(Node node) {
+		return this.isPlacedAt(node, Place.BELOW);
 	}
 
   	

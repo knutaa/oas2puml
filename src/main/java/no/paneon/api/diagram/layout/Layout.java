@@ -171,288 +171,6 @@ public class Layout {
         
 	}
 	
-	
-	// TBD - Inheritance
-	@LogMethod(level=LogLevel.DEBUG) 
-	public void processEdgesForInheritance(Diagram diagram) {
-		
-		Predicate<Node> notInheritance = n -> !CoreAPIGraph.isPatternInheritance(n);
-
-	    List<Node> coreGraph = layoutGraph.extractCoreGraph().stream().filter(notInheritance).collect(toList());
-
-	    List<Edge> edges = coreGraph.stream()
-	    						.map(n -> CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),n))
-	    						.flatMap(Set::stream)
-	    						.filter(e -> e.isInheritance())
-	    						.collect(toList());
-	    		
-    	List<Node> superClasses = edges.stream().map(Edge::getRelated).sorted().distinct().collect(toList());
-    	
-		Predicate<Node> notSuperclass = n -> !superClasses.contains(n);
-
-		Predicate<Node> notOneOf = n -> !layoutGraph.apiGraph.getGraph().edgeSet().stream().filter(Edge::isOneOf).anyMatch(edge -> edge.getRelated().equals(n));
-
-        List<Node> nodesToProcess = getNodesToProcess(Utils.copyList(coreGraph), this.resourceNode)
-        								.stream()
-        								.filter(notSuperclass)
-        								.filter(notOneOf)
-        								.distinct()
-        								.collect(toList());
-                  
-        if(nodesToProcess.size()>1) {
-	        diagram.addComment(new Comment("layout of the inheritance: " + coreGraph));
-	     
-	        Set<Node> allSuperclassSubGraphNodes = nodesToProcess.stream()
-	        										.map(n -> CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),n))
-	        										.flatMap(Set::stream)
-													.filter(e -> e.isInheritance())
-													.map(Edge::getRelated)
-									            	.map(n -> CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(),n))
-									            	.flatMap(Set::stream)
-									            	.collect(toSet());
-
-	    	LOG.debug("processEdgesForInheritance:: allSuperclassSubGraphNodes={}", allSuperclassSubGraphNodes );
-
-	        nodesToProcess.forEach(node -> {
-	        	
-	            List<Node> nodeSuperclasses = CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),node).stream()
-												.filter(e -> e.isInheritance())
-												.map(Edge::getRelated)
-												.sorted()
-												.distinct()
-												.collect(toList());
-	            
-		    	LOG.debug("processEdgesForInheritance:: node={} superclasses={}", node, nodeSuperclasses );
-		    	
-	        });
-	        
-	        
-	    	LOG.debug("processEdgesForInheritance:: nodesToProcess={} ", nodesToProcess );
-	    	LOG.debug("processEdgesForInheritance:: edges={}", edges);
-	    	LOG.debug("processEdgesForInheritance:: superClasses={}", superClasses);
-	    	
-	        Iterator<Node> iter = nodesToProcess.iterator();
-	        while(iter.hasNext()) {
-	        	                    	            		                	
-	        	Node node = iter.next();
-	        	
-	        	Set<Node> subGraphOfNode = CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(),node);
-	        	
-	        	boolean nodeConnectedToSuperclasses = subGraphOfNode.stream().anyMatch(n ->allSuperclassSubGraphNodes.contains(n));
-	        	
-		    	LOG.debug("processEdgesForInheritance:: node={} connected={} usbGraphOfNode={}", node, nodeConnectedToSuperclasses, subGraphOfNode );
-		    	LOG.debug("processEdgesForInheritance:: node={} allSuperclassSubGraphNodes={}", node, allSuperclassSubGraphNodes );
-
-	        	if(nodeConnectedToSuperclasses && !layoutGraph.isPlaced(node)) {
-	            	LOG.debug("processEdgesForInheritance:: processing node={} nodeConnectedToSuperclasses={}", node, nodeConnectedToSuperclasses);
-	            	processEdgesForInheritanceHelper(diagram,node);
-	        	}
-	            
-	        }	
-	        
-	        diagram.addComment(new Comment("finished layout of the inheritance"));
-
-        }
-        
-	}
-	
-	
-	private void processEdgesForInheritanceHelper(Diagram diagram, Node node) {
-		Optional<Node> noparent = Optional.empty();
-		Set<Node> processed = new HashSet<>();
-		processEdgesForInheritanceHelper(diagram, noparent, node, processed);
-	}
-
-	private void processEdgesForInheritanceHelper(Diagram diagram, Optional<Node> parent, Node node, Set<Node> processed) {
-	    Set<Node> superClasses = CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),node).stream()
-	    						.filter(e -> e.isInheritance())
-	    						.map(e -> this.apiGraph.getGraph().getEdgeTarget(e))
-	    						.filter(n -> !processed.contains(n))
-	    						.filter(n -> !CoreAPIGraph.isLeafNodeOrOnlyEnums(this.apiGraph.getGraph(),n))
-	    						.sorted()
-	    						.distinct()
-	    						.collect(toSet());
-
-	    if(processed.contains(node)) return;
-	    
-	    if(!superClasses.isEmpty()) {
-	    	
-	    	processed.add(node);
-			ClassEntity cls = diagram.getClassEntityForResource(node.getName());
-
-	    	if(parent.isPresent()) {
-				String rule = "#Inheritance rule - place BELOW parent";
-				Place defaultDirection = Place.BELOW;
-				Optional<Node> following = Optional.empty();
-				
-				LOG.debug("processEdgesForInheritanceHelper: place BELOW parent: node={} candidate={}", node, parent);
-	
-				layoutGraph.placeEdgesBetween(cls, parent.get(), node, following, defaultDirection, rule);
-	    	}
-	    											
-	    	LOG.debug("processEdgesForInheritanceHelper:: node={} superClasses={}", node, superClasses);
-
-	    	LOG.debug("processEdgesForInheritanceHelper:: node={} isPlaced={}", node, !this.layoutGraph.isPlaced(node, Place.ABOVE));
-	    	LOG.debug("processEdgesForInheritanceHelper:: node={} isPlacedAt={}", node, !this.layoutGraph.isPlacedAt(node, Place.ABOVE));
-
-	    	for(Node candidate : superClasses) {
-	    		
-	    		boolean isCandidateLeaf = CoreAPIGraph.isLeafNode(this.apiGraph.getGraph(),candidate);
-	    		boolean hasEnumsOnly = CoreAPIGraph.getOutboundNeighbours(this.apiGraph.getGraph(),candidate).stream().allMatch(Node::isEnumNode);
-
-	    		boolean singleInbound = CoreAPIGraph.getInboundNeighbours(this.apiGraph.getGraph(),candidate).size()<=1;
-	    		boolean placedBelow = !this.layoutGraph.isPlacedAt(node, Place.ABOVE);
-	    		boolean simpleNode = isCandidateLeaf || hasEnumsOnly;
-	    		
-	    		if(simpleNode && singleInbound && !placedBelow) {
-	    			// ignore if leaf
-	    			
-					LOG.debug("processEdgesForInheritanceHelper: isCandidateLeaf: node={} candidate={}", node, candidate);
-
-					String rule = "#Inheritance rule - above";
-					Place defaultDirection = Place.ABOVE;
-					Optional<Node> following = Optional.empty();
-					
-					LOG.debug("processEdgesForInheritanceHelper: place ABOVE: node={} candidate={}", node, candidate);
-		
-					//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
-					layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
-					
-	    		} else if(simpleNode && placedBelow) {
-	    			// ignore if leaf
-	    			
-					LOG.debug("processEdgesForInheritanceHelper: isCandidateLeaf: node={} candidate={}", node, candidate);
-
-					String rule = "#Inheritance rule - below";
-					Place defaultDirection = Place.BELOW;
-					Optional<Node> following = Optional.empty();
-					
-					LOG.debug("processEdgesForInheritanceHelper: place BELOW: node={} candidate={}", node, candidate);
-		
-					//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
-					layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
-					
-	    		} else {
-					String rule = "#Inheritance rule - right";
-					Place defaultDirection = Place.RIGHT;
-					Optional<Node> following = Optional.empty();
-
-					LOG.debug("processEdgesForInheritanceHelper: place RIGHT: node={} candidate={}", node, candidate);
-		
-					// layoutGraph.placeEdges(cls,  node,  candidate, func, rule);	
-					layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
-
-	    		}
-	    	}
-	    	
-			List<Node> neighbours = apiGraph.getOutboundNeighbours(node).stream().sorted().collect(toList());
-			
-			neighbours.forEach(neighbour -> {
-				Optional<Node> parentNode = Optional.of(node);
-				
-				boolean isLinearPath = this.apiGraph.isLinearPath(neighbour,Integer.MAX_VALUE);
-				if(!isLinearPath) 
-					processEdgesForInheritanceHelper(diagram,parentNode,neighbour, processed);
-				
-			});
-	    	
-	    }	    
-		
-	}
-
-	@LogMethod(level=LogLevel.DEBUG) 
-	private List<Node> shiftCircle(List<Node> circle) {
-		Predicate<Node> isPlaced = layoutGraph::isPlaced;		
-		boolean someAlreadyPlaced = circle.stream().anyMatch(isPlaced);
-
-		if(someAlreadyPlaced) {
-			Node front = circle.get(0);
-			while(!layoutGraph.isPlaced(front)) {
-				circle.remove(0);
-				circle.add(front);
-				front = circle.get(0);
-			}
-		}
-		return circle;
-	}
-
-
-	@LogMethod(level=LogLevel.DEBUG) 
-	private List<Node> rotateCircle(List<Node> circle, Node pivot) {
-		if(!circle.isEmpty() && circle.contains(pivot)) {
-			
-	    	LOG.debug("rotateCircle:: #0 pivot={} circle={}", pivot, circle);
-
-			while(!circle.get(0).equals(pivot)) {
-				Node first = circle.get(0);
-				circle.remove(0);
-				if(!circle.get(circle.size()-1).equals(first)) circle.add(first);
-			}
-			circle.add(pivot);
-			if(layoutGraph.isPlaced(circle.get(1))) {
-				Collections.reverse(circle);
-			}
-        	LOG.debug("rotateCircle:: #1 pivot={} circle={}", pivot, circle);
-
-		}
-		return circle;
-	}
-	
-	@LogMethod(level=LogLevel.DEBUG) 
-	private List<Node> getNodesToProcess(List<Node> list, Node pivot) {
-		list.remove(pivot);
-		list.add(0,pivot);
-		return list;
-	}
-
-
-	@LogMethod(level=LogLevel.DEBUG) 
-	void processEdgesForRemainingNodes(Diagram diagram) {
-
-		List<Node> nodes = apiGraph.getGraphNodes().stream()
-				.filter(node -> !node.equals(resourceNode))
-				.sorted(Comparator.comparing(this::subGraphSize))
-				.collect(toList());
-		
-		
-		nodes.add(0, resourceNode );
-		
-		for(Node node: nodes ) {
-			if(LOG.isDebugEnabled()) LOG.debug("generateDiagram:: adding edges with node={}", node);
-			generateUMLEdges(diagram, node, apiGraph.getGraphNodeList());
-		}		
-	}
-
-	@LogMethod(level=LogLevel.DEBUG)
-	private int subGraphSize(Node node) {
-		return CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(), node).size();
-	}
-	
-	@LogMethod(level=LogLevel.DEBUG)
-	private Optional<Node> getNextNode(List<Node> nodesToProcess) {
-		  return nodesToProcess.stream()
-					.sorted(Comparator.comparing(n -> - this.layoutGraph.getInboundEdgesFromPlaced(n) ))
-					.findFirst();		  		
-	}
-	
-	@LogMethod(level=LogLevel.DEBUG)
-	private boolean presentEnumForNode(String resource, String node) {
-		return !Utils.isBaseType(resource, node);
-	}
-
-	@LogMethod(level=LogLevel.DEBUG)
-	EnumEntity generateForEnum(ClassEntity cls, EnumNode enumNode) {
-		EnumEntity enode = null;
-		String type = enumNode.getType();
-		
-		if(!cls.isEnumProcessed(type)) {
-			enode = new EnumEntity(enumNode);
-			cls.addEnum(enode);
-		}
-		
-		return enode;
-	}
-
 	@LogMethod(level=LogLevel.DEBUG)
 	boolean generateUMLEdges(Diagram diagram, Node node, List<Node> includeNodes) {
 		return generateUMLEdges(diagram, node, includeNodes, new HashMap<>() );
@@ -534,7 +252,7 @@ public class Layout {
 
 		layoutUnbalancedAboveBelow(node,cls,includeNodes, edgeAnalyzer);
 
-		layoutBelowLeftRight(node,cls,includeNodes, edgeAnalyzer);
+		// layoutBelowLeftRight(node,cls,includeNodes, edgeAnalyzer);
 
 		layoutBelowRemaining(node,cls,includeNodes, edgeAnalyzer);
 
@@ -543,6 +261,335 @@ public class Layout {
 		return cls.getEdgeCount()>edgeCount;
 
 	}
+
+	
+	// TBD - Inheritance
+	@LogMethod(level=LogLevel.DEBUG) 
+	private void processEdgesForInheritance(Diagram diagram) {
+		
+		Predicate<Node> notInheritance = n -> !CoreAPIGraph.isPatternInheritance(n);
+
+	    List<Node> coreGraph = layoutGraph.extractCoreGraph().stream().filter(notInheritance).collect(toList());
+
+	    List<Edge> edges = coreGraph.stream()
+	    						.map(n -> CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),n))
+	    						.flatMap(Set::stream)
+	    						.filter(e -> e.isInheritance())
+	    						.collect(toList());
+	    		
+    	List<Node> superClasses = edges.stream().map(Edge::getRelated).sorted().distinct().collect(toList());
+    	
+		Predicate<Node> notSuperclass = n -> !superClasses.contains(n);
+
+		Predicate<Node> notOneOf         = n -> !layoutGraph.apiGraph.getGraph().edgeSet().stream().filter(Edge::isOneOf).anyMatch(edge -> edge.getRelated().equals(n));
+		Predicate<Node> notDiscriminator = n -> !layoutGraph.apiGraph.getGraph().edgeSet().stream().filter(Edge::isDiscriminator).anyMatch(edge -> edge.getRelated().equals(n));
+
+        List<Node> nodesToProcess = getNodesToProcess(Utils.copyList(coreGraph), this.resourceNode)
+        								.stream()
+        								.filter(notSuperclass)
+        								.filter(notOneOf)
+        								.filter(notDiscriminator)
+        								.distinct()
+        								.collect(toList());
+                  
+    	LOG.debug("processEdgesForInheritance:: nodesToProcess={}", nodesToProcess );
+
+    	if(nodesToProcess.isEmpty()) return;
+    	
+    	// TBD - or > 1 ?
+    	
+        diagram.addComment(new Comment("layout of the inheritance: " + coreGraph));
+     
+        Set<Node> allSuperclassSubGraphNodes = nodesToProcess.stream()
+        										.map(n -> CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),n))
+        										.flatMap(Set::stream)
+												.filter(Edge::isInheritance)
+												.map(Edge::getRelated)
+								            	.map(n -> CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(),n))
+								            	.flatMap(Set::stream)
+								            	.collect(toSet());
+
+    	LOG.debug("processEdgesForInheritance:: allSuperclassSubGraphNodes={}", allSuperclassSubGraphNodes );
+
+        nodesToProcess.forEach(node -> {
+        	
+            List<Node> nodeSuperclasses = CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),node).stream()
+											.filter(e -> e.isInheritance())
+											.map(Edge::getRelated)
+											.sorted()
+											.distinct()
+											.collect(toList());
+            
+	    	LOG.debug("processEdgesForInheritance:: node={} superclasses={}", node, nodeSuperclasses );
+	    	
+        });
+        
+        
+    	LOG.debug("processEdgesForInheritance:: nodesToProcess={} ", nodesToProcess );
+    	LOG.debug("processEdgesForInheritance:: edges={}", edges);
+    	LOG.debug("processEdgesForInheritance:: superClasses={}", superClasses);
+    	
+        Iterator<Node> iter = nodesToProcess.iterator();
+        while(iter.hasNext()) {
+        	                    	            		                	
+        	Node node = iter.next();
+        	
+        	Set<Node> subGraphOfNode = CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(),node);
+        	
+        	boolean nodeConnectedToSuperclasses = subGraphOfNode.stream().anyMatch(n ->allSuperclassSubGraphNodes.contains(n));
+        	
+	    	LOG.debug("processEdgesForInheritance:: node={} connected={} usbGraphOfNode={}", node, nodeConnectedToSuperclasses, subGraphOfNode );
+	    	LOG.debug("processEdgesForInheritance:: node={} allSuperclassSubGraphNodes={}", node, allSuperclassSubGraphNodes );
+
+        	if(nodeConnectedToSuperclasses && !layoutGraph.isPlaced(node)) {
+            	LOG.debug("processEdgesForInheritance:: processing node={} nodeConnectedToSuperclasses={}", node, nodeConnectedToSuperclasses);
+            	processEdgesForInheritanceHelper(diagram,node);
+        	}
+            
+        }	
+        
+        diagram.addComment(new Comment("finished layout of the inheritance"));
+        
+	}
+	
+	
+	private void processEdgesForInheritanceHelper(Diagram diagram, Node node) {
+		Optional<Node> noparent = Optional.empty();
+		Set<Node> processed = new HashSet<>();
+		processEdgesForInheritanceHelper(diagram, noparent, node, processed);
+	}
+
+	private void processEdgesForInheritanceHelper(Diagram diagram, Optional<Node> parent, Node node, Set<Node> processed) {
+	    Set<Node> subClasses = CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),node).stream()
+	    						.filter(e -> e.isInheritance())
+	    						.map(e -> this.apiGraph.getGraph().getEdgeTarget(e))
+	    						.filter(n -> !processed.contains(n))
+	    						// .filter(n -> !CoreAPIGraph.isLeafNodeOrOnlyEnums(this.apiGraph.getGraph(),n))
+	    						.sorted()
+	    						.distinct()
+	    						.collect(toSet());
+
+	    if(processed.contains(node)) return;
+
+    	LOG.debug("processEdgesForInheritanceHelper:: node={} subClasses={}", node, subClasses );
+
+	    if(subClasses.isEmpty()) {
+	    	return;
+	    }
+	    
+	    	
+    	processed.add(node);
+		ClassEntity cls = diagram.getClassEntityForResource(node.getName());
+
+    	if(parent.isPresent()) {
+			String rule = "#Inheritance rule - place BELOW parent";
+			Place defaultDirection = Place.BELOW;
+			Optional<Node> following = Optional.empty();
+			
+			LOG.debug("processEdgesForInheritanceHelper: place BELOW parent: node={} candidate={}", node, parent);
+
+			layoutGraph.placeEdgesBetween(cls, parent.get(), node, following, defaultDirection, rule);
+			
+			// return;
+    	}
+    											
+    	LOG.debug("processEdgesForInheritanceHelper:: node={} subClasses={}", node, subClasses);
+
+    	LOG.debug("processEdgesForInheritanceHelper:: node={} isPlaced={}", node, !this.layoutGraph.isPlaced(node, Place.ABOVE));
+    	LOG.debug("processEdgesForInheritanceHelper:: node={} isPlacedAt={}", node, !this.layoutGraph.isPlacedAt(node, Place.ABOVE));
+
+    	for(Node candidate : subClasses) {
+    		
+    		boolean isCandidateLeaf = CoreAPIGraph.isLeafNode(this.apiGraph.getGraph(),candidate);
+    		boolean hasEnumsOnly = CoreAPIGraph.getOutboundNeighbours(this.apiGraph.getGraph(),candidate).stream().allMatch(Node::isEnumNode);
+
+    		boolean singleInbound = CoreAPIGraph.getInboundNeighbours(this.apiGraph.getGraph(),candidate).size()<=1;
+    		boolean placedBelow = this.layoutGraph.isPlacedAt(node, Place.BELOW) && this.layoutGraph.isPlaced(node);
+    		boolean simpleNode = isCandidateLeaf || hasEnumsOnly;
+    		
+	    	LOG.debug("processEdgesForInheritanceHelper:: node={} candidate={} singleInbound={} placedBelow={} simpleNode={}", node, candidate, singleInbound, placedBelow, simpleNode);
+
+	    	if(node.getName().endsWith("RefOrValue")) { // TBD - should be generalized
+	    		
+	    		String rule = "#Inheritance rule - RefOrValue";
+				Place defaultDirection = Place.BELOW;
+				Optional<Node> following = Optional.empty();
+				
+				LOG.debug("processEdgesForInheritanceHelper: place BELOW: node={} candidate={}", node, candidate);
+	
+				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				
+	    	} else if(simpleNode && singleInbound && !placedBelow) {
+    			// ignore if leaf
+    			
+				LOG.debug("processEdgesForInheritanceHelper: isCandidateLeaf: node={} candidate={}", node, candidate);
+
+				String rule = "#Inheritance rule - above";
+				Place defaultDirection = Place.ABOVE;
+				Optional<Node> following = Optional.empty();
+				
+				LOG.debug("processEdgesForInheritanceHelper: place ABOVE: node={} candidate={}", node, candidate);
+	
+				//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
+				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				
+    		} else if(simpleNode && (placedBelow || !this.layoutGraph.isPlaced(node))) {
+    			// ignore if leaf
+    			
+				LOG.debug("processEdgesForInheritanceHelper: isCandidateLeaf: node={} candidate={}", node, candidate);
+
+				String rule = "#Inheritance rule - below";
+				Place defaultDirection = Place.BELOW;
+				Optional<Node> following = Optional.empty();
+				
+				LOG.debug("processEdgesForInheritanceHelper: place BELOW: node={} candidate={}", node, candidate);
+	
+				//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
+				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				
+    		} else {
+				String rule = "#Inheritance rule - right";
+				Place defaultDirection = Place.RIGHT;
+				Optional<Node> following = Optional.empty();
+
+				LOG.debug("processEdgesForInheritanceHelper: place RIGHT: node={} candidate={}", node, candidate);
+	
+				// layoutGraph.placeEdges(cls,  node,  candidate, func, rule);	
+				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+
+    		}
+    	}
+    	
+		List<Node> neighbours = apiGraph.getOutboundNeighbours(node).stream().sorted().collect(toList());
+		
+		neighbours.forEach(neighbour -> {
+			Optional<Node> parentNode = Optional.of(node);
+			
+			boolean isLinearPath = this.apiGraph.isLinearPath(neighbour,Integer.MAX_VALUE);
+			if(!isLinearPath) 
+				processEdgesForInheritanceHelper(diagram,parentNode,neighbour, processed);
+			
+		});
+    		    
+		
+	}
+
+	@LogMethod(level=LogLevel.DEBUG) 
+	private List<Node> shiftCircle(List<Node> circle) {
+		Predicate<Node> isPlaced = layoutGraph::isPlaced;		
+		boolean someAlreadyPlaced = circle.stream().anyMatch(isPlaced);
+
+		if(someAlreadyPlaced) {
+			Node front = circle.get(0);
+			while(!layoutGraph.isPlaced(front)) {
+				circle.remove(0);
+				circle.add(front);
+				front = circle.get(0);
+			}
+		}
+		return circle;
+	}
+
+
+	@LogMethod(level=LogLevel.DEBUG) 
+	private List<Node> rotateCircle(List<Node> circle, Node pivot) {
+		if(!circle.isEmpty() && circle.contains(pivot)) {
+			
+	    	LOG.debug("rotateCircle:: #0 pivot={} circle={}", pivot, circle);
+
+			while(!circle.get(0).equals(pivot)) {
+				Node first = circle.get(0);
+				circle.remove(0);
+				if(!circle.get(circle.size()-1).equals(first)) circle.add(first);
+			}
+			circle.add(pivot);
+			if(layoutGraph.isPlaced(circle.get(1))) {
+				Collections.reverse(circle);
+			}
+        	LOG.debug("rotateCircle:: #1 pivot={} circle={}", pivot, circle);
+
+		}
+		return circle;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG) 
+	private List<Node> getNodesToProcess(List<Node> list, Node pivot) {
+		list.remove(pivot);
+		list.add(0,pivot);
+		return list;
+	}
+
+
+	@LogMethod(level=LogLevel.DEBUG) 
+	void processEdgesForRemainingNodes(Diagram diagram) {
+
+		List<Node> nodes = apiGraph.getGraphNodes().stream()
+				.filter(node -> !node.equals(resourceNode))
+				.sorted(Comparator.comparing(this::subGraphSize))
+				.collect(toList());
+		
+		
+		LOG.debug("processEdgesForRemainingNodes: #1 nodes={}", nodes);
+		
+		Predicate<Node> isNotPlaced = n -> !this.layoutGraph.isPlaced(n);
+		
+		List<Node> placedNodes = nodes.stream().filter(this.layoutGraph::isPlaced).collect(toList());
+		List<Node> nonPlacedNodes = nodes.stream().filter(isNotPlaced).collect(toList());
+
+		nodes = placedNodes;
+		nodes.addAll(nonPlacedNodes);
+		
+		nodes.add(0, resourceNode );
+		
+		LOG.debug("processEdgesForRemainingNodes: #2 nodes={}", nodes);
+
+		for(Node node: nodes ) {
+			if(LOG.isDebugEnabled()) LOG.debug("generateDiagram:: adding edges with node={}", node);
+			generateUMLEdges(diagram, node, apiGraph.getGraphNodeList());
+		}		
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	private int subGraphSize(Node node) {
+		return CoreAPIGraph.getSubGraphNodes(this.apiGraph.getGraph(), node).size();
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private Optional<Node> getNextNode(List<Node> nodesToProcess) {
+		List<Node> sorted = nodesToProcess.stream()
+					.sorted(Comparator.comparing(n -> - this.layoutGraph.getInboundEdgesFromPlaced(n) ))
+					.collect(toList());
+		
+		Optional<Node> found = sorted.stream()
+							.filter(this.layoutGraph::isPlaced)
+							.findFirst();	
+		
+		if(!found.isPresent()) {
+			found = sorted.stream().findFirst();
+		}
+		
+		return found;
+		
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private boolean presentEnumForNode(String resource, String node) {
+		return !Utils.isBaseType(resource, node);
+	}
+
+	@LogMethod(level=LogLevel.DEBUG)
+	EnumEntity generateForEnum(ClassEntity cls, EnumNode enumNode) {
+		EnumEntity enode = null;
+		String type = enumNode.getType();
+		
+		if(!cls.isEnumProcessed(type)) {
+			enode = new EnumEntity(enumNode);
+			cls.addEnum(enode);
+		}
+		
+		return enode;
+	}
+
 
 	private void layoutCircleNodes(Node node, ClassEntity cls, Map<Integer, List<List<Node>> > circleMap) {
 		
@@ -608,10 +655,27 @@ public class Layout {
 		
 		if(circle.isEmpty()) return;
 			
-		Predicate<Node> isNotPlaced = n -> !layoutGraph.isPlaced(n) || n.equals(node) || true;
+		Predicate<Node> isNotPlaced = n -> !layoutGraph.isPlaced(n) || n.equals(node) || true; // TBD last true
 		
 		List<Node> effectiveCircle = circle.stream().filter(isNotPlaced).collect(toList());
 
+		if(!layoutGraph.isPlaced(node) && !effectiveCircle.get(0).equals(node) && effectiveCircle.contains(node)) {
+			if(effectiveCircle.get(0).equals(effectiveCircle.get(effectiveCircle.size()-1))) {
+				effectiveCircle.remove(effectiveCircle.size()-1);
+			}
+			
+			Node first = effectiveCircle.get(0);
+			while(!first.equals(node)) {
+				effectiveCircle.remove(0);
+				effectiveCircle.add(first);
+				first = effectiveCircle.get(0);
+			}
+			
+			if(first.equals(node)) effectiveCircle.add(first);
+			
+			
+		}
+		
 		LOG.debug("layoutCircleNodes:: node={} circle={}", node, circle);
 		LOG.debug("layoutCircleNodes:: node={} effectiveCircle={}", node, effectiveCircle);
 
@@ -830,36 +894,81 @@ public class Layout {
 		Node fromNode = node;
 		Optional<Node> optFromNode = circleIterator.current();
 		if(optFromNode.isPresent()) {
+			
+			LOG.debug("placeCircleSegment: node={} fromNode={} optFromNode={}",  node, fromNode, optFromNode);
+
 			fromNode = optFromNode.get();
 		}
 		
-		Place previousDirection=Place.EMPTY;
+		Place previousDirection = Place.EMPTY;
+		Place lastDirection     = Place.EMPTY;
 		
+		LOG.debug("placeCircleSegment: node={} circle={} defaultDirections={}",  node, circle, defaultDirections);
+
 		boolean firstHidden=true;
 		boolean previousOverride=false;
+	
 		while(circleIterator.hasNext()) {
 			
 			Node toNode = circleIterator.next();
 			
+			toNode.addCircleElements(circle);
+			
+			LOG.debug("#0 placeCircleSegment: toNode={} ",  toNode);
+
 			Optional<Node> followingNode = followingNode(circleIterator);
 			
 			String detailedRule = rule + " - place " + defaultDirections;
 
-			if(directionIterator.hasNext()) defaultDirection=directionIterator.next();
-			
-			if(previousOverride && previousDirection==Place.BELOW && (defaultDirection==Place.RIGHT || defaultDirection==Place.LEFT)) {
-				defaultDirection=Place.ABOVE;
+			if(directionIterator.hasNext()) {
+				defaultDirection=directionIterator.next();
+				LOG.debug("#1 placeCircleSegment: defaultDirection next={} ",  defaultDirection);
+				lastDirection=defaultDirection;
+				
+			} else {
+				// defaultDirection=defaultDirections.get(defaultDirections.size()-1);
+				defaultDirection=lastDirection;
+				LOG.debug("placeCircleSegment: defaultDirection missing next={} ",  defaultDirection);
+
 			}
 			
-			LOG.debug("placeCircleSegment: from={} to={} defaultDirection={} previous={}",  fromNode, toNode, defaultDirection, previousDirection);
-			
-			detailedRule = detailedRule + " - default to " + defaultDirection;
-			
-			Place placedDirection = layoutGraph.placeEdgesBetween(cls, fromNode, toNode, followingNode, defaultDirection, detailedRule);
-			
-			LOG.debug("placeCircleSegment: to={} pos={} placedDirection={}", toNode, layoutGraph.getPosition(toNode), placedDirection);
+			Place activeDirection=defaultDirection;
+			Place forceDirection=defaultDirection;
 
-			if((placedDirection==Place.RIGHT || placedDirection==Place.LEFT) && placedDirection!=previousDirection) {
+			if(previousOverride && previousDirection==Place.BELOW && (defaultDirection==Place.RIGHT || defaultDirection==Place.LEFT)) {
+				forceDirection=defaultDirection;
+				activeDirection=Place.ABOVE;
+			}			
+			
+			Place placedDirection;
+			previousOverride=false;
+			if(isRecursive(fromNode) && activeDirection==Place.RIGHT) {
+				// forceDirection=activeDirection;
+				activeDirection=Place.BELOW;
+				detailedRule = detailedRule + " - BELOW as recursive from";
+				placedDirection = layoutGraph.placeEdgesBetween(cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
+				previousOverride=true;
+				
+				LOG.debug("placeCircleSegment: #1 from={} to={} activeDirection={} previous={} placedDirection={}",  fromNode, toNode, activeDirection, previousDirection, placedDirection);
+
+			
+			} else {		
+				detailedRule = detailedRule + " - default to " + defaultDirection;
+				placedDirection = layoutGraph.placeEdgesBetween(cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
+				
+				LOG.debug("placeCircleSegment: from={} to={} activeDirection={} previous={} placedDirection={}",  fromNode, toNode, activeDirection, previousDirection, placedDirection);
+
+				
+			}
+						
+			if(false && forceDirection!=Place.EMPTY) {
+				
+				LOG.debug("placeCircleSegment: FORCE to={} fromNode={}", toNode, fromNode);
+
+				detailedRule = rule + " force direction after override";
+				layoutGraph.forceLeftRight(cls, forceDirection, fromNode, toNode);
+
+			} else if((placedDirection==Place.RIGHT || placedDirection==Place.LEFT) && placedDirection!=previousDirection) {
 								
 				Node from = fromNode;
 				List<Node> toRightLeft = layoutGraph.getPlacedNodes().stream()
@@ -880,26 +989,20 @@ public class Layout {
 					LOG.debug("placeCircleSegment: toRightLeft={}", toRightLeft.stream().map(this::xPositionOfNode).collect(toList()));
 
 					Node pivot = toRightLeft.get(0);
-					layoutGraph.forceLeftRight(cls, placedDirection, pivot, fromNode);
+					if(layoutGraph.isAtSameLevel(pivot, fromNode)) {
+						layoutGraph.forceLeftRight(cls, placedDirection, pivot, fromNode);
 
-					// cls.addEdge(new HiddenEdge(pivot,placedDirection,fromNode,rule));
+						// cls.addEdge(new HiddenEdge(pivot,placedDirection,fromNode,rule));
 		
-					LOG.debug("placeCircleSegment: fromNode={} toNode={} leftRight={} pivot={}", fromNode, toNode, toRightLeft, pivot);
-
+						LOG.debug("placeCircleSegment: fromNode={} toNode={} leftRight={} pivot={}", fromNode, toNode, toRightLeft, pivot);
+					}
+					
 				}
 		
 			}
 
-			previousDirection=placedDirection;	
-			previousOverride=(placedDirection!=defaultDirection);
-			
-//			if(placedDirection!=previousDirection || previousDirection!=Place.EMPTY) {
-//				layoutGraph.addHiddenIfGroup(cls,fromNode,toNode,placedDirection,detailedRule);
-//				previousDirection=placedDirection;
-//			}
-//			if(!fromNode.equals(node) && !toNode.equals(node)) {
-//				layoutGraph.placeEdgesBetween(cls, node, toNode, Place.BELOW, detailedRule);
-//			}
+			previousDirection = placedDirection;
+			previousOverride = previousOverride || (placedDirection!=defaultDirection);
 			
 			fromNode = toNode;
 		}
@@ -1000,6 +1103,11 @@ public class Layout {
 		return recursive;
 	}
 
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private boolean isRecursive(Node node) {	
+		return apiGraph.getOutboundNeighbours(node).contains(node);
+	}
 
 	@LogMethod(level=LogLevel.DEBUG)
 	private void processManualOverride(ClassEntity cls, Node node) {
@@ -1117,7 +1225,7 @@ public class Layout {
 
 		Node nodeBelow = layoutGraph.getNearestBelow(node);
 		
-		LOG.debug("layoutBelowLeftRight:: node={} nodeBelow={}", node, nodeBelow);
+		Out.debug("layoutBelowLeftRight:: node={} nodeBelow={}", node, nodeBelow);
 
 		if(nodeBelow==null) {
 			Place direction = Place.BELOW;
@@ -1128,8 +1236,8 @@ public class Layout {
 					.sorted(Comparator.comparing(this::outboundSpan))
 					.collect(toSet());
 
-			LOG.debug("layoutBelowLeftRight:: sorted candidates for below: node={} candidates={}", node, candidates);
-			LOG.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
+			Out.debug("layoutBelowLeftRight:: sorted candidates for below: node={} candidates={}", node, candidates);
+			Out.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
 			
 			String rule = "General below rule";
 
@@ -1138,16 +1246,18 @@ public class Layout {
 		    return;
 		}
 
-		Set<Node> inboundToNodeBelow = apiGraph.getInboundNeighbours(nodeBelow);
+		Set<Node> connectedToNodeBelow = apiGraph.getNeighbours(nodeBelow);
 
-		List<Node> nodesBelow = inboundToNodeBelow.stream()
-				.map(apiGraph::getOutboundNeighbours)
+		List<Node> nodesBelow = connectedToNodeBelow.stream()
+				.map(apiGraph::getNeighbours)
 				.flatMap(Set::stream)
 				.filter(n -> layoutGraph.isPlaced(n) && layoutGraph.isPlacedAt(n,Place.BELOW))
-				.filter(node::equals)
+				//.filter(node::equals)
 				.distinct()
 				.collect(toList());
 
+		nodesBelow.add(nodeBelow);
+			
 		Optional<Node> someNodePlacedRightOrLeft = nodesBelow.stream()
 				.filter(n -> layoutGraph.isPlacedAt(n,Place.LEFT) || layoutGraph.isPlacedAt(n,Place.RIGHT) )
 				.findFirst();
@@ -1159,14 +1269,14 @@ public class Layout {
 				.anyMatch(n -> n.getX() > layoutGraph.getPosition(node).getX());
 
 		boolean someEdgeFromLeft = nodesBelow.stream()
-				.map(apiGraph::getInboundNeighbours)
+				.map(apiGraph::getNeighbours)
 				.flatMap(Set::stream)
 				.map(layoutGraph::getPosition)
 				.anyMatch(n -> n.getX() <= layoutGraph.getPosition(node).getX());
 
-		LOG.debug("layoutBelowLeftRight:: node={} place below: nodesBelow={}", node, nodesBelow);
-		LOG.debug("layoutBelowLeftRight:: node={} place below: someNodePlacedRightOrLeft={}", node, someNodePlacedRightOrLeft);
-		LOG.debug("layoutBelowLeftRight:: node={} place below: someEdgeFromLeft={} someEdgeFromRight={}", node, someEdgeFromLeft, someEdgeFromRight);
+		Out.debug("layoutBelowLeftRight:: node={} place below: nodesBelow={}", node, nodesBelow);
+		Out.debug("layoutBelowLeftRight:: node={} place below: someNodePlacedRightOrLeft={}", node, someNodePlacedRightOrLeft);
+		Out.debug("layoutBelowLeftRight:: node={} place below: someEdgeFromLeft={} someEdgeFromRight={}", node, someEdgeFromLeft, someEdgeFromRight);
 
 
 		List<Place> directions = new LinkedList<>();
@@ -1181,58 +1291,74 @@ public class Layout {
 			}
 		}
 
-		LOG.debug("layoutBelowLeftRight:: node={} directions={}", node, directions);
+		Out.debug("layoutBelowLeftRight:: node={} directions={}", node, directions);
 
-		if(someNodePlacedRightOrLeft.isPresent()) {
-			for( Place direction : directions ) {
-				// Set<Node> placedInDirection = Utils.intersection(layoutGraph.getPlacedAt(node,Place.getMapping().get(direction)),inboundToNodeBelow);
-				Set<Node> placedInDirection = Utils.intersection(layoutGraph.getPlacedAt(node,direction),inboundToNodeBelow);
-
-				placedInDirection.remove(node);
-
+		for( Place direction : directions ) {
+			
+			Predicate<Node> notAlreadyPlaced = n -> !layoutGraph.isPlaced(n);
+			
+			Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.BELOW).stream().filter(notAlreadyPlaced).collect(toSet());
+			if(!candidates.isEmpty()) {
 				String rule = "General below rule - direction to " + direction;
+			
+				Out.debug("layoutBelowLeftRight:: node={} candidates={}", node, candidates);
 
-				LOG.debug("layoutBelowLeftRight:: processing rule: node={} rule={} placedInDirection={} inboundToNodeBelow={}", 
-						node, rule, placedInDirection, inboundToNodeBelow);
-
-				boolean placeToDirection = placedInDirection.isEmpty();
-				if(placeToDirection) {
-					// check placement on the left side, find the ones that have been placed to right of others
-					List<Node> pivot = layoutGraph.getAllRightLeftOf(nodeBelow, direction);
-
-					Optional<Node> directConnection = pivot.stream().filter(n -> layoutGraph.hasDirectConnection(nodeBelow,n)).findFirst();
-					if(!directConnection.isPresent()) {
-						pivot.add(nodeBelow);
-						Node pivotNode = layoutGraph.getEdgeBoundary(pivot,direction);
-
-						Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.BELOW);
-						if(!candidates.isEmpty()) {
-							LOG.debug("layoutBelowLeftRight:: pivotNode={} candidates for below: {}", pivotNode, candidates);
-
-							candidates = candidates.stream()
-									.filter(includeNodes::contains)
-									.sorted(Comparator.comparing(n -> apiGraph.getOutboundNeighbours(n).size()))
-									.collect(toSet());
-
-							LOG.debug("layoutBelowLeftRight:: pivotNode={} sorted candidates for below: {}", pivotNode, candidates);
-							LOG.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
-
-							layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, pivotNode, direction, edgeAnalyzer);
-
-						}
-					}
-				} else {
-					
-					Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.BELOW);
-					candidates = candidates.stream()
-							.filter(includeNodes::contains)
-							.sorted(Comparator.comparing(n -> apiGraph.getOutboundNeighbours(n).size()))
-							.collect(toSet());
-
-					layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, nodeBelow, direction, edgeAnalyzer);
-				}
+				layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, nodeBelow, direction, edgeAnalyzer);
 			}
-		}		
+			
+		}
+		
+//		if(someNodePlacedRightOrLeft.isPresent()) {
+//			for( Place direction : directions ) {
+//				// Set<Node> placedInDirection = Utils.intersection(layoutGraph.getPlacedAt(node,Place.getMapping().get(direction)),inboundToNodeBelow);
+//				Set<Node> placedInDirection = Utils.intersection(layoutGraph.getPlacedAt(node,direction),connectedToNodeBelow);
+//
+//				placedInDirection.remove(node);
+//
+//				String rule = "General below rule - direction to " + direction;
+//
+//				Out.debug("layoutBelowLeftRight:: processing rule: node={} rule={} placedInDirection={} connectedToNodeBelow={}", 
+//						node, rule, placedInDirection, connectedToNodeBelow);
+//
+//				boolean placeToDirection = placedInDirection.isEmpty();
+//				if(placeToDirection) {
+//					// check placement on the left side, find the ones that have been placed to right of others
+//					List<Node> pivot = layoutGraph.getAllRightLeftOf(nodeBelow, direction);
+//
+//					Optional<Node> directConnection = pivot.stream().filter(n -> layoutGraph.hasDirectConnection(nodeBelow,n)).findFirst();
+//					if(!directConnection.isPresent()) {
+//						pivot.add(nodeBelow);
+//						Node pivotNode = layoutGraph.getEdgeBoundary(pivot,direction);
+//
+//						Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.BELOW);
+//						if(!candidates.isEmpty()) {
+//							LOG.debug("layoutBelowLeftRight:: pivotNode={} candidates for below: {}", pivotNode, candidates);
+//
+//							candidates = candidates.stream()
+//									.filter(includeNodes::contains)
+//									.sorted(Comparator.comparing(n -> apiGraph.getOutboundNeighbours(n).size()))
+//									.collect(toSet());
+//
+//							LOG.debug("layoutBelowLeftRight:: pivotNode={} sorted candidates for below: {}", pivotNode, candidates);
+//							LOG.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
+//
+//							layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, pivotNode, direction, edgeAnalyzer);
+//
+//						}
+//					}
+//				} else {
+//					
+//					Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.BELOW);
+//					candidates = candidates.stream()
+//							.filter(includeNodes::contains)
+//							.sorted(Comparator.comparing(n -> apiGraph.getOutboundNeighbours(n).size()))
+//							.collect(toSet());
+//
+//					layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, nodeBelow, direction, edgeAnalyzer);
+//				}
+//			}
+//		}	
+		
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -1356,21 +1482,21 @@ public class Layout {
 				
 		boolean remainingAboveCandidates = neighbours.stream().anyMatch(isPlaced.negate());
 					
-		LOG.debug("layoutUnbalancedAboveBelow: check for unbalance above / below - remainingAboveCandidates={}", remainingAboveCandidates);
+		LOG.debug("layoutUnbalancedAboveBelow: node={} check for unbalance above / below - remainingAboveCandidates={}", node, remainingAboveCandidates);
 		
 		int unbalance = layoutGraph.currentlyPlacedAtLevel(node,+1)-layoutGraph.currentlyPlacedAtLevel(node,-1);
 		
 		LOG.debug("layoutUnbalancedAboveBelow:: node={} unbalance={} above={} below={}", node, unbalance, 
-				layoutGraph.currentlyPlacedAtLevel(node,+1), layoutGraph.currentlyPlacedAtLevel(node,-1));
+				  layoutGraph.currentlyPlacedAtLevel(node,+1), layoutGraph.currentlyPlacedAtLevel(node,-1));
 
 		if(remainingAboveCandidates) return;
 		if(apiGraph.getNeighbours(node).size()<4) return;
 
-		if(unbalance>=0) {
+		if(false && unbalance>=0) { // TBD
 						
 			neighbours = edgeAnalyzer.getEdgesForPosition(Place.BELOW).stream().collect(toList());
 			if(!neighbours.isEmpty()) {
-				int subset = Math.min(neighbours.size(),unbalance);
+				int subset = Math.min(neighbours.size(),Math.abs(unbalance));
 				Set<Node> candidates = neighbours.subList(0, subset).stream()
 						.filter(includeNodes::contains)
 						.collect(toSet());
@@ -1489,14 +1615,20 @@ public class Layout {
 		
 		LOG.debug("layoutRight: node={} check for right - candidates={}", node, edgeAnalyzer.getEdgesForPosition(Place.RIGHT));
 
-		Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.RIGHT).stream()
-				.filter(includeNodes::contains)
-				.collect(toSet());
+//		Set<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.RIGHT).stream()
+//				.filter(includeNodes::contains)
+//				.collect(toSet());
 
+		List<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.RIGHT).stream()
+				.filter(includeNodes::contains)
+				.sorted(Comparator.comparing(n -> apiGraph.getNeighbours(n).size()))
+				.collect(toList());
+		
 		LOG.debug("layoutRight: node={} check for right - candidates={}", node, candidates);
 
-		if(!candidates.isEmpty()) {
-			candidates = Collections.singleton(candidates.iterator().next());  
+		if(!candidates.isEmpty()) {			
+			Set<Node> candidate = Collections.singleton(candidates.get(0));
+
 			String rule = "General right rule";
 			Place func = Place.RIGHT;
 
@@ -1505,7 +1637,7 @@ public class Layout {
 			LOG.debug("layoutRight: placeRIGHT: node={} isPlaced RIGHT = {}", node, layoutGraph.getPlacedAt(node,Place.RIGHT));
 			LOG.debug("layoutRight: placeRIGHT: node={} isPlaced LEFT = {}", node, layoutGraph.getPlacedAt(node,Place.LEFT));
 
-			layoutGraph.placeEdgesToNeighbours(cls, node, candidates, rule, func);
+			layoutGraph.placeEdgesToNeighbours(cls, node, candidate, rule, func);
 
 		}
 	

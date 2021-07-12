@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 
 import no.paneon.api.graph.Node;
 import no.paneon.api.logging.LogMethod;
+import no.paneon.api.utils.Out;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 
@@ -234,14 +235,14 @@ public class Positions {
 			posTo.moveTo(posFrom);
 			posTo.move(direction);		
 			
-			LOG.debug("position: from={} to={} direction={}", from, to, direction);
+			LOG.debug("position: from={} to={} direction={} posTo={} posFrom={}", from, to, direction, posTo, posFrom);
 
 		} else if(!posFrom.isPositioned()) {
 			
 			posFrom.moveTo(posTo);
 			posFrom.move(direction.reverse());		
 			
-			LOG.debug("position: from={} to={} direction={}", from, to, direction);
+			LOG.debug("position: from={} to={} direction={} posTo={} posFrom={}", from, to, direction, posTo, posFrom);
 
 		} else {
 			// posTo.moveTo(posFrom);
