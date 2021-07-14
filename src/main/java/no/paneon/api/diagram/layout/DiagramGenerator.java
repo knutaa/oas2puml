@@ -122,16 +122,17 @@ public class DiagramGenerator
 				APIGraph apiGraph;
 				
 				if(pivot.contentEquals(resource)) {
-					apiGraph = new APIGraph(coreGraph, currentGraph, pivot);
+					apiGraph = new APIGraph(coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
 					label = resource;
 				} else {
-					apiGraph = new APISubGraph(coreGraph, currentGraph, pivot);
+					apiGraph = new APISubGraph(coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
 					label = resource + "_" + pivot;
 				} 
 				
-				if(!args.keepTechnicalEdges) { 
-					apiGraph.removeTechnicalAllOfs();
-				}
+//				if(!args.keepTechnicalEdges) { 
+//					apiGraph.removeTechnicalAllOfs();
+//					apiGraph.removeRedundantRelationships();
+//				}
 				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph);
 							
@@ -250,6 +251,8 @@ public class DiagramGenerator
   	    List<String> placement = layout.getNodePlacement();
   	    placement.forEach(line -> diagram.addComment(new Comment(line)));
   	    
+	    LOG.debug("generateDiagramForGraph: resource={} DONE", resource);
+
   	    return diagram;
   	    
 	}

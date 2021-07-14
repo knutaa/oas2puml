@@ -80,6 +80,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.LEFT, Arrays.asList(
 				
+				EdgeAnalyzer::notIfPivotSpecialCase,
+
 				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
 
 				EdgeAnalyzer::notIfFromRightAndSingleTo,
@@ -169,6 +171,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.RIGHT, Arrays.asList( 
 				
+				EdgeAnalyzer::notIfPivotSpecialCase,
+
 				EdgeAnalyzer::notIfToSingleAndLargeSubgraph,
 
 				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
@@ -307,6 +311,8 @@ public class EdgeAnalyzer {
 				
 				// EdgeAnalyzer::notIfBelowAndFewOutbounds,
 				
+				EdgeAnalyzer::notIfPivotSpecialCase,
+
 				EdgeAnalyzer::notFromCircleNodeAndBelowInCircle,
 
 				EdgeAnalyzer::notIfFromRightAndSingleTo,
@@ -447,6 +453,19 @@ public class EdgeAnalyzer {
 			res=false;
 		
 		}
+		
+		return rejectIfTrue( res );
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfPivotSpecialCase(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+				
+		boolean res = from.equals(apiGraph.getResourceNode());
+		
+		res = res && apiGraph.getOutboundEdges(from).size()<=2;
+		
+		if(res) LOG.debug("notIfPivotSpecialCase: from={} to={} res={}",  from, to, res);
 		
 		return rejectIfTrue( res );
 

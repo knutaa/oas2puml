@@ -36,6 +36,8 @@ public class ClassEntity extends Entity {
 		
 	String description = "";
 	
+	String inline = "";
+	
 	Set<String> inheritance;
 	Set<String> discriminatorMapping;
 
@@ -172,6 +174,9 @@ public class ClassEntity extends Entity {
 	    	nullableProperties.forEach(label -> res.append(INDENT + label + " is nullable" + NEWLINE));
 	    }
 
+	    if(!inline.isEmpty()) {
+	    	res.append( INDENT + inline + NEWLINE);
+	    }
 	    
 	    res.append( "}" + NEWLINE );
 	    
@@ -195,6 +200,7 @@ public class ClassEntity extends Entity {
 		}
 	}
 
+	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static String formatInheritance(String s) {
 		return "\\n" + s + " ";
@@ -247,6 +253,10 @@ public class ClassEntity extends Entity {
 	@LogMethod(level=LogLevel.DEBUG)
 	public Collection<ClassProperty> getProperties() {
 		return classProperties;
+	}
+
+	public void setInline(String inline) {
+		this.inline=inline;
 	}
 	
 }

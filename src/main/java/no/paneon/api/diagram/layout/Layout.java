@@ -76,6 +76,10 @@ public class Layout {
 		
 		ClassEntity cls = new ClassEntity(node.getName(), properties, stereoType, node.getDescription(), node.getInheritance(), node.getDiscriminatorMapping());
 
+		if(!node.getInline().isEmpty()) {
+			cls.setInline(node.getInline());
+		}
+		
 		for(EnumNode enumNode : apiGraph.getEnumsForNode(node) ) {
 			generateForEnum(cls, enumNode);
 		}
@@ -560,6 +564,8 @@ public class Layout {
 					.sorted(Comparator.comparing(n -> - this.layoutGraph.getInboundEdgesFromPlaced(n) ))
 					.collect(toList());
 		
+		LOG.debug("getNextNode: sorted={}", sorted);
+
 		Optional<Node> found = sorted.stream()
 							.filter(this.layoutGraph::isPlaced)
 							.findFirst();	
@@ -640,6 +646,9 @@ public class Layout {
 		}
 
 		sortedCircles.forEach(circle -> {
+
+			// circle.retainAll( this.layoutGraph.layoutGraph.vertexSet() );
+			circle.retainAll( apiGraph.getGraph().vertexSet() );
 
 			LOG.debug("layoutCircleNodes: #1 node={} circle={}", node, circle);
 
@@ -1225,7 +1234,7 @@ public class Layout {
 
 		Node nodeBelow = layoutGraph.getNearestBelow(node);
 		
-		Out.debug("layoutBelowLeftRight:: node={} nodeBelow={}", node, nodeBelow);
+		LOG.debug("layoutBelowLeftRight:: node={} nodeBelow={}", node, nodeBelow);
 
 		if(nodeBelow==null) {
 			Place direction = Place.BELOW;
@@ -1236,8 +1245,8 @@ public class Layout {
 					.sorted(Comparator.comparing(this::outboundSpan))
 					.collect(toSet());
 
-			Out.debug("layoutBelowLeftRight:: sorted candidates for below: node={} candidates={}", node, candidates);
-			Out.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
+			LOG.debug("layoutBelowLeftRight:: sorted candidates for below: node={} candidates={}", node, candidates);
+			LOG.debug("layoutBelowLeftRight:: placing below to {} all remaining below:: {}", direction, candidates);
 			
 			String rule = "General below rule";
 
@@ -1274,9 +1283,9 @@ public class Layout {
 				.map(layoutGraph::getPosition)
 				.anyMatch(n -> n.getX() <= layoutGraph.getPosition(node).getX());
 
-		Out.debug("layoutBelowLeftRight:: node={} place below: nodesBelow={}", node, nodesBelow);
-		Out.debug("layoutBelowLeftRight:: node={} place below: someNodePlacedRightOrLeft={}", node, someNodePlacedRightOrLeft);
-		Out.debug("layoutBelowLeftRight:: node={} place below: someEdgeFromLeft={} someEdgeFromRight={}", node, someEdgeFromLeft, someEdgeFromRight);
+		LOG.debug("layoutBelowLeftRight:: node={} place below: nodesBelow={}", node, nodesBelow);
+		LOG.debug("layoutBelowLeftRight:: node={} place below: someNodePlacedRightOrLeft={}", node, someNodePlacedRightOrLeft);
+		LOG.debug("layoutBelowLeftRight:: node={} place below: someEdgeFromLeft={} someEdgeFromRight={}", node, someEdgeFromLeft, someEdgeFromRight);
 
 
 		List<Place> directions = new LinkedList<>();
@@ -1291,7 +1300,7 @@ public class Layout {
 			}
 		}
 
-		Out.debug("layoutBelowLeftRight:: node={} directions={}", node, directions);
+		LOG.debug("layoutBelowLeftRight:: node={} directions={}", node, directions);
 
 		for( Place direction : directions ) {
 			
@@ -1301,7 +1310,7 @@ public class Layout {
 			if(!candidates.isEmpty()) {
 				String rule = "General below rule - direction to " + direction;
 			
-				Out.debug("layoutBelowLeftRight:: node={} candidates={}", node, candidates);
+				LOG.debug("layoutBelowLeftRight:: node={} candidates={}", node, candidates);
 
 				layoutGraph.placeEdgesToNeighboursBelow(cls, node, candidates, rule, nodeBelow, direction, edgeAnalyzer);
 			}
@@ -1317,7 +1326,7 @@ public class Layout {
 //
 //				String rule = "General below rule - direction to " + direction;
 //
-//				Out.debug("layoutBelowLeftRight:: processing rule: node={} rule={} placedInDirection={} connectedToNodeBelow={}", 
+//				LOG.debug("layoutBelowLeftRight:: processing rule: node={} rule={} placedInDirection={} connectedToNodeBelow={}", 
 //						node, rule, placedInDirection, connectedToNodeBelow);
 //
 //				boolean placeToDirection = placedInDirection.isEmpty();

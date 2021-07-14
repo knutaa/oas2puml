@@ -316,8 +316,10 @@ public class LayoutGraph extends Positions {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	public boolean isPlaced(Node node) {				
-		return !layoutGraph.outgoingEdgesOf(node).isEmpty() || !layoutGraph.incomingEdgesOf(node).isEmpty(); 			        
+	public boolean isPlaced(Node node) {	
+		boolean contained = layoutGraph.vertexSet().contains(node);
+		
+		return contained && (!layoutGraph.outgoingEdgesOf(node).isEmpty() || !layoutGraph.incomingEdgesOf(node).isEmpty() ); 			        
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
