@@ -108,7 +108,7 @@ public class DiagramGenerator
 
 			for(String pivot : subGraphs ) {
 				
-				LOG.debug("generateDiagramGraph: pivot={}", pivot);
+				LOG.debug("generateDiagramGraph: resource={} subGraph={}", resource, pivot);
 
 				Optional<Graph<Node,Edge>> pivotGraph = graphs.getSubGraph(resource, pivot);
 			
@@ -117,7 +117,11 @@ public class DiagramGenerator
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
+								
+				boolean onlyDiscriminatorEdges = onlyDiscriminatorEdgesToPivot(currentGraph, resource, pivot);
 				
+				if(onlyDiscriminatorEdges) continue;
+
 				String label; 
 				APIGraph apiGraph;
 				
@@ -148,6 +152,30 @@ public class DiagramGenerator
 
 	}
 	        	
+	private boolean onlyDiscriminatorEdgesToPivot(Graph<Node, Edge> graph, String resource, String pivot) {
+		boolean res = false;
+		
+		if(!pivot.contentEquals(resource)) {
+			Optional<Node> optPivotNode = CoreAPIGraph.getNodeByName(graph,  pivot);
+			if(optPivotNode.isPresent()) {
+				Node pivotNode = optPivotNode.get();
+	
+				if(!graph.outgoingEdgesOf(pivotNode).isEmpty()) {
+					res = graph.outgoingEdgesOf(pivotNode).stream().allMatch(Edge::isInheritance);
+				}
+				res = res && graph.incomingEdgesOf(pivotNode).stream().allMatch(Edge::isDiscriminator);
+				
+				LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} edges={}", pivot, graph.incomingEdgesOf(pivotNode));
+				
+			}
+		}
+		
+		LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} res={}", pivot, res);
+
+		return res;
+	}
+
+
 	@LogMethod(level=LogLevel.DEBUG)
 	private Map<String,String> writeDiagramsForSubResources(Diagram diagram, String resource, Set<String> generated) {
 		Map<String,String> config = new HashMap<>();
@@ -504,10 +532,10 @@ public class DiagramGenerator
 			return;
 	    }
 	    			
-		Out.println(header1 + ": " + resource);
-		Out.println(header2 + ": " + graphComplexity);
+	    Out.println(header1 + ": " + resource);
+	    Out.println(header2 + ": " + graphComplexity);
 		
-		Out.println("... Node complexity contributions: ");
+	    Out.println("... Node complexity contributions: ");
 		complexity.entrySet().stream().forEach(entry -> {
 			Out.println("... ... " + entry.getKey() + " : " + entry.getValue());
 		});

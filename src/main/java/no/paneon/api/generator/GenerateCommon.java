@@ -16,14 +16,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-
-//import org.apache.logging.log4j.core.LoggerContext;
-//import org.apache.logging.log4j.core.config.Configuration;
-//import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class GenerateCommon {
 	
@@ -36,10 +31,16 @@ public class GenerateCommon {
 		
 		List<String> dirs = getDirectories(common.workingDirectory);
 				
-		APIModel.loadAPI(common.openAPIFile, Utils.getFile(common.openAPIFile, dirs));
+		try {
+			APIModel.loadAPI(common.openAPIFile, Utils.getFile(common.openAPIFile, dirs));
 		
-		Timestamp.timeStamp("api specification loaded");
-
+			Timestamp.timeStamp("api specification loaded");
+			
+		} catch(Exception ex) {
+			Out.println("... unable to read API specification from " + common.openAPIFile);
+			System.exit(0);
+		}
+		
 		Out.silentMode = common.silentMode;
 		
 		setLogLevel( Utils.getLevelmap().get(common.debug));
@@ -54,6 +55,10 @@ public class GenerateCommon {
     		APIModel.setSwaggerSource(common.openAPIFile);
     	}
  
+    	if(common.rulesFile!=null) {
+    		Config.setRulesSource(common.rulesFile);
+    	}
+    	
     	if(common.conformanceSourceOnly) {
     		Config.setBoolean("conformanceSourceOnly",true);
     	}
@@ -74,26 +79,15 @@ public class GenerateCommon {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	protected void setLogLevel(org.apache.logging.log4j.Level level) {
-//		LoggerContext context = (LoggerContext) LogManager.getContext(false);
-//		Configuration config = context.get
-//		LoggerConfig rootConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-//		rootConfig.setLevel(level);	
-//		
+	protected void setLogLevel(org.apache.logging.log4j.Level level) {		
 		
 		LoggerContext context = (LoggerContext) LogManager.getContext(false);
 		Configuration config = context.getConfiguration();
 		LoggerConfig rootConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
 		rootConfig.setLevel(level);
 
-//		LogManager.getRootLogger().atLevel(level);
-
-//		Configurator.setAllLevels(LogManager.getRootLogger().getName(), level);
-
 		AspectLogger.setGlobalDebugLevel(level);
-		
-		
-		
+			
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
