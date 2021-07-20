@@ -80,6 +80,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.LEFT, Arrays.asList(
 				
+				EdgeAnalyzer::ifMultipleToInheritance,
+
 				EdgeAnalyzer::notIfPivotSpecialCase,
 
 				EdgeAnalyzer::notIfFromBelowAndTwoOthers,
@@ -171,6 +173,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.RIGHT, Arrays.asList( 
 				
+				EdgeAnalyzer::ifMultipleToInheritance,
+
 				EdgeAnalyzer::notIfPivotSpecialCase,
 
 				EdgeAnalyzer::notIfToSingleAndLargeSubgraph,
@@ -310,6 +314,8 @@ public class EdgeAnalyzer {
 		edgeConditions.put(Place.ABOVE, Arrays.asList(
 				
 				// EdgeAnalyzer::notIfBelowAndFewOutbounds,
+				
+				EdgeAnalyzer::ifMultipleToInheritance,
 				
 				EdgeAnalyzer::notIfPivotSpecialCase,
 
@@ -631,18 +637,24 @@ public class EdgeAnalyzer {
 		
 		Optional<Node> nextNode = Optional.of(to);
 		
+		Set<Node> seen = new HashSet<>();
 		while(linearPath && nextNode.isPresent()) {
 			length++;
 			Node next = nextNode.get();
 			nextNode = Optional.empty();
 
+			seen.add(next);
+			
 			Set<Edge> outbound = apiGraph.getOutboundEdges(next);
 			Set<Edge> inbound = apiGraph.getInboundEdges(next);
 			linearPath = (inbound.size()==1 && outbound.size()<=1);
 			if(linearPath) {
 				Optional<Edge> edge = Utils.getFirstElement(outbound);
 				if(!edge.isEmpty()) {
-					nextNode = Optional.of( apiGraph.getGraph().getEdgeTarget(edge.get()) );
+					next = apiGraph.getGraph().getEdgeTarget(edge.get());
+					if(!seen.contains(next)) {
+						nextNode = Optional.of( next );
+					}
 				}
 			}
 			LOG.debug("notIfLongPath: from={} to={} nextNode={}", from, to, nextNode);
@@ -843,10 +855,22 @@ public class EdgeAnalyzer {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private static Status notIfInheritance(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
-		boolean isInheritance = apiGraph.getGraph().outgoingEdgesOf(to).stream().anyMatch(Edge::isInheritance);
+	private static Status ifMultipleToInheritance(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+		Set<Edge> isInheritance = apiGraph.getGraph().incomingEdgesOf(to).stream().filter(Edge::isInheritance).collect(toSet());
 				
-		Status res = rejectIfFalse(!isInheritance);
+		boolean res = isInheritance.size()>2;
+		
+		if(res) LOG.debug("ifMultipleToInheritance:: to={} from={} res={}", to, from, res);
+
+		return acceptWhenTrue(res);
+
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfInheritance(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+		Set<Edge> isInheritance = apiGraph.getGraph().outgoingEdgesOf(to).stream().filter(Edge::isInheritance).collect(toSet());
+				
+		Status res = rejectIfFalse(isInheritance.size()>0);
 		
 		LOG.debug("notIfInheritance:: to={} from={} res={}", to, from, res);
 

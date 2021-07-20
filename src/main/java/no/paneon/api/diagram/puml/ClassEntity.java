@@ -19,6 +19,7 @@ import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.logging.LogMethod;
+import no.paneon.api.graph.Node;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 public class ClassEntity extends Entity {
@@ -40,9 +41,24 @@ public class ClassEntity extends Entity {
 	
 	Set<String> inheritance;
 	Set<String> discriminatorMapping;
+	Set<String> inheritedDiscriminatorMapping;
 
 	static final String BLANK_LINE = INDENT + "{field}//" + BLANK + "//" + NEWLINE;
 
+	private ClassEntity(String name) {
+		super();
+		this.name = name;
+		this.classProperties = new LinkedList<>();
+		this.enumEntities = new LinkedList<>();
+		this.edges = new LinkedList<>();
+		
+		this.inheritance = new HashSet<>();
+		this.discriminatorMapping = new HashSet<>();
+		this.inheritedDiscriminatorMapping = new HashSet<>();
+
+        LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
+        
+	}
 	private ClassEntity(String name, String stereotype) {
 		super();
 		this.name = name;
@@ -56,6 +72,17 @@ public class ClassEntity extends Entity {
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
+	}
+	
+	public ClassEntity(Node node) {
+		this(node.getName());
+
+		this.description = node.getDescription();
+		this.inheritance.addAll(node.getInheritance());
+		
+		this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
+		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
+
 	}
 	
 	public ClassEntity(String name, List<ClassProperty> properties, String stereotype, String description, Set<String> inheritance, Set<String> mapping) {
@@ -72,6 +99,10 @@ public class ClassEntity extends Entity {
 		if(c!=null) classProperties.add(c);
 	}
 	
+	public void addProperties(List<ClassProperty> properties) {
+		classProperties.addAll(properties);
+	}
+
 	@LogMethod(level=LogLevel.DEBUG)
 	public boolean addEnum(EnumEntity c) {
 		if(c!=null) {
@@ -158,10 +189,18 @@ public class ClassEntity extends Entity {
 
 	    }
 	    
-	    if(!this.discriminatorMapping.isEmpty()) {
+	    
+	    if(!this.discriminatorMapping.isEmpty() || !this.inheritedDiscriminatorMapping.isEmpty()) {
+	    	
 	    	res.append( INDENT + "--" + NEWLINE);
 	    	res.append( INDENT + "mapping (discriminator):" + NEWLINE);
+
 	    	this.discriminatorMapping.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
+
+	    	String format = Config.getString("inheritedFormatting");
+			String finalFormat = format.isEmpty() ? "%s" : format;
+						
+	    	this.inheritedDiscriminatorMapping.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
 	    }
 	    
 	    List<String> nullableProperties = classProperties.stream()

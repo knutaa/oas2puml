@@ -91,10 +91,12 @@ public class DiagramGenerator
 		
 		LOG.debug("generateDiagramGraph: coreGraph={}", coreGraph.getCompleteGraph().edgeSet());
 
-		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph);
+		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
-		LOG.debug("generateDiagramGraph: coreGraph resources={}", this.resources);
+		LOG.debug("## generateDiagramGraph: coreGraph resources={}", this.resources);
+
+		Set<String> seenResources = new HashSet<>();	
 
 		for(String resource : this.resources) {
 			
@@ -104,14 +106,18 @@ public class DiagramGenerator
 				
 			List<String> subGraphs = graphs.getSubGraphLabels(resource);
 								
-			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, subGraphs);
-
+			LOG.debug("## generateDiagramGraph: ## resource={} subGraphs={}", resource, subGraphs);
+			
 			for(String pivot : subGraphs ) {
+				
+				if(seenResources.contains(pivot)) continue;
 				
 				LOG.debug("generateDiagramGraph: resource={} subGraph={}", resource, pivot);
 
 				Optional<Graph<Node,Edge>> pivotGraph = graphs.getSubGraph(resource, pivot);
 			
+				LOG.debug("generateDiagramGraph: pivot={} pivotGraph={}", pivot, pivotGraph);
+
 				if(!pivotGraph.isPresent()) continue;
 								
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
@@ -120,6 +126,8 @@ public class DiagramGenerator
 								
 				boolean onlyDiscriminatorEdges = onlyDiscriminatorEdgesToPivot(currentGraph, resource, pivot);
 				
+				LOG.debug("generateDiagramGraph: pivot={} onlyDiscriminatorEdges={}", pivot, onlyDiscriminatorEdges);
+
 				if(onlyDiscriminatorEdges) continue;
 
 				String label; 
@@ -133,25 +141,22 @@ public class DiagramGenerator
 					label = resource + "_" + pivot;
 				} 
 				
-//				if(!args.keepTechnicalEdges) { 
-//					apiGraph.removeTechnicalAllOfs();
-//					apiGraph.removeRedundantRelationships();
-//				}
-				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph);
 							
 				Out.printAlways("... generated diagram for " + pivot);
 
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );
-				
+					
+				seenResources.add(pivot);
 			}
 			
 		}
-		
+				
 		return diagramConfig;
 
 	}
 	        	
+
 	private boolean onlyDiscriminatorEdgesToPivot(Graph<Node, Edge> graph, String resource, String pivot) {
 		boolean res = false;
 		
@@ -260,18 +265,20 @@ public class DiagramGenerator
 	            	    	    
 	    List<Node> nodesInGraph = getSequenceOfNodesInGraph(apiGraph,resource);
 	    	   
-	    LOG.debug("generateDiagramForGraph: resource={} nodes={}",  resource, nodesInGraph);
+	    LOG.debug("## generateDiagramForGraph: resource={} nodes={}",  resource, nodesInGraph);
 	    
 	    for(Node node: nodesInGraph ) {
 	    	if(!(node instanceof EnumNode)) {
 	    		layout.generateUMLClasses(diagram, node, resource);
 	    	}
 	    }
-	            	    	
-	    // layout.processEdgesForInheritance(diagram);
+	            
+	    LOG.debug("generateDiagramForGraph: resource={} processed classes",  resource);
 
 	    layout.processEdgesForCoreGraph(diagram);
         
+	    LOG.debug("generateDiagramForGraph: resource={} processed core graph",  resource);
+
 	    layout.processEdgesForRemainingNodes(diagram);
 	    	               
 	    addOrphanEnums(apiGraph,diagram);
@@ -546,6 +553,8 @@ public class DiagramGenerator
 	private List<String> getResources(Args.Common args) {
        	List<String> resourcesFromAPI = APIModel.getResources();
  	       
+    	LOG.debug("getResources:: {}", resourcesFromAPI);
+
     	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
     	
     	resourcesFromRules.removeAll(resourcesFromAPI);

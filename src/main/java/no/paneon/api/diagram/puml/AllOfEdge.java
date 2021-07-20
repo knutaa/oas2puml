@@ -39,6 +39,11 @@ public class AllOfEdge extends HiddenEdge {
 	@Override
 	@LogMethod(level=LogLevel.DEBUG)
 	public String toString() {
+		return toString(from,to);
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String toString(Node from, Node to) {
 		String res="";
 		
 		String label = edge!=null ? edge.relation : "";
@@ -52,15 +57,12 @@ public class AllOfEdge extends HiddenEdge {
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:
-			// res = to + " <|-left- " + from + " : " + strLabel + '\n';
-			res = from + " <|-left- " + to + " : " + strLabel + '\n';
-
+			res = from + " -left-|> " + to + " : " + strLabel + '\n';
 		    break;
 			
 		case RIGHT:
 		case FORCERIGHT:
 		    res = from + " -right-|> " + to + " : " + strLabel + '\n';
-
 		    break;
 			
 		case ABOVE:

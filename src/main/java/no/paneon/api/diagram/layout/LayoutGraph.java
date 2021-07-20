@@ -25,6 +25,7 @@ import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import no.paneon.api.diagram.puml.AllOfEdge;
+import no.paneon.api.diagram.puml.AllOfReverseEdge;
 import no.paneon.api.diagram.puml.ClassEntity;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
@@ -36,6 +37,7 @@ import no.paneon.api.diagram.puml.ForcedHiddenEdge;
 import no.paneon.api.diagram.puml.HiddenEdge;
 import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.AllOf;
+import no.paneon.api.graph.AllOfReverse;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Discriminator;
 import no.paneon.api.graph.Edge;
@@ -240,6 +242,26 @@ public class LayoutGraph extends Positions {
 		return res;
 	}
 	
+	@LogMethod(level=LogLevel.DEBUG)
+	public boolean placeReverseEdges(ClassEntity cls, Node from, Node to, Place direction, String rule) {
+		boolean res=false;
+		
+		if(apiGraph.getNeighbours(to).contains(from)) {
+   
+    		List<Edge> edges = apiGraph.getEdges(to, from).stream()
+    			.filter(edge -> !isEdgePlaced(edge))
+    			.filter(edge -> !edge.isEnumEdge())
+    			.collect(toList());
+    		
+    		for(Edge edge : edges) {
+    			boolean d = placeEdgeHelper(cls, direction, to, edge, rule);
+    			res = res || d;
+    		}
+    		
+    	}
+
+		return res;
+	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private boolean isEdgePlaced(Edge edge) {
@@ -259,7 +281,9 @@ public class LayoutGraph extends Positions {
 	    
 	    LOG.debug("placeEdgeHelper: from={} to={} direction={} edge={} rule={}", from, to, direction, edge.getClass(), rule);
 	    
-	    if(edge instanceof AllOf) {
+	    if(edge instanceof AllOfReverse) {
+	    	cls.addEdge(new AllOfReverseEdge(direction,edge, rule));
+	    } else if(edge instanceof AllOf) {
 	    	cls.addEdge(new AllOfEdge(direction,edge, rule));
 	    } else if(edge instanceof Discriminator) {
 	    	cls.addEdge(new DiscriminatorEdge(direction,edge, rule));
@@ -658,13 +682,15 @@ public class LayoutGraph extends Positions {
 	    	
 			if(isPositionedAbove(nodeA, nodeB)) { 
 	    		rule="P01-1";
-	    		func = funcBelowAboveLong;
-	    		// func = funcAboveBelowLong;
+	    		// func = funcBelowAboveLong;
+	    		func = funcBelowAbove; // TBD ????
 	    		
 	    	} else if(isPositionedBelow(nodeA, nodeB)) {
 	    		rule="P01-2";
-	    		func = funcAboveBelowLong;
+	    		// func = funcAboveBelowLong;
 	    		// func = funcBelowAboveLong;
+	    		func = funcAboveBelow; // TBD ????
+
 
 	    	} else {
 	    		LOG.debug("ERROR: nodeA and nodeB in same position - should NOT happen");

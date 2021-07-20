@@ -55,7 +55,7 @@ public class OAS3Test  {
     	
 		argsDiagram.openAPIFile = file;
 		argsDiagram.targetDirectory = folder.toString();
-
+		
     	GenerateDiagram generator = new GenerateDiagram(argsDiagram);
     	
     	generator.execute();

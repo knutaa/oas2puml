@@ -74,7 +74,12 @@ public class Layout {
 		
 		List<ClassProperty> properties = getPropertiesForClass(node, apiGraph.getOutboundNeighbours(node), incomplete);
 		
-		ClassEntity cls = new ClassEntity(node.getName(), properties, stereoType, node.getDescription(), node.getInheritance(), node.getDiscriminatorMapping());
+		// ClassEntity cls = new ClassEntity(node.getName(), properties, stereoType, node.getDescription(), node.getInheritance(), node.getDiscriminatorMapping());
+
+		ClassEntity cls = new ClassEntity(node);
+		
+		cls.addProperties(properties);
+		cls.setStereoType(stereoType);
 
 		if(!node.getInline().isEmpty()) {
 			cls.setInline(node.getInline());
@@ -146,28 +151,41 @@ public class Layout {
 	public void processEdgesForCoreGraph(Diagram diagram) {
 	    List<Node> coreGraph = layoutGraph.extractCoreGraph();
 
+        diagram.addComment(new Comment("layout of the core: " + coreGraph));
+
+	    List<Node> processed = processEdgesForInheritance(diagram);
+
     	List<List<Node>> circles = apiGraph.getCircles();
     	
-        List<Node> nodesToProcess = getNodesToProcess(Utils.copyList(coreGraph), resourceNode);    
+        List<Node> nodesToProcess = getNodesToProcess(Utils.copyList(coreGraph), resourceNode).stream()
+        								.filter(n -> !processed.contains(n))
+        								.collect(toList());
                 
-        diagram.addComment(new Comment("layout of the core: " + coreGraph));
+        
+    	LOG.debug("generateDiagram:: processing node={}", nodesToProcess);
              
         Optional<Node> nextNode = getNextNode(nodesToProcess);
         while(nextNode.isPresent()) {
         	                    	            		                	
         	Node node = nextNode.get();
-        	
+        	        	
         	LOG.debug("generateDiagram:: processing node={}", node);
         	        	
         	Map<Integer, List<List<Node>> > circlesForNode = GraphAlgorithms.getCirclesForNode(circles, node);
         	        	
+        	LOG.debug("generateDiagram:: node={} circlesForNode={}", node, circlesForNode);
+
     		generateUMLEdges(diagram, node, coreGraph, circlesForNode);
+
+        	LOG.debug("generateDiagram:: processing edges for node={}", node);
 
     		circles = GraphAlgorithms.removeCirclesForNode(circles, node);	
 
     		nodesToProcess.remove(node);
     		nextNode = getNextNode(nodesToProcess);
             
+        	LOG.debug("generateDiagram:: processing nextNode={}", nextNode);
+
         }	
         
         diagram.addComment(new Comment("finished layout of the core"));
@@ -203,7 +221,9 @@ public class Layout {
 		LOG.debug("generateUMLEdges: node={} isComposite={}",  node, this.apiGraph.isCompositeNode(node));
 		LOG.debug("generateUMLEdges: node={} vertex={}",  node, this.apiGraph.getGraph().vertexSet());
 
-		apiGraph.getGraph().vertexSet().stream().forEach(vertex -> LOG.debug("generateUMLEdges: vertex={} isCompositeNode={}", vertex, apiGraph.isCompositeNode(vertex)));
+		for(Node vertex : apiGraph.getGraph().vertexSet()) {
+			LOG.debug("generateUMLEdges: vertex={} isCompositeNode={}", vertex, apiGraph.isCompositeNode(vertex));
+		}
 		
 		//
 		// first process based on configuration details (manual override)
@@ -212,16 +232,25 @@ public class Layout {
 		
 		// special case of recursive?
 		//
+		
+		LOG.debug("generateUMLEdges: node={} #000",  node);
+
 		boolean isRecursive = processRecursive(cls, node);
 		
 		//
 		// special case of 'Item' sub-resource - this we try to place to the right
 		//
+		
+		LOG.debug("generateUMLEdges: node={} #00",  node);
+
 		boolean hasItem = processItemSpecialCase(cls, node);
 		
 		// 
 		// start layout with identified circles
 		//
+		
+		LOG.debug("generateUMLEdges: node={} #0",  node);
+
 		layoutCircleNodes(node,cls,circles);
 
 		//
@@ -237,6 +266,8 @@ public class Layout {
 		// 8) below (looking left and right)
 		// 9) below any remaining
 		//		
+
+		LOG.debug("generateUMLEdges: node={} #1",  node);
 
 		layoutBetweenAlreadyPlacedNodes(node,cls,neighbours,includeNodes);
 
@@ -269,7 +300,7 @@ public class Layout {
 	
 	// TBD - Inheritance
 	@LogMethod(level=LogLevel.DEBUG) 
-	private void processEdgesForInheritance(Diagram diagram) {
+	private void processEdgesForInheritance_old(Diagram diagram) {
 		
 		Predicate<Node> notInheritance = n -> !CoreAPIGraph.isPatternInheritance(n);
 
@@ -354,6 +385,52 @@ public class Layout {
         
         diagram.addComment(new Comment("finished layout of the inheritance"));
         
+	}
+	
+	
+	// TBD - Inheritance
+	@LogMethod(level=LogLevel.DEBUG) 
+	public List<Node> processEdgesForInheritance(Diagram diagram) {
+		
+        List<Node> nodesToProcess = layoutGraph.apiGraph.getGraph().incomingEdgesOf(resourceNode).stream()
+        								.filter(Edge::isAllOf)
+        								.map( layoutGraph.apiGraph.getGraph()::getEdgeSource )
+        								.collect(toList());
+               
+        nodesToProcess = nodesToProcess.stream()
+        					.filter( n -> layoutGraph.apiGraph.getGraph().incomingEdgesOf(n).isEmpty() )
+        					.collect( toList() );
+        
+    	LOG.debug("processEdgesForInheritance:: nodesToProcess={}", nodesToProcess );
+
+    	List<Place> directions = new LinkedList<>();
+    	
+    	directions.add( Place.LEFT);
+    	directions.add( Place.RIGHT);
+    	
+    	for(int i=0; i<(nodesToProcess.size()-2)/2; i++) directions.add( Place.ABOVE);
+    	for(int i=0; i<nodesToProcess.size()/2; i++) directions.add( Place.BELOW);
+    	
+		ClassEntity cls = diagram.getClassEntityForResource(this.resourceNode.getName());
+
+		String rule = "inheritance rule";
+		
+		Iterator<Node> iterNode       = nodesToProcess.iterator();
+		Iterator<Place> iterDirection = directions.iterator();
+		
+		while(iterNode.hasNext()) {
+			Node node = iterNode.next();
+			Place direction = iterDirection.next();
+						
+			layoutGraph.placeReverseEdges(cls, resourceNode, node, direction, rule + " in direction " + direction);
+			
+	    	LOG.debug("processEdgesForInheritance:: placeing={}", node );
+
+		}
+
+		nodesToProcess.remove(resourceNode);
+		
+        return nodesToProcess;
 	}
 	
 	
@@ -668,7 +745,7 @@ public class Layout {
 		
 		List<Node> effectiveCircle = circle.stream().filter(isNotPlaced).collect(toList());
 
-		if(!layoutGraph.isPlaced(node) && !effectiveCircle.get(0).equals(node) && effectiveCircle.contains(node)) {
+		if(!effectiveCircle.get(0).equals(node) && effectiveCircle.contains(node)) {
 			if(effectiveCircle.get(0).equals(effectiveCircle.get(effectiveCircle.size()-1))) {
 				effectiveCircle.remove(effectiveCircle.size()-1);
 			}
@@ -682,8 +759,7 @@ public class Layout {
 			
 			if(first.equals(node)) effectiveCircle.add(first);
 			
-			
-		}
+		} 
 		
 		LOG.debug("layoutCircleNodes:: node={} circle={}", node, circle);
 		LOG.debug("layoutCircleNodes:: node={} effectiveCircle={}", node, effectiveCircle);
@@ -770,7 +846,7 @@ public class Layout {
 			defaultDirections = createCircleDirections(effectiveCircle, Arrays.asList(Place.RIGHT, Place.BELOW, Place.LEFT) );
 			rule = rule + " - free to RIGHT";
 
-		} else if(!layoutGraph.isPlacedAt(effectiveNode, Place.LEFT)) {
+		} else if(!layoutGraph.isPlacedAt(effectiveNode, Place.LEFT) ) {
 			defaultDirections = Arrays.asList(Place.LEFT, Place.BELOW, Place.RIGHT);
 			rule = rule + " - free to LEFT";
 			
@@ -1104,7 +1180,14 @@ public class Layout {
 		boolean recursive=false;
 		String rule = "Recursive (self-reference)";
 
-		if(apiGraph.getOutboundNeighbours(node).contains(node)) {
+		Predicate<Edge> isNotDiscriminator = e -> !e.isDiscriminator(); 
+		
+		Set<Node> neighbours = apiGraph.getOutboundEdges(node).stream()
+									.filter(isNotDiscriminator)
+									.map(this.apiGraph.getGraph()::getEdgeTarget)
+									.collect(toSet());
+		
+		if(neighbours.contains(node)) {
 			Set<Node> placeNodes = Collections.singleton(node);
 			recursive = layoutGraph.placeEdgesToNeighbours(cls, node, placeNodes, rule, Place.RIGHT);      	
 		}
