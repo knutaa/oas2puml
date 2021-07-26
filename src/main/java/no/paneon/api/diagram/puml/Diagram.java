@@ -149,6 +149,7 @@ public class Diagram extends Entity {
 	    
 	    puml = Utils.replaceParagraph(puml, variables);
 	    
+	    
 	    StringBuilder res = new StringBuilder();
 	    
 	    res.append( puml );
@@ -426,6 +427,8 @@ public class Diagram extends Entity {
 				.filter(isSimpleType.negate())
 				.collect(toSet());
 		
+		LOG.debug("getSubResourcesWithIncompleteDiagram: diagram={} res={}", this.resource, res);
+		
 		return res;
 		
 	}
@@ -456,4 +459,7 @@ public class Diagram extends Entity {
 		return incomplete;
 	}
 
+	public String getResource() {
+		return resource;
+	}
 }

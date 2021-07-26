@@ -370,17 +370,19 @@ public class LayoutGraph extends Positions {
 		res.addAll( layoutGraph.outgoingEdgesOf(node).stream()
 						.filter(edge -> edge.isSameDirection(direction))
 						.map(layoutGraph::getEdgeTarget)
+						.filter(n -> !n.equals(node))
 						.collect(toList()) );
 		
 		res.addAll( layoutGraph.incomingEdgesOf(node).stream()
 						.filter(edge -> edge.isSameDirection(Place.getReverse(direction)))
 						.map(layoutGraph::getEdgeSource)
+						.filter(n -> !n.equals(node))
 						.filter(n -> !res.contains(n))
 						.collect(toList()) );
-						
+					
 		res.remove(node);
 		
-		LOG.debug("getPlacedAt: node={} direction={} res={}",  node, direction, res);
+		// if(node.getName().contentEquals("QuoteItem") && direction==Place.LEFT) Out.debug("getPlacedAt: node={} direction={} res={}",  node, direction, res);
 		
 		return res;
 		

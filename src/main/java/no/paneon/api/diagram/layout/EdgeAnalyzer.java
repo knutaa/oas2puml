@@ -1130,7 +1130,7 @@ public class EdgeAnalyzer {
 												
 				return getElementsFromSet(options,iLength);
 				
-			} else {
+			} else if(!node.equals(layoutGraph.resourceNode)){
 				return res;
 			}
 		} 

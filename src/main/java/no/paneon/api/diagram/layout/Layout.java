@@ -74,8 +74,6 @@ public class Layout {
 		
 		List<ClassProperty> properties = getPropertiesForClass(node, apiGraph.getOutboundNeighbours(node), incomplete);
 		
-		// ClassEntity cls = new ClassEntity(node.getName(), properties, stereoType, node.getDescription(), node.getInheritance(), node.getDiscriminatorMapping());
-
 		ClassEntity cls = new ClassEntity(node);
 		
 		cls.addProperties(properties);
@@ -89,6 +87,8 @@ public class Layout {
 			generateForEnum(cls, enumNode);
 		}
 					
+		LOG.debug("generateUMLClasses: node={} incomplete={}",  node, incomplete);
+		
 		if(incomplete.isEmpty()) {
 			diagram.removeIncomplete(node.getName());
 		} else {
@@ -422,6 +422,11 @@ public class Layout {
 			Node node = iterNode.next();
 			Place direction = iterDirection.next();
 						
+			ClassEntity nodeEntity = diagram.getClassEntityForResource(node.getName());
+			if(nodeEntity==null) {
+				generateUMLClasses(diagram, node, diagram.getResource());
+			}			
+
 			layoutGraph.placeReverseEdges(cls, resourceNode, node, direction, rule + " in direction " + direction);
 			
 	    	LOG.debug("processEdgesForInheritance:: placeing={}", node );
@@ -1740,7 +1745,12 @@ public class Layout {
 
 		LOG.debug("layoutLeft: check for left: node={} includeNodes={}", node, includeNodes);
 
-		if(layoutGraph.isPlacedAt(node, Place.LEFT)) return;
+		if(layoutGraph.isPlacedAt(node, Place.LEFT)) {
+			
+			LOG.debug("layoutLeft: check for left: node={} placeLeft={}", node, layoutGraph.getPlacedAt(node, Place.LEFT));
+
+			return;
+		}
 		
 		List<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.LEFT).stream()
 								.filter(includeNodes::contains)
@@ -1749,6 +1759,10 @@ public class Layout {
 						
 		int balanceIndex = layoutGraph.getBalancedIndex(node,0,-1);
 
+		if(node.getName().contentEquals("QuoteItem"))  {
+			LOG.debug("layoutLeft: check for left - node={} candidates={} balanceIndex={}", node, candidates, balanceIndex);
+		}
+		
 		LOG.debug("layoutLeft: check for left - node={} candidates={} balanceIndex={}", node, candidates, balanceIndex);
 		LOG.debug("layoutLeft: check for left - node={} candidates={}", node, edgeAnalyzer.getEdgesForPosition(Place.LEFT));
 

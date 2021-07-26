@@ -217,14 +217,10 @@ public class DiagramGenerator
 	    
 	    graph.filterSimpleTypes();
 	    
-	    LOG.debug("#2 apiGraph: " + graph.getAllNodes().size() + " " + graph);
-
 		if(Config.processComplexity()) {						
 			graph = complexityAdjustedGraph(graph,diagram);
 		} 
 		
-	    LOG.debug("#3 adjusted apiGraph: " + graph.getAllNodes().size() + " " + graph);
-
 	    graph.filterSimpleTypes();
 
 	    LOG.debug("filtering adjusted apiGraph: " + graph.getAllNodes().size() + " " + graph);
@@ -255,7 +251,6 @@ public class DiagramGenerator
   	    
 	}
 	
-	
 	@LogMethod(level=LogLevel.DEBUG)
 	private Diagram generateDiagramForGraph(String resource, APIGraph apiGraph) {
 		        
@@ -264,11 +259,13 @@ public class DiagramGenerator
 	    layout = new Layout(apiGraph, layoutConfig);
 	            	    	    
 	    List<Node> nodesInGraph = getSequenceOfNodesInGraph(apiGraph,resource);
-	    	   
-	    LOG.debug("## generateDiagramForGraph: resource={} nodes={}",  resource, nodesInGraph);
+	    	   	    
+	    LOG.debug("generateDiagramForGraph:: resource={} edges{}=", resource, apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n") ));
+
+	    Set<Node> reachable = CoreAPIGraph.getReachable(apiGraph.getGraph(), resource);
 	    
 	    for(Node node: nodesInGraph ) {
-	    	if(!(node instanceof EnumNode)) {
+	    	if(!(node instanceof EnumNode) && reachable.contains(node)) {
 	    		layout.generateUMLClasses(diagram, node, resource);
 	    	}
 	    }
@@ -280,7 +277,7 @@ public class DiagramGenerator
 	    LOG.debug("generateDiagramForGraph: resource={} processed core graph",  resource);
 
 	    layout.processEdgesForRemainingNodes(diagram);
-	    	               
+	    	            
 	    addOrphanEnums(apiGraph,diagram);
 	      	    	
   	    List<String> placement = layout.getNodePlacement();
@@ -400,28 +397,28 @@ public class DiagramGenerator
 	}
 
 
-	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram processDiagramForResource(String resource, Set<String> producedDiagrams) {
-				
-  	    Diagram diagram = generateDiagramForResource(resource, producedDiagrams);
-  	      	    	      	    
-  	    producedDiagrams.add(resource);
-  	    		
-		for(String incomplete : diagram.getIncomplete() ) {
-  	    	String stereoType = Config.getDefaultStereoType();
-  	    	
-  	    	if(!producedDiagrams.contains(incomplete)) {
-	  	    	Diagram subDiagram = generateDiagramForResource(incomplete, stereoType, producedDiagrams);
-	  	    	diagram.addSubDiagram(subDiagram);	
-	  	    	producedDiagrams.add(incomplete);
-  	    	}
-  	    	  	    	  	    	
-		}
-  	    		
-  	    return diagram;
-  	    
-	}
-	
+//	@LogMethod(level=LogLevel.DEBUG)
+//	private Diagram processDiagramForResource(String resource, Set<String> producedDiagrams) {
+//				
+//  	    Diagram diagram = generateDiagramForResource(resource, producedDiagrams);
+//  	      	    	      	    
+//  	    producedDiagrams.add(resource);
+//  	    		
+//		for(String incomplete : diagram.getIncomplete() ) {
+//  	    	String stereoType = Config.getDefaultStereoType();
+//  	    	
+//  	    	if(!producedDiagrams.contains(incomplete)) {
+//	  	    	Diagram subDiagram = generateDiagramForResource(incomplete, stereoType, producedDiagrams);
+//	  	    	diagram.addSubDiagram(subDiagram);	
+//	  	    	producedDiagrams.add(incomplete);
+//  	    	}
+//  	    	  	    	  	    	
+//		}
+//  	    		
+//  	    return diagram;
+//  	    
+//	}
+//	
 
 	@LogMethod(level=LogLevel.DEBUG)
 	private Complexity processComplexity(String resource) {

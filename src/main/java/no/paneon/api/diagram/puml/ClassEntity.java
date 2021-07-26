@@ -33,7 +33,7 @@ public class ClassEntity extends Entity {
 	static List<String> processedEnums = new LinkedList<>();
 	
 	String name;
-	String stereotype;
+	String stereotype = "";
 		
 	String description = "";
 	
@@ -82,7 +82,7 @@ public class ClassEntity extends Entity {
 		
 		this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
-
+		
 	}
 	
 	public ClassEntity(String name, List<ClassProperty> properties, String stereotype, String description, Set<String> inheritance, Set<String> mapping) {
