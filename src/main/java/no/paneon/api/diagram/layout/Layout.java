@@ -251,7 +251,11 @@ public class Layout {
 		
 		LOG.debug("generateUMLEdges: node={} #0",  node);
 
-		layoutCircleNodes(node,cls,circles);
+		if(isDiscriminatorNode(node)) {
+			layoutCircleDiscriminatorNodes(node,cls,circles);
+		} else {
+			layoutCircleNodes(node,cls,circles);
+		}
 
 		//
 		// layout in multiple steps / phases:
@@ -298,6 +302,22 @@ public class Layout {
 	}
 
 	
+	private boolean isDiscriminatorNode(Node node) {
+		boolean res=false;
+	    Set<String> neighbours = this.apiGraph.getNeighbours(node).stream().map(Node::getName).collect(toSet());
+
+	    Set<String> mapping = node.getAllDiscriminatorMapping();
+	    
+	    if(mapping.size() >= neighbours.size()) res=true;
+	    
+	    
+	    LOG.debug("isDiscriminatorNode: node={} neighbours={} mapping={} res={}", node, neighbours, mapping, res);
+	    
+	    return res;
+	
+	}
+
+
 	// TBD - Inheritance
 	@LogMethod(level=LogLevel.DEBUG) 
 	private void processEdgesForInheritance_old(Diagram diagram) {
@@ -474,7 +494,7 @@ public class Layout {
 			
 			LOG.debug("processEdgesForInheritanceHelper: place BELOW parent: node={} candidate={}", node, parent);
 
-			layoutGraph.placeEdgesBetween(cls, parent.get(), node, following, defaultDirection, rule);
+			layoutGraph.placeEdgesBetween(this, cls, parent.get(), node, following, defaultDirection, rule);
 			
 			// return;
     	}
@@ -503,7 +523,7 @@ public class Layout {
 				
 				LOG.debug("processEdgesForInheritanceHelper: place BELOW: node={} candidate={}", node, candidate);
 	
-				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				layoutGraph.placeEdgesBetween(this, cls, node, candidate, following, defaultDirection, rule);
 				
 	    	} else if(simpleNode && singleInbound && !placedBelow) {
     			// ignore if leaf
@@ -517,7 +537,7 @@ public class Layout {
 				LOG.debug("processEdgesForInheritanceHelper: place ABOVE: node={} candidate={}", node, candidate);
 	
 				//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
-				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				layoutGraph.placeEdgesBetween(this, cls, node, candidate, following, defaultDirection, rule);
 				
     		} else if(simpleNode && (placedBelow || !this.layoutGraph.isPlaced(node))) {
     			// ignore if leaf
@@ -531,7 +551,7 @@ public class Layout {
 				LOG.debug("processEdgesForInheritanceHelper: place BELOW: node={} candidate={}", node, candidate);
 	
 				//layoutGraph.placeEdges(cls,  node,  candidate, func, rule);						
-				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				layoutGraph.placeEdgesBetween(this, cls, node, candidate, following, defaultDirection, rule);
 				
     		} else {
 				String rule = "#Inheritance rule - right";
@@ -541,7 +561,7 @@ public class Layout {
 				LOG.debug("processEdgesForInheritanceHelper: place RIGHT: node={} candidate={}", node, candidate);
 	
 				// layoutGraph.placeEdges(cls,  node,  candidate, func, rule);	
-				layoutGraph.placeEdgesBetween(cls, node, candidate, following, defaultDirection, rule);
+				layoutGraph.placeEdgesBetween(this, cls, node, candidate, following, defaultDirection, rule);
 
     		}
     	}
@@ -742,6 +762,78 @@ public class Layout {
 
 	}
 	
+	
+	private void layoutCircleDiscriminatorNodes(Node node, ClassEntity cls, Map<Integer, List<List<Node>> > circleMap) {
+		
+		
+		if(!circleMap.isEmpty()) {
+			LOG.debug("layoutCircleDiscriminatorNodes:: node={} circleMap=\n ... {}", node, circleMap.values().stream().map(Object::toString).collect(Collectors.joining("\n ... ")));
+		}
+			
+		Set<String> mapping = node.getAllDiscriminatorMapping();
+		
+		Predicate<String> isMapped = s -> mapping.contains(s);
+
+		Predicate<List<Node>> isAllMapped = nodeList -> nodeList.stream().map(Node::getName).allMatch(isMapped);
+		
+		List<List<Node>> sortedCircles = circleMap.values().stream()
+												.flatMap(List::stream)
+												.filter(isAllMapped)
+												.sorted((xs1, xs2) -> xs2.size() - xs1.size())
+												.collect(toList());
+
+						
+ 		if(!sortedCircles.isEmpty()) {
+			LOG.debug("layoutCircleDiscriminatorNodes:: node={}, sorted==\n ... {}", node, sortedCircles.stream().map(Object::toString).collect(Collectors.joining("\n ... ")));
+		}
+		
+		Map<Node, Long> commonNodeCount = sortedCircles.stream()
+												.map(HashSet::new)
+												.flatMap(Set::stream)
+												.filter(n -> !n.equals(node))
+												.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+ 
+		LOG.debug("layoutCircleDiscriminatorNodes:: node={}, commonNodeCount={}", node, commonNodeCount);
+
+				
+		Optional<Long> maxCommon = commonNodeCount.values().stream().max(Long::compare);
+		
+		Set<Node> commonNodes = commonNodeCount.entrySet().stream()
+									.filter(entry -> entry.getValue()>1)
+									.map(Map.Entry::getKey)
+									.collect(toSet());
+		
+		LOG.debug("layoutCircleDiscriminatorNodes: node={} commonNodes={}", node, commonNodes);
+		
+		for(List<Node> circle : sortedCircles) {
+			if(commonNodes.contains(circle.get(1)) || !apiGraph.isLeafNode(circle.get(1))) {
+				LOG.debug("layoutCircleDiscriminatorNodes:: node={}, circle={}", node, circle);
+				Collections.reverse(circle);
+				LOG.debug("layoutCircleDiscriminatorNodes:: node={}, reversed circle={}", node, circle);
+
+			}
+		}
+		
+		if(!sortedCircles.isEmpty()) {
+			LOG.debug("layoutCircleDiscriminatorNodes:: node={}, sorted==\n ... {}", node, sortedCircles.stream().map(Object::toString).collect(Collectors.joining("\n ... ")));
+		}
+
+		sortedCircles.forEach(circle -> {
+
+			// circle.retainAll( this.layoutGraph.layoutGraph.vertexSet() );
+			circle.retainAll( apiGraph.getGraph().vertexSet() );
+
+			LOG.debug("layoutCircleDiscriminatorNodes: #1 node={} circle={}", node, circle);
+
+			if(circle.contains(node)) {				
+				layoutCircleNodes(cls, node, circle, maxCommon);
+			}
+
+		});
+
+	}
+	
+	
 	private void layoutCircleNodes(ClassEntity cls, Node node, List<Node> circle, Optional<Long> maxCommon) {
 		
 		if(circle.isEmpty()) return;
@@ -810,7 +902,7 @@ public class Layout {
 			for(Node placedNode : alreadyPlaced) {
 				
 				layoutGraph.placeEdges(cls, placedNode, effectiveNode, 
-						layoutGraph.getDirection(placedNode, effectiveNode, Optional.empty(), Place.RIGHT), 
+						layoutGraph.getDirection(this, placedNode, effectiveNode, Optional.empty(), Place.RIGHT), 
 						"placing first element in floating circle");
 			}
 			
@@ -974,6 +1066,8 @@ public class Layout {
 	@LogMethod(level=LogLevel.DEBUG)
 	private void placeCircleSegment(ClassEntity cls, Node node, List<Node> circle, List<Place> defaultDirections, String rule) {
 
+		LOG.debug("placeCircleSegment: node={} circle={} defaultDirections={} rule={}",  node, circle, defaultDirections, rule);
+
 		Place defaultDirection = Place.BELOW;
 		Iterator<Place> directionIterator = defaultDirections.iterator();
 		
@@ -1036,7 +1130,7 @@ public class Layout {
 				// forceDirection=activeDirection;
 				activeDirection=Place.BELOW;
 				detailedRule = detailedRule + " - BELOW as recursive from";
-				placedDirection = layoutGraph.placeEdgesBetween(cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
+				placedDirection = layoutGraph.placeEdgesBetween(this, cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
 				previousOverride=true;
 				
 				LOG.debug("placeCircleSegment: #1 from={} to={} activeDirection={} previous={} placedDirection={}",  fromNode, toNode, activeDirection, previousDirection, placedDirection);
@@ -1044,7 +1138,15 @@ public class Layout {
 			
 			} else {		
 				detailedRule = detailedRule + " - default to " + defaultDirection;
-				placedDirection = layoutGraph.placeEdgesBetween(cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
+
+				LOG.debug("placeCircleSegment: from={} to={} activeDirection={} previousDirection={}",  fromNode, toNode, activeDirection, previousDirection);
+
+				if(defaultDirection==Place.EMPTY) {
+					defaultDirection = Place.BELOW;
+					activeDirection = defaultDirection;
+				}
+				
+				placedDirection = layoutGraph.placeEdgesBetween(this, cls, fromNode, toNode, followingNode, activeDirection, detailedRule);
 				
 				LOG.debug("placeCircleSegment: from={} to={} activeDirection={} previous={} placedDirection={}",  fromNode, toNode, activeDirection, previousDirection, placedDirection);
 
@@ -1226,6 +1328,37 @@ public class Layout {
 		}
 		
 	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public Place getManualOverride(Node from, Node to) {
+		Place res = getManualOverrideHelper(from, to);
+		
+		if(res==Place.EMPTY) {
+			res = getManualOverrideHelper(to,from);
+			if(res!=Place.EMPTY) res = Place.getReverse(res);
+		}
+
+		return res;
+		
+	}
+
+	private Place getManualOverrideHelper(Node from, Node to) {
+		Place res = Place.EMPTY;
+		String nodeName=from.getName();
+		if(layoutConfig.has(nodeName)) {
+			Place[] directions = Place.values();
+
+			for( Place direction: directions) {
+				if(layoutConfig.getJSONObject(nodeName).has(direction.label)) {
+					JSONArray config = layoutConfig.getJSONObject(nodeName).getJSONArray(direction.label);
+					List<String> placeNodes = Utils.JSONArrayToList(config); 																	
+					if(placeNodes.contains(to.getName())) return direction;
+				}
+			}
+		}
+		return res;
+	}
+
 
 	@LogMethod(level=LogLevel.DEBUG)
 	private void layoutBetweenCommonNode(Node node, ClassEntity cls, List<Node> neighbours, List<Node> includeNodes) {

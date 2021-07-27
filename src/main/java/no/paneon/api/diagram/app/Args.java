@@ -82,6 +82,9 @@ public class Args {
 		@Parameter(names = { "-h", "--help" }, description = "Usage details", help = true)
 		public boolean help = false;
 
+		@Parameter(names = { "--time-stamp" }, description = "Include time stamp details")
+		public boolean timestamp = false;
+		
 	}
 
 	public class Diagram extends Common {

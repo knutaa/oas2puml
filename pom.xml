@@ -113,8 +113,6 @@
 					</execution>
 				</executions>
 				<dependencies>
-					<!-- Ensure aspectj tools version used by compiler is the same version 
-						used as dependency. Avoids warning -->
 					<dependency>
 						<groupId>org.aspectj</groupId>
 						<artifactId>aspectjtools</artifactId>

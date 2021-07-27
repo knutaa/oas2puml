@@ -264,8 +264,13 @@ public class DiagramGenerator
 
 	    Set<Node> reachable = CoreAPIGraph.getReachable(apiGraph.getGraph(), resource);
 	    
+	    LOG.debug("generateDiagramForGraph:: resource={} reachable={}", resource, reachable);
+	    
 	    for(Node node: nodesInGraph ) {
 	    	if(!(node instanceof EnumNode) && reachable.contains(node)) {
+	    		
+	    	    LOG.debug("generateDiagramForGraph:: resource={} node={}", resource, node);
+
 	    		layout.generateUMLClasses(diagram, node, resource);
 	    	}
 	    }

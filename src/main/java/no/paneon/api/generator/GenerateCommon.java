@@ -62,6 +62,11 @@ public class GenerateCommon {
     	if(common.conformanceSourceOnly) {
     		Config.setBoolean("conformanceSourceOnly",true);
     	}
+    	
+    	if(common.timestamp) {
+    		Timestamp.setActive();  		
+    	}
+
     	   
 	}
 	

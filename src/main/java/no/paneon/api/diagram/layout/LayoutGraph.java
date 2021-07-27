@@ -219,6 +219,8 @@ public class LayoutGraph extends Positions {
 	public boolean placeEdges(ClassEntity cls, Node from, Node to, Place direction, String rule) {
 		boolean res=false;
 		
+		LOG.debug("placeEdges: cls={} from={} to={} direction={} rule={}", cls.getName(), from, to, direction, rule);
+		
     	if(direction.isForced()) {
         	res = placeForced(cls, from, to, direction, rule);
     	} else {
@@ -381,9 +383,7 @@ public class LayoutGraph extends Positions {
 						.collect(toList()) );
 					
 		res.remove(node);
-		
-		// if(node.getName().contentEquals("QuoteItem") && direction==Place.LEFT) Out.debug("getPlacedAt: node={} direction={} res={}",  node, direction, res);
-		
+				
 		return res;
 		
 	}
@@ -1424,8 +1424,8 @@ public class LayoutGraph extends Positions {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	public Place placeEdgesBetween(ClassEntity cls, Node from, Node to, Place defaultDirection, String rule) {
-		Place direction = getDirection(from, to, Optional.empty(), defaultDirection);
+	public Place placeEdgesBetween(Layout layout, ClassEntity cls, Node from, Node to, Place defaultDirection, String rule) {
+		Place direction = getDirection(layout, from, to, Optional.empty(), defaultDirection);
 		
 		LOG.debug("placeEdgesBetween: from={} to={} direction={}",  from, to, direction);
 
@@ -1441,8 +1441,8 @@ public class LayoutGraph extends Positions {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	public Place placeEdgesBetween(ClassEntity cls, Node from, Node to, Optional<Node> following, Place defaultDirection, String rule) {
-		Place direction = getDirection(from, to, following, defaultDirection);
+	public Place placeEdgesBetween(Layout layout, ClassEntity cls, Node from, Node to, Optional<Node> following, Place defaultDirection, String rule) {
+		Place direction = getDirection(layout, from, to, following, defaultDirection);
 		
 		LOG.debug("placeEdgesBetween: from={} to={} direction={} defaultDirection={}",  from, to, direction, defaultDirection);
 
@@ -1458,8 +1458,12 @@ public class LayoutGraph extends Positions {
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
-	public Place getDirection(Node nodeA, Node nodeB, Optional<Node> following, Place defaultDirection) {
-		return getDirection(nodeA, nodeB, following, defaultDirection, null);
+	public Place getDirection(Layout layout, Node nodeA, Node nodeB, Optional<Node> following, Place defaultDirection) {
+		Place override = layout.getManualOverride(nodeA,nodeB);
+		if(override!=Place.EMPTY) 
+			return override;
+		else
+			return getDirection(nodeA, nodeB, following, defaultDirection, null);
 	}
 		
 	@LogMethod(level=LogLevel.DEBUG)
