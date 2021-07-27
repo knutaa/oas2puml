@@ -1,0 +1,1646 @@
+openapi: 3.0.1
+info:
+  title: Product Inventory
+  description: >-
+    **TMF API Reference : TMF 637 - Product Inventory Management**
+
+    The Product Inventory Management API provides standardized mechanism for product inventory
+    management such as creation, update and retrieval of the representation of a product in the
+    inventory. It also allows the notification of events related to product lifecycle
+
+    **Product resource**
+
+    A product offering procured by a customer or other interested party playing a party role. A
+    product is realized as one or more service(s) and / or resource(s).
+
+    Product Inventory API performs the following operations on product :
+
+    - Retrieval of a product or a collection of products depending on filter criteria
+
+    - Partial update of a product (including updating rules and for administration purpose)
+
+    - Creation of a product (including default values and creation rules and for administration
+    purpose)
+
+    - Deletion of a product (for administration purposes)
+
+    - Notification of events on product.
+  version: 5.0.0
+servers:
+  - url: 'https://serverRoot'
+tags:
+  - name: product
+    description: Operations for Product Resource
+  - name: notification listener
+    description: Notifications for Resource Lifecycle and event notifications
+  - name: events subscription
+    description: Endpoints to register and terminate an Event Listener
+paths:
+  /product:
+    get:
+      tags:
+        - product
+      summary: List or find Product objects
+      description: >-
+        This operation retrieves a Product entity. Attribute selection enabled for all first level
+        attributes.
+      operationId: listProduct
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ProductArray'
+        default:
+          $ref: '#/components/responses/Error'
+    post:
+      tags:
+        - product
+      summary: Creates a Product
+      description: This operation creates a Product entity.
+      operationId: createProduct
+      requestBody:
+        $ref: '#/components/requestBodies/Product_Create'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Product'
+        default:
+          $ref: '#/components/responses/Error'
+  '/product/{id}':
+    get:
+      tags:
+        - product
+      summary: Retrieves a Product by ID
+      description: List or find Product objects
+      operationId: retrieveProduct
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Product'
+        default:
+          $ref: '#/components/responses/Error'
+    patch:
+      tags:
+        - product
+      summary: Updates partially a Product
+      description: This operation updates partially a Product entity.
+      operationId: patchProduct
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/Product_Update'
+      responses:
+        '200':
+          $ref: '#/components/responses/200Product'
+        default:
+          $ref: '#/components/responses/Error'
+    delete:
+      tags:
+        - product
+      summary: Deletes a Product
+      description: This operation deletes a Product entity.
+      operationId: deleteProduct
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        default:
+          $ref: '#/components/responses/Error'
+  /listener/productCreateEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity ProductCreateEvent
+      description: Example of a client listener for receiving the notification ProductCreateEvent
+      operationId: productCreateEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ProductCreateEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/productAttributevaluechangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity ProductCreateEvent
+      description: Example of a client listener for receiving the notification ProductAttributevaluechangeEvent
+      operationId: productAttributevaluechangeEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ProductAttributevaluechangeEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/productStatechangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity ProductCreateEvent
+      description: Example of a client listener for receiving the notification ProductStatechangeEvent
+      operationId: productStatechangeEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ProductStatechangeEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/productBatchEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity ProductCreateEvent
+      description: Example of a client listener for receiving the notification ProductBatchEvent
+      operationId: productBatchEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ProductBatchEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /listener/productDeleteEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity ProductCreateEvent
+      description: Example of a client listener for receiving the notification ProductDeleteEvent
+      operationId: productDeleteEvent
+      requestBody:
+        description: The event data
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ProductDeleteEvent'
+        required: true
+      responses:
+        '201':
+          description: Notified
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/EventSubscription'
+  /hub:
+    post:
+      operationId: registerListener
+      summary: Register a listener
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver information
+        about its health state, execution state, failures and metrics.
+      tags:
+        - events subscription
+      requestBody:
+        $ref: '#/components/requestBodies/EventSubscriptionInput'
+      responses:
+        '201':
+          $ref: '#/components/responses/EventSubscription'
+        default:
+          $ref: '#/components/responses/Error'
+  '/hub/{id}':
+    delete:
+      operationId: unregisterListener
+      summary: Unregister a listener
+      description: >-
+        Resets the communication endpoint address the service instance must use to deliver
+        information about its health state, execution state, failures and metrics.
+      tags:
+        - events subscription
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    BaseEvent:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - description: Base event with common attributes.
+          type: object
+          properties:
+            event:
+              type: object
+            eventId:
+              type: string
+              description: The identifier of the notification.
+            eventTime:
+              type: string
+              format: date-time
+              description: Time of the event occurrence.
+            eventType:
+              type: string
+              description: The type of the notification.
+            correlationId:
+              type: string
+              description: The correlation id for this event.
+            domain:
+              type: string
+              description: The domain of the event.
+            title:
+              type: string
+              description: The title of the event.
+            description:
+              type: string
+              description: An explanatory of the event.
+            priority:
+              type: string
+              description: A priority.
+            timeOcurred:
+              type: string
+              format: date-time
+              description: The time the event occured.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BaseEvent: '#/components/schemas/BaseEvent'
+          ProductDeleteEvent: '#/components/schemas/ProductDeleteEvent'
+          ProductBatchEvent: '#/components/schemas/ProductBatchEvent'
+          ProductStatechangeEvent: '#/components/schemas/ProductStatechangeEvent'
+          ProductAttributevaluechangeEvent: '#/components/schemas/ProductAttributevaluechangeEvent'
+          ProductCreateEvent: '#/components/schemas/ProductCreateEvent'
+    Entity:
+      allOf:
+        - $ref: '#/components/schemas/Addressable'
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/Entity'
+    Addressable:
+      type: object
+      required:
+        - id
+        - href
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+    Extensible:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      required:
+        - '@type'
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          format: uri
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+    Product:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            A product offering procured by a customer or other interested party playing a party
+            role. A product is realized as one or more service(s) and / or resource(s).
+          properties:
+            agreementItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/AgreementItemRef'
+            billingAccount:
+              $ref: '#/components/schemas/BillingAccountRef'
+            creationDate:
+              type: string
+              format: date-time
+              description: Date and time when the product was created
+            description:
+              type: string
+              description: >-
+                Is the description of the product. It could be copied from the description of the
+                Product Offering.
+            isBundle:
+              type: boolean
+              description: >-
+                If true, the product is a ProductBundle which is an instantiation of a
+                BundledProductOffering. If false, the product is a ProductComponent which is an
+                instantiation of a SimpleProductOffering.
+            isCustomerVisible:
+              type: boolean
+              description: 'If true, the product is visible by the customer.'
+            name:
+              type: string
+              description: Name of the product. It could be the same as the name of the product offering
+            orderDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was ordered
+            productCharacteristic:
+              type: array
+              items:
+                $ref: '#/components/schemas/Characteristic'
+            productOffering:
+              $ref: '#/components/schemas/ProductOfferingRef'
+            productOrderItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedOrderItem'
+            product:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRefOrValue'
+            productPrice:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductPrice'
+            productRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRelationship'
+            productSerialNumber:
+              type: string
+              description: >-
+                Is the serial number for the product. This is typically applicable to tangible
+                products e.g. Broadband Router.
+            productSpecification:
+              $ref: '#/components/schemas/ProductSpecificationRef'
+            productTerm:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductTerm'
+            realizingResource:
+              type: array
+              items:
+                $ref: '#/components/schemas/ResourceRef'
+            realizingService:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceRef'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            place:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+            startDate:
+              type: string
+              format: date-time
+              description: Is the date from which the product starts
+            status:
+              $ref: '#/components/schemas/ProductStatusType'
+            terminationDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was terminated
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Product: '#/components/schemas/Product'
+    AgreementItemRef:
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - type: object
+          description: It's a Agreement item that has been executed previously.
+          properties:
+            agreementName:
+              type: string
+              description: Name of the related entity.
+            agreementHref:
+              type: string
+              description: Reference of the related entity.
+            '@referredType':
+              type: string
+              description: The actual type of the target instance when needed for disambiguation.
+            agreementId:
+              type: string
+              description: Unique identifier of a related entity.
+            agreementItemId:
+              type: string
+              description: Id of an item of a Agreement
+          required:
+            - agreementId
+            - agreementItemId
+    BillingAccountRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            BillingAccount reference. A BillingAccount is a detailed description of a bill
+            structure.
+          type: object
+          properties:
+            ratingType:
+              type: string
+              description: >-
+                Indicates whether the account follows a specific payment option such as prepaid or
+                postpaid
+    Characteristic:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - description: Describes a given characteristic of an object or entity through a name/value pair.
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the characteristic
+            name:
+              type: string
+              description: Name of the characteristic
+          required:
+            - name
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Characteristic: '#/components/schemas/Characteristic'
+    ProductOfferingRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    RelatedOrderItem:
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - type: object
+          description: It's a Order item that has been executed previously.
+          properties:
+            orderItemAction:
+              type: string
+              description: Action of the order item for this product.
+            orderHref:
+              type: string
+              description: Reference of the related entity.
+            '@referredType':
+              type: string
+              description: The actual type of the target instance when needed for disambiguation.
+            role:
+              type: string
+              description: Role played by the  Order
+            orderId:
+              type: string
+              description: Unique identifier of a related  Order.
+            orderItemId:
+              type: string
+              description: Id of an item of a prduct order
+          required:
+            - orderItemId
+            - orderId
+            - role
+    ProductRefOrValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductRefOrValue: '#/components/schemas/ProductRefOrValue'
+          ProductRef: '#/components/schemas/ProductRef'
+          ProductValue: '#/components/schemas/ProductValue'
+    ProductPrice:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - description: Description of price and discount awarded
+          type: object
+          properties:
+            description:
+              type: string
+              description: Description of the Product price
+            name:
+              type: string
+              description: Name of the Product price
+            productOfferingPrice:
+              $ref: '#/components/schemas/ProductOfferingPriceRef'
+            recurringChargePeriod:
+              type: string
+              description: 'Used for recurring charge to indicate period (month, week, etc..).'
+            unitOfMeasure:
+              type: string
+              description: 'Unit of Measure if price depending on it (Gb, SMS volume, etc..)'
+            price:
+              $ref: '#/components/schemas/Price'
+            priceAlteration:
+              type: array
+              items:
+                $ref: '#/components/schemas/PriceAlteration'
+            priceType:
+              type: string
+              description: indicate if the price is for recurrent or no-recurrent charge
+          required:
+            - priceType
+            - price
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductPrice: '#/components/schemas/ProductPrice'
+    ProductRelationship:
+      allOf:
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: Used to describe relationship between product.
+          type: object
+          properties:
+            id:
+              type: string
+              description: Id of the related product
+            relationshipType:
+              type: string
+              description: 'Relationship type as relies on, bundles, etc...'
+          required:
+            - id
+            - relationshipType
+    ProductSpecificationRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    ProductTerm:
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            Description of a productTerm linked to this product. This represent a commitment with a
+            duration
+          type: object
+          properties:
+            description:
+              type: string
+              description: Description of the productTerm
+            duration:
+              $ref: '#/components/schemas/Duration'
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            name:
+              type: string
+              description: Name of the productTerm
+              example: 12months commitment
+    ResourceRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    ServiceRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    RelatedParty:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            Related Entity reference. A related party defines party or party role linked to a
+            specific entity.
+          type: object
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+            '@referredType':
+              type: string
+              description: The actual type of the target instance when needed for disambiguation.
+          required:
+            - '@referredType'
+    RelatedPlaceRefOrValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - description: >-
+            Related Entity reference. A related place defines a place described by reference or by
+            value linked to a specific entity. The polymorphic attributes @type, @schemaLocation &
+            @referredType are related to the place entity and not the RelatedPlaceRefOrValue class
+            itself
+          type: object
+          properties:
+            role:
+              type: string
+          required:
+            - role
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedPlaceRefOrValue: '#/components/schemas/RelatedPlaceRefOrValue'
+          PlaceRef: '#/components/schemas/PlaceRef'
+          GeographicAddressValue: '#/components/schemas/GeographicAddressValue'
+          GeoJsonLineString: '#/components/schemas/GeoJsonLineString'
+          GeoJsonMultiLineString: '#/components/schemas/GeoJsonMultiLineString'
+          GeoJsonMultiPoint: '#/components/schemas/GeoJsonMultiPoint'
+          GeoJsonPoint: '#/components/schemas/GeoJsonPoint'
+          GeoJsonPolygon: '#/components/schemas/GeoJsonPolygon'
+    ProductStatusType:
+      type: string
+      description: Possible values for the status of the product
+      enum:
+        - created
+        - pendingActive
+        - cancelled
+        - active
+        - pendingTerminate
+        - terminated
+        - suspended
+        - 'aborted '
+    SchemaContext:
+      type: object
+      description: SchemaContext schema for use in TMForum Open-APIs
+      properties:
+        '@schemaLocation':
+          type: string
+          format: uri
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+    EntityRef:
+      description: Entity reference schema to be use for all entityRef class.
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
+          description: Hyperlink reference
+    ProductRef:
+      allOf:
+        - $ref: '#/components/schemas/ProductRefOrValue'
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    ProductValue:
+      allOf:
+        - $ref: '#/components/schemas/ProductRefOrValue'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+        - type: object
+          description: >-
+            A product offering procured by a customer or other interested party playing a party
+            role. A product is realized as one or more service(s) and / or resource(s).
+          properties:
+            href:
+              type: string
+              format: uri
+              description: Hyperlink reference
+            id:
+              type: string
+              description: unique identifier
+            agreementItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/AgreementItemRef'
+            billingAccount:
+              $ref: '#/components/schemas/BillingAccountRef'
+            creationDate:
+              type: string
+              format: date-time
+              description: Date and time when the product was created
+            description:
+              type: string
+              description: >-
+                Is the description of the product. It could be copied from the description of the
+                Product Offering.
+            isBundle:
+              type: boolean
+              description: >-
+                If true, the product is a ProductBundle which is an instantiation of a
+                BundledProductOffering. If false, the product is a ProductComponent which is an
+                instantiation of a SimpleProductOffering.
+            isCustomerVisible:
+              type: boolean
+              description: 'If true, the product is visible by the customer.'
+            name:
+              type: string
+              description: Name of the product. It could be the same as the name of the product offering
+            orderDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was ordered
+            productCharacteristic:
+              type: array
+              items:
+                $ref: '#/components/schemas/Characteristic'
+            productOffering:
+              $ref: '#/components/schemas/ProductOfferingRef'
+            productOrderItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedOrderItem'
+            product:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRefOrValue'
+            productPrice:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductPrice'
+            productRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRelationship'
+            productSerialNumber:
+              type: string
+              description: >-
+                Is the serial number for the product. This is typically applicable to tangible
+                products e.g. Broadband Router.
+            productSpecification:
+              $ref: '#/components/schemas/ProductSpecificationRef'
+            productTerm:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductTerm'
+            realizingResource:
+              type: array
+              items:
+                $ref: '#/components/schemas/ResourceRef'
+            realizingService:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceRef'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            place:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+            startDate:
+              type: string
+              format: date-time
+              description: Is the date from which the product starts
+            status:
+              $ref: '#/components/schemas/ProductStatusType'
+            terminationDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was terminated
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductValue: '#/components/schemas/ProductValue'
+    ProductOfferingPriceRef:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    Price:
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            Provides all amounts (tax included, duty free, tax rate), used currency and percentage
+            to apply for Price and Price Alteration.
+          type: object
+          properties:
+            dutyFreeAmount:
+              $ref: '#/components/schemas/Money'
+            percentage:
+              type: number
+              format: float
+              description: Percentage to apply for ProdOfferPriceAlteration
+            taxIncludedAmount:
+              $ref: '#/components/schemas/Money'
+            taxRate:
+              type: number
+              format: float
+              description: Tax rate
+    PriceAlteration:
+      allOf:
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: 'Is an amount, usually of money, that modifies the price charged for an order item.'
+          type: object
+          required:
+            - priceType
+            - price
+          properties:
+            applicationDuration:
+              type: integer
+              description: >-
+                Duration during which the alteration applies on the order item price (for instance 2
+                months free of charge for the recurring charge)
+            description:
+              type: string
+              description: >-
+                A narrative that explains in detail the semantics of this order item price
+                alteration
+            name:
+              type: string
+              description: Name of the order item price alteration
+            productOfferingPrice:
+              $ref: '#/components/schemas/ProductOfferingPriceRef'
+            priceType:
+              type: string
+              description: 'A category that describes the price such as recurring, one time and usage.'
+            priority:
+              type: integer
+              description: >-
+                Priority level for applying this alteration among all the defined alterations on the
+                order item price
+            recurringChargePeriod:
+              type: string
+              description: 'Could be month, week...'
+            unitOfMeasure:
+              type: string
+              description: 'Could be minutes, GB...'
+            price:
+              $ref: '#/components/schemas/Price'
+    Duration:
+      type: object
+      description: A time interval in a given unit of time
+      properties:
+        amount:
+          type: integer
+          description: 'Time interval (number of seconds, minutes, hours, etc.)'
+        units:
+          type: string
+          description: 'Unit of time (seconds, minutes, hours, etc.)'
+    TimePeriod:
+      description: 'A period of time, either as a deadline (endDateTime only) a startDateTime only, or both'
+      type: object
+      properties:
+        startDateTime:
+          description: 'Start of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+        endDateTime:
+          description: 'End of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+    PlaceRef:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/Reference'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/SchemaContext'
+    GeographicAddressValue:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            Structured textual way of describing how to find a Property in an urban area (country
+            properties are often defined differently).
+
+            Note : Address corresponds to SID UrbanPropertyAddress
+          type: object
+          properties:
+            locality:
+              type: string
+              description: >-
+                An area of defined or undefined boundaries within a local authority or other
+                legislatively defined area, usually rural or semi rural in nature. [ANZLIC-STREET],
+                or a suburb, a bounded locality within a city, town or shire principally of urban
+                character [ANZLICSTREET]
+            postcode:
+              type: string
+              description: >-
+                descriptor for a postal delivery area, used to speed and simplify the delivery of
+                mail (also know as zipcode)
+            stateOrProvince:
+              type: string
+              description: the State or Province that the address is in
+            streetNr:
+              type: string
+              description: >-
+                Number identifying a specific property on a public street. It may be combined with
+                streetNrLast for ranged addresses
+            streetNrLast:
+              type: string
+              description: Last number in a range of street numbers allocated to a property
+            streetNrLastSuffix:
+              type: string
+              description: Last street number suffix for a ranged address
+            streetNrSuffix:
+              type: string
+              description: the first street number suffix
+            streetSuffix:
+              type: string
+              description: A modifier denoting a relative direction
+            streetType:
+              type: string
+              description: >-
+                alley, avenue, boulevard, brae, crescent, drive, highway, lane, terrace, parade,
+                place, tarn, way, wharf 
+            geographicSubAddress:
+              $ref: '#/components/schemas/GeographicSubAddressValue'
+            city:
+              type: string
+              description: City that the address is in
+            country:
+              type: string
+              description: Country that the address is in
+            streetName:
+              type: string
+              description: Name of the street or other street type
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GeographicAddressValue: '#/components/schemas/GeographicAddressValue'
+    GeoJsonLineString:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/GeographicLocationValue'
+        - type: object
+          description: 'Container for GeoJson LineString: A collection of Points forming a connected line'
+          required:
+            - geoJson
+          properties:
+            geoJson:
+              $ref: '#/components/schemas/LineString'
+    GeoJsonMultiLineString:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/GeographicLocationValue'
+        - description: 'A container for GeoJSON MultiLineString: A collection of distinct LineStrings'
+          required:
+            - geoJson
+          properties:
+            geoJson:
+              $ref: '#/components/schemas/MultiLineString'
+          type: object
+    GeoJsonMultiPoint:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/GeographicLocationValue'
+        - description: 'Container for GeoJSON MultiPoint: A collection of Points'
+          required:
+            - geoJson
+          properties:
+            geoJson:
+              $ref: '#/components/schemas/MultiPoint'
+          type: object
+    GeoJsonPoint:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/GeographicLocationValue'
+        - type: object
+          description: 'Container for a GeoJSON Point: A single position'
+          required:
+            - geoJson
+          properties:
+            geoJson:
+              $ref: '#/components/schemas/Point'
+    GeoJsonPolygon:
+      allOf:
+        - $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+        - $ref: '#/components/schemas/GeographicLocationValue'
+        - description: 'Container for GeoJSON Polygon: An array of linear rings'
+          required:
+            - geoJson
+          properties:
+            geoJson:
+              $ref: '#/components/schemas/Polygon'
+          type: object
+    GcProductStatusType:
+      type: string
+      description: Possible core values for the status of the product
+      enum:
+        - active
+        - terminated
+    Reference:
+      description: Reference schema .
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+    Money:
+      description: A base / value business entity used to represent money
+      type: object
+      properties:
+        unit:
+          type: string
+          description: Currency (ISO4217 norm uses 3 letters to define the currency)
+        value:
+          type: number
+          format: float
+          description: >-
+            A signed floating point number, the meaning of the sign is according to the context of
+            the API that uses this Data type
+    GeographicSubAddressValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+        - description: >-
+            Representation of a GeographicSubAddress 
+
+            It is used for addressing within a property in an urban area (country properties are
+            often defined differently). It may refer to a building, a building cluster, or a floor
+            of a multistory building.
+          type: object
+          properties:
+            buildingName:
+              type: string
+              description: allows for buildings that have well-known names
+            levelNumber:
+              type: string
+              description: 'used where a level type may be repeated e.g. BASEMENT 1, BASEMENT 2'
+            levelType:
+              type: string
+              description: describes level types within a building
+            name:
+              type: string
+              description: Name of the subAddress to identify it with a meaningful identification
+            privateStreetName:
+              type: string
+              description: >-
+                private streets internal to a property (e.g. a university) may have internal names
+                that are not recorded by the land title office.
+            privateStreetNumber:
+              type: string
+              description: private streets numbers internal to a private street
+            subUnitNumber:
+              type: string
+              description: |-
+                the discriminator used for the subunit
+                often just a simple number e.g. FLAT 5, may also be a range
+            subUnitType:
+              type: string
+              description: |-
+                the type of subunit
+                e.g.BERTH, FLAT, PIER, SUITE, SHOP, TOWER, UNIT, WHARF
+            subAddressType:
+              type: string
+              description: 'Type of subAddress : it can be a subunit or a private street'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GeographicSubAddressValue: '#/components/schemas/GeographicSubAddressValue'
+    LineString:
+      type: object
+      description: 'GeoJSON: A collection of Points forming a connected line'
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          enum:
+            - LineString
+        coordinates:
+          $ref: '#/components/schemas/lineString'
+    GeographicLocationValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/SchemaContext'
+        - type: object
+          description: >-
+            A GeographicLocation is a pure-virtual super-class to the GeoJSON-aligned geometries of
+            Point (addresses and locations), MultiPoint, LineString (streets, highways and
+            boundaries), MultiLineString and Polygon (countries, provinces, tracts of land). Use the
+            @type attribute to specify which of these is being specified by the geometry attribute.
+          properties:
+            bbox:
+              type: array
+              description: >-
+                A bounding box array that contains the geometry. The axes order follows the axes
+                order of the geometry
+              items:
+                type: number
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          GeographicLocationValue: '#/components/schemas/GeographicLocationValue'
+          GeoJsonPolygon: '#/components/schemas/GeoJsonPolygon'
+          GeoJsonPoint: '#/components/schemas/GeoJsonPoint'
+          GeoJsonMultiPoint: '#/components/schemas/GeoJsonMultiPoint'
+          GeoJsonMultiLineString: '#/components/schemas/GeoJsonMultiLineString'
+          GeoJsonLineString: '#/components/schemas/GeoJsonLineString'
+    MultiLineString:
+      description: A collection of distinct LineStrings
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiLineString
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/lineString'
+      type: object
+    MultiPoint:
+      description: A collection of Points
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiPoint
+        coordinates:
+          $ref: '#/components/schemas/positionArray'
+      type: object
+    Point:
+      type: object
+      description: 'GeoJSON: A single position'
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+        coordinates:
+          $ref: '#/components/schemas/position'
+    Polygon:
+      description: An array of linear rings
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Polygon
+        coordinates:
+          $ref: '#/components/schemas/polygon'
+      type: object
+    position:
+      description: 'GeoJSON: A single position'
+      type: array
+      minItems: 2
+      items:
+        - type: number
+      additionalItems: false
+    positionArray:
+      description: 'GeoJSON: An array of positions'
+      type: array
+      items:
+        $ref: '#/components/schemas/position'
+    lineString:
+      description: 'GeoJSON: An array of two or more positions'
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 2
+    linearRing:
+      description: 'GeoJSON: An array of four positions where the first equals the last'
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 4
+    polygon:
+      description: 'GeoJSON: An array of linear rings'
+      type: array
+      items:
+        $ref: '#/components/schemas/linearRing'
+    Product_Create:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            A product offering procured by a customer or other interested party playing a party
+            role. A product is realized as one or more service(s) and / or resource(s).
+          properties:
+            agreementItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/AgreementItemRef'
+            billingAccount:
+              $ref: '#/components/schemas/BillingAccountRef'
+            creationDate:
+              type: string
+              format: date-time
+              description: Date and time when the product was created
+            description:
+              type: string
+              description: >-
+                Is the description of the product. It could be copied from the description of the
+                Product Offering.
+            isBundle:
+              type: boolean
+              description: >-
+                If true, the product is a ProductBundle which is an instantiation of a
+                BundledProductOffering. If false, the product is a ProductComponent which is an
+                instantiation of a SimpleProductOffering.
+            isCustomerVisible:
+              type: boolean
+              description: 'If true, the product is visible by the customer.'
+            name:
+              type: string
+              description: Name of the product. It could be the same as the name of the product offering
+            orderDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was ordered
+            productCharacteristic:
+              type: array
+              items:
+                $ref: '#/components/schemas/Characteristic'
+            productOffering:
+              $ref: '#/components/schemas/ProductOfferingRef'
+            productOrderItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedOrderItem'
+            product:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRefOrValue'
+            productPrice:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductPrice'
+            productRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRelationship'
+            productSerialNumber:
+              type: string
+              description: >-
+                Is the serial number for the product. This is typically applicable to tangible
+                products e.g. Broadband Router.
+            productSpecification:
+              $ref: '#/components/schemas/ProductSpecificationRef'
+            productTerm:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductTerm'
+            realizingResource:
+              type: array
+              items:
+                $ref: '#/components/schemas/ResourceRef'
+            realizingService:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceRef'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            place:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+            startDate:
+              type: string
+              format: date-time
+              description: Is the date from which the product starts
+            status:
+              $ref: '#/components/schemas/ProductStatusType'
+            terminationDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was terminated
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Product: '#/components/schemas/Product_Create'
+    Product_Update:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            A product offering procured by a customer or other interested party playing a party
+            role. A product is realized as one or more service(s) and / or resource(s).
+          properties:
+            agreementItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/AgreementItemRef'
+            billingAccount:
+              $ref: '#/components/schemas/BillingAccountRef'
+            creationDate:
+              type: string
+              format: date-time
+              description: Date and time when the product was created
+            description:
+              type: string
+              description: >-
+                Is the description of the product. It could be copied from the description of the
+                Product Offering.
+            isBundle:
+              type: boolean
+              description: >-
+                If true, the product is a ProductBundle which is an instantiation of a
+                BundledProductOffering. If false, the product is a ProductComponent which is an
+                instantiation of a SimpleProductOffering.
+            isCustomerVisible:
+              type: boolean
+              description: 'If true, the product is visible by the customer.'
+            name:
+              type: string
+              description: Name of the product. It could be the same as the name of the product offering
+            orderDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was ordered
+            productCharacteristic:
+              type: array
+              items:
+                $ref: '#/components/schemas/Characteristic'
+            productOffering:
+              $ref: '#/components/schemas/ProductOfferingRef'
+            productOrderItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedOrderItem'
+            product:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRefOrValue'
+            productPrice:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductPrice'
+            productRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductRelationship'
+            productSerialNumber:
+              type: string
+              description: >-
+                Is the serial number for the product. This is typically applicable to tangible
+                products e.g. Broadband Router.
+            productSpecification:
+              $ref: '#/components/schemas/ProductSpecificationRef'
+            productTerm:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductTerm'
+            realizingResource:
+              type: array
+              items:
+                $ref: '#/components/schemas/ResourceRef'
+            realizingService:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceRef'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            place:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedPlaceRefOrValue'
+            startDate:
+              type: string
+              format: date-time
+              description: Is the date from which the product starts
+            status:
+              $ref: '#/components/schemas/ProductStatusType'
+            terminationDate:
+              type: string
+              format: date-time
+              description: Is the date when the product was terminated
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Product: '#/components/schemas/Product_Update'
+    ProductCreateEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - description: Example of a client listener for receiving the notification ProductCreateEvent
+          type: object
+          properties:
+            event:
+              $ref: '#/components/schemas/ProductEventPayload'
+    ProductAttributevaluechangeEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - description: Example of a client listener for receiving the notification ProductCreateEvent
+          type: object
+          properties:
+            event:
+              $ref: '#/components/schemas/ProductEventPayload'
+    ProductStatechangeEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - description: Example of a client listener for receiving the notification ProductCreateEvent
+          type: object
+          properties:
+            event:
+              $ref: '#/components/schemas/ProductEventPayload'
+    ProductBatchEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - description: Example of a client listener for receiving the notification ProductCreateEvent
+          type: object
+          properties:
+            event:
+              $ref: '#/components/schemas/ProductEventPayload'
+    ProductDeleteEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - description: Example of a client listener for receiving the notification ProductCreateEvent
+          type: object
+          properties:
+            event:
+              $ref: '#/components/schemas/ProductEventPayload'
+    ProductEventPayload:
+      description: TBD
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+    Error:
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Error: '#/components/schemas/Error'
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          required:
+            - code
+            - reason
+          properties:
+            code:
+              type: string
+              description: 'Application relevant detail, defined in the API or a common list.'
+            reason:
+              type: string
+              description: Explanation of the reason for the error which can be shown to a client user.
+            message:
+              type: string
+              description: >-
+                More details and corrective actions related to the error which can be shown to a
+                client user.
+            status:
+              type: string
+              description: HTTP Error code extension
+            referenceError:
+              type: string
+              description: URI of documentation describing the error.
+              format: uri
+      description: 'Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)'
+    EventSubscriptionInput:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - callback
+      properties:
+        callback:
+          type: string
+          description: The callback being registered.
+        query:
+          type: string
+          description: additional data to be passed
+    EventSubscription:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - id
+        - callback
+      properties:
+        id:
+          type: string
+          description: Id of the listener
+        callback:
+          type: string
+          description: The callback being registered.
+        query:
+          type: string
+          description: additional data to be passed
+  parameters:
+    Id:
+      name: id
+      required: true
+      schema:
+        type: string
+      in: path
+      description: Identifier of the Service
+    Fields:
+      name: fields
+      in: query
+      description: Comma-separated properties to be provided in response
+      schema:
+        type: string
+    Offset:
+      name: offset
+      in: query
+      description: Requested index for start of resources to be provided in response
+      schema:
+        type: integer
+    Limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response
+      schema:
+        type: integer
+  requestBodies:
+    Product_Create:
+      description: The Product to be created
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Product_Create'
+      required: true
+    Product_Update:
+      description: The Product to be updated
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Product_Update'
+      required: true
+    EventSubscriptionInput:
+      description: Data containing the callback endpoint to deliver the information
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/EventSubscriptionInput'
+      required: true
+  responses:
+    '204':
+      description: Deleted
+      content: {}
+    200ProductArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json;charset=utf-8:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Product'
+    200Product:
+      description: Success
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Product'
+    201Product:
+      description: Created
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Product'
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    EventSubscription:
+      description: Notified
+      content:
+        application/json;charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/EventSubscription'
+  headers:
+    X-Total-Count:
+      description: Total number of items matching criteria
+      schema:
+        type: integer
+    X-Result-Count:
+      description: Actual number of items returned in the response body
+      schema:
+        type: integer
+  securitySchemes: {}

@@ -309,8 +309,7 @@ public class Layout {
 	    Set<String> mapping = node.getAllDiscriminatorMapping();
 	    
 	    if(mapping.size() >= neighbours.size()) res=true;
-	    
-	    
+	    	    
 	    LOG.debug("isDiscriminatorNode: node={} neighbours={} mapping={} res={}", node, neighbours, mapping, res);
 	    
 	    return res;
@@ -774,17 +773,33 @@ public class Layout {
 		
 		Predicate<String> isMapped = s -> mapping.contains(s);
 
-		Predicate<List<Node>> isAllMapped = nodeList -> nodeList.stream().map(Node::getName).allMatch(isMapped);
+		Predicate<List<Node>> hasOnlyMappedElement = nodeList -> nodeList.stream().map(Node::getName).allMatch(isMapped);
+				
 		
-		List<List<Node>> sortedCircles = circleMap.values().stream()
-												.flatMap(List::stream)
-												.filter(isAllMapped)
-												.sorted((xs1, xs2) -> xs2.size() - xs1.size())
-												.collect(toList());
+		List<List<Node>> sortedCirclesOnlyMapped = circleMap.values().stream()
+													.flatMap(List::stream)
+													.filter(hasOnlyMappedElement)
+													.sorted((xs1, xs2) -> xs2.size() - xs1.size())
+													.collect(toList());
 
-						
+		Predicate<List<Node>> hasMappedElement = nodeList -> nodeList.stream().map(Node::getName).anyMatch(isMapped);
+		
+		List<List<Node>> sortedCirclesSomeMapped = circleMap.values().stream()
+													.flatMap(List::stream)
+													.filter(hasMappedElement)
+													.sorted((xs1, xs2) -> xs2.size() - xs1.size())
+													.collect(toList());
+
+		List<List<Node>> sortedCircles = new LinkedList<>();
+		
+		sortedCircles.addAll(sortedCirclesOnlyMapped);
+		// sortedCircles.addAll(sortedCirclesSomeMapped);
+
  		if(!sortedCircles.isEmpty()) {
 			LOG.debug("layoutCircleDiscriminatorNodes:: node={}, sorted==\n ... {}", node, sortedCircles.stream().map(Object::toString).collect(Collectors.joining("\n ... ")));
+		} else {
+			LOG.debug("layoutCircleDiscriminatorNodes:: node={} #sorted circles={}", node, sortedCircles.size() );
+			return;
 		}
 		
 		Map<Node, Long> commonNodeCount = sortedCircles.stream()
@@ -1286,11 +1301,9 @@ public class Layout {
 	private boolean processRecursive(ClassEntity cls, Node node) {
 		boolean recursive=false;
 		String rule = "Recursive (self-reference)";
-
-		Predicate<Edge> isNotDiscriminator = e -> !e.isDiscriminator(); 
 		
 		Set<Node> neighbours = apiGraph.getOutboundEdges(node).stream()
-									.filter(isNotDiscriminator)
+									.filter(Edge::isNotDiscriminator)
 									.map(this.apiGraph.getGraph()::getEdgeTarget)
 									.collect(toSet());
 		

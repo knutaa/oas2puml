@@ -123,7 +123,8 @@ public class DiagramGenerator
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
-								
+				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.edgeSet());
+			
 				boolean onlyDiscriminatorEdges = onlyDiscriminatorEdgesToPivot(currentGraph, resource, pivot);
 				
 				LOG.debug("generateDiagramGraph: pivot={} onlyDiscriminatorEdges={}", pivot, onlyDiscriminatorEdges);
