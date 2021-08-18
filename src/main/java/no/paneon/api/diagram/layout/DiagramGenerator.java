@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -214,7 +215,7 @@ public class DiagramGenerator
 	    
 	    APIGraph graph = new APIGraph(resource);
 
-	    LOG.debug("generateDiagramForResourceCore: resource=" + resource);
+	    LOG.debug("#1 generateDiagramForResource: resource=" + resource);
 	    
 	    graph.filterSimpleTypes();
 	    
@@ -261,14 +262,15 @@ public class DiagramGenerator
 	            	    	    
 	    List<Node> nodesInGraph = getSequenceOfNodesInGraph(apiGraph,resource);
 	    	   	    
-	    LOG.debug("generateDiagramForGraph:: resource={} edges{}=", resource, apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n") ));
+	    LOG.debug("generateDiagramForGraph:: resource={} nodes={}", resource, nodesInGraph );
+	    LOG.debug("generateDiagramForGraph:: resource={} edges={}", resource, apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n") ));
 
 	    Set<Node> reachable = CoreAPIGraph.getReachable(apiGraph.getGraph(), resource);
 	    
 	    LOG.debug("generateDiagramForGraph:: resource={} reachable={}", resource, reachable);
-	    
+	    	    
 	    for(Node node: nodesInGraph ) {
-	    	if(!(node instanceof EnumNode) && reachable.contains(node)) {
+	    	if(isResourceNode(node,resource) || !(node instanceof EnumNode) && reachable.contains(node)) {
 	    		
 	    	    LOG.debug("generateDiagramForGraph:: resource={} node={}", resource, node);
 
@@ -294,6 +296,11 @@ public class DiagramGenerator
   	    return diagram;
   	    
 	}
+
+	private boolean isResourceNode(Node node, String resource) {
+		return node.getName().contentEquals(resource);
+	}
+
 
 	private List<Node> getSequenceOfNodesInGraph(APIGraph graph, String resource) {
 		Node resourceNode = graph.getNode(resource);

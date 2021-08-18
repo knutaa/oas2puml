@@ -1,0 +1,64 @@
+simpleTypes: 
+  - TimePeriod
+  - Money
+  - Quantity
+  - Duration
+  - Tax
+  - Value
+  - Any
+  - object
+  - Number
+  - Date
+  - Polygon
+  - Point
+  - MultiPoint
+  - MultiLineString
+  - LineString
+  - lineString
+  - multiPoint
+  - polygon
+  - point
+  - multipoint
+  - multiLineString
+  
+layout:
+  GeoJsonMultiLineString:
+    placeAbove:
+      - RelatedPlaceRefOrValue
+  GeoJsonLineString:
+    placeAbove:
+      - RelatedPlaceRefOrValue  
+  GeoJsonPoint:
+    placeAbove:
+      - RelatedPlaceRefOrValue
+  GeoJsonPolygon:
+    placeAbove:
+      - RelatedPlaceRefOrValue
+  GeoJsonMultiPoint:
+    placeAbove:
+      - RelatedPlaceRefOrValue
+
+  # RelatedPlaceRefOrValue:
+  #   placeBelow:
+  #     - GeoJsonMultiLineString
+  #     - GeoJsonLineString
+  #     - GeoJsonPoint
+  #     - GeoJsonPolygon
+  #     - GeoJsonMultiPoint
+
+xlayout:
+  GeoJsonLineString:
+    placeBelow:
+      - LineString
+  GeoJsonMultiLineString:
+    placeBelow:
+      - MultiLineString
+  LineString:
+    placeBelow:
+      - lineString     
+  GeographicAddressValue:
+    placeLeft:
+      - GeographicSubAddressValue
+  # GeographicLocationValue:
+  #   placeBelow:
+  #     - GeoJsonLineString

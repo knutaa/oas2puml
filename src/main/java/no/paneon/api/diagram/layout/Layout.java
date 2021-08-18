@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jgrapht.Graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -162,7 +163,7 @@ public class Layout {
         								.collect(toList());
                 
         
-    	LOG.debug("generateDiagram:: processing node={}", nodesToProcess);
+    	LOG.debug("generateDiagram:: processing resource={} nodes={}", resourceNode, nodesToProcess);
              
         Optional<Node> nextNode = getNextNode(nodesToProcess);
         while(nextNode.isPresent()) {
@@ -180,6 +181,8 @@ public class Layout {
         	LOG.debug("generateDiagram:: processing edges for node={}", node);
 
     		circles = GraphAlgorithms.removeCirclesForNode(circles, node);	
+
+    		LOG.debug("generateDiagram:: processing edges for node={} circles={}", node, circles);
 
     		nodesToProcess.remove(node);
     		nextNode = getNextNode(nodesToProcess);
@@ -410,8 +413,16 @@ public class Layout {
 	// TBD - Inheritance
 	@LogMethod(level=LogLevel.DEBUG) 
 	public List<Node> processEdgesForInheritance(Diagram diagram) {
+	
+		Graph<Node, Edge> graph = layoutGraph.apiGraph.getGraph();
 		
-        List<Node> nodesToProcess = layoutGraph.apiGraph.getGraph().incomingEdgesOf(resourceNode).stream()
+		if(!graph.vertexSet().contains(resourceNode)) {
+	    	LOG.debug("processEdgesForInheritance:: resourceNode={} not found in graph!", resourceNode );
+
+			return new LinkedList<>();
+		}
+		
+        List<Node> nodesToProcess = graph.incomingEdgesOf(resourceNode).stream()
         								.filter(Edge::isAllOf)
         								.map( layoutGraph.apiGraph.getGraph()::getEdgeSource )
         								.collect(toList());
