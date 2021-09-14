@@ -75,6 +75,24 @@ public class DiagramGenerator
 			this.resources.add(args.resource);
 		}
 	
+		if(!args.subResourceConfig.isEmpty()) {
+			JSONObject subResourceConfig = Utils.readJSONOrYaml(args.subResourceConfig);
+			if(subResourceConfig!=null && !subResourceConfig.keySet().isEmpty()) {
+				if(subResourceConfig.has("subResourceConfig")) {
+					JSONObject envelop = new JSONObject();
+					envelop.put("subResourceConfig",  subResourceConfig);
+					subResourceConfig=envelop;
+				}
+				Config.addConfiguration(subResourceConfig);
+			} else {
+				if(subResourceConfig==null) {
+					Out.debug("... empty configuration for sub-resource graphs - using graph complexity analysis");
+				} else {
+					Out.debug("... configuration file for sub-resource graphs ({}) not found", args.subResourceConfig);
+				}
+			}
+		}
+		
 	    createDirectory(target);
 	    removeExistingFiles(target, ".puml");
 
@@ -95,16 +113,21 @@ public class DiagramGenerator
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
-		LOG.debug("## generateDiagramGraph: coreGraph resources={}", this.resources);
-
+		
 		Set<String> seenResources = new HashSet<>();	
+
+		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
 
 		for(String resource : this.resources) {
 			
 			LOG.debug("generateDiagramGraph: resource={}", resource);
 
-			graphs.generateSubGraphsForResource(resource);
-				
+			if(subResourceConfig!=null && subResourceConfig.has(resource)) {
+				graphs.generateSubGraphsFromConfig(resource, Config.getList(subResourceConfig, resource));
+			} else {
+				graphs.generateSubGraphsForResource(resource);
+			}
+			
 			List<String> subGraphs = graphs.getSubGraphLabels(resource);
 								
 			LOG.debug("## generateDiagramGraph: ## resource={} subGraphs={}", resource, subGraphs);
@@ -124,7 +147,7 @@ public class DiagramGenerator
 				Graph<Node,Edge> currentGraph = pivotGraph.get();
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
-				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.edgeSet());
+				LOG.debug("generateDiagramGraph: pivot={} currentGraph=\n{}", pivot, currentGraph.edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
 			
 				boolean onlyDiscriminatorEdges = onlyDiscriminatorEdgesToPivot(currentGraph, resource, pivot);
 				
@@ -143,7 +166,9 @@ public class DiagramGenerator
 					label = resource + "_" + pivot;
 				} 
 				
-				Diagram diagram = generateDiagramForGraph(pivot, apiGraph);
+				LOG.debug("generateDiagramGraph:: graph edges={}", apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
+				
+				Diagram diagram = generateDiagramForGraph(pivot, apiGraph, subGraphs);
 							
 				Out.printAlways("... generated diagram for " + pivot);
 
@@ -205,7 +230,7 @@ public class DiagramGenerator
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram generateDiagramForResource(String resource, Set<String> producedDiagrams) {
+	private Diagram generateDiagramForResource(String resource, Set<String> producedDiagrams, List<String> subGraphs) {
 		
         List<Object> generated = new ArrayList<>();
 
@@ -233,19 +258,19 @@ public class DiagramGenerator
 
 	    for(Node node: graph.getGraphNodes() ) {
 	    	if(!(node instanceof EnumNode)) {
-	    		layout.generateUMLClasses(diagram, node, resource);
+	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
 	    	}
 	    }
 	            
 	    LOG.debug("incomplete: " + diagram.getIncomplete());
 	    
-	    layout.processEdgesForCoreGraph(diagram);
+	    layout.processEdgesForCoreGraph(diagram, subGraphs);
         
 	    layout.processEdgesForRemainingNodes(diagram);
 	    	               
 	    addOrphanEnums(graph,diagram);
 	      	    	    
-  	    addDiagramForBaseTypes(diagram, producedDiagrams);
+  	    addDiagramForBaseTypes(diagram, producedDiagrams, subGraphs);
   	    
   	    layout.getNodePlacement();
   	    		
@@ -254,7 +279,7 @@ public class DiagramGenerator
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram generateDiagramForGraph(String resource, APIGraph apiGraph) {
+	private Diagram generateDiagramForGraph(String resource, APIGraph apiGraph, List<String> subGraphs) {
 		        
 	    Diagram diagram = new Diagram(args, file, resource);
 	       	    
@@ -274,13 +299,13 @@ public class DiagramGenerator
 	    		
 	    	    LOG.debug("generateDiagramForGraph:: resource={} node={}", resource, node);
 
-	    		layout.generateUMLClasses(diagram, node, resource);
+	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
 	    	}
 	    }
 	            
 	    LOG.debug("generateDiagramForGraph: resource={} processed classes",  resource);
 
-	    layout.processEdgesForCoreGraph(diagram);
+	    layout.processEdgesForCoreGraph(diagram, subGraphs);
         
 	    LOG.debug("generateDiagramForGraph: resource={} processed core graph",  resource);
 
@@ -318,9 +343,9 @@ public class DiagramGenerator
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram generateDiagramForResource(String resource, String stereoType, Set<String> producedDiagrams) {
+	private Diagram generateDiagramForResource(String resource, String stereoType, Set<String> producedDiagrams, List<String> subGraphs) {
 		
-		Diagram diagram = generateDiagramForResource(resource, producedDiagrams);
+		Diagram diagram = generateDiagramForResource(resource, producedDiagrams, subGraphs);
 		
 		producedDiagrams.add(resource);
 				
@@ -330,14 +355,14 @@ public class DiagramGenerator
 		
 	}
 	
-	private void addDiagramForBaseTypes(Diagram diagram, Set<String> producedDiagrams) {
+	private void addDiagramForBaseTypes(Diagram diagram, Set<String> producedDiagrams, List<String> subGraphs) {
 		
 		Collection<String> missingDiagrams = diagram.getBaseTypes();
 				
 		for(String baseType : missingDiagrams) { 
 	    	if(!producedDiagrams.contains(baseType)) {
 	  	    	String stereoType = Config.getDefaultStereoType();
-	  	    	Diagram subDiagram = generateDiagramForResource(baseType, stereoType, producedDiagrams);
+	  	    	Diagram subDiagram = generateDiagramForResource(baseType, stereoType, producedDiagrams, subGraphs);
 	  	    	diagram.addSubDiagram(subDiagram);
 	    	}
   	    }		
@@ -584,6 +609,7 @@ public class DiagramGenerator
 	public boolean hasExplicitResources() {
 		return !this.resources.isEmpty();
 	}
+
 
 }
 	

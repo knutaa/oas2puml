@@ -68,8 +68,8 @@ public class Layout {
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	public ClassEntity generateUMLClasses(Diagram diagram, Node node, String resource) {
-		String stereoType = Utils.getStereoType(apiGraph, node.getName(), resource);
+	public ClassEntity generateUMLClasses(Diagram diagram, Node node, String resource, List<String> subGraphs) {
+		String stereoType = Utils.getStereoType(apiGraph, node.getName(), resource, subGraphs);
 						
 		Collection<String> incomplete = new HashSet<>();
 		
@@ -149,12 +149,12 @@ public class Layout {
 
 
 	@LogMethod(level=LogLevel.DEBUG) 
-	public void processEdgesForCoreGraph(Diagram diagram) {
+	public void processEdgesForCoreGraph(Diagram diagram, List<String> subGraphs) {
 	    List<Node> coreGraph = layoutGraph.extractCoreGraph();
 
         diagram.addComment(new Comment("layout of the core: " + coreGraph));
 
-	    List<Node> processed = processEdgesForInheritance(diagram);
+	    List<Node> processed = processEdgesForInheritance(diagram, subGraphs);
 
     	List<List<Node>> circles = apiGraph.getCircles();
     	
@@ -412,7 +412,7 @@ public class Layout {
 	
 	// TBD - Inheritance
 	@LogMethod(level=LogLevel.DEBUG) 
-	public List<Node> processEdgesForInheritance(Diagram diagram) {
+	public List<Node> processEdgesForInheritance(Diagram diagram, List<String> subGraphs) {
 	
 		Graph<Node, Edge> graph = layoutGraph.apiGraph.getGraph();
 		
@@ -454,7 +454,7 @@ public class Layout {
 						
 			ClassEntity nodeEntity = diagram.getClassEntityForResource(node.getName());
 			if(nodeEntity==null) {
-				generateUMLClasses(diagram, node, diagram.getResource());
+				generateUMLClasses(diagram, node, diagram.getResource(), subGraphs);
 			}			
 
 			layoutGraph.placeReverseEdges(cls, resourceNode, node, direction, rule + " in direction " + direction);

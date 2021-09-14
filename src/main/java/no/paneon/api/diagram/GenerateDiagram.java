@@ -58,7 +58,7 @@ public class GenerateDiagram extends GenerateCommon {
 	    }
 	  
 	    Map<String,String> diagramConfig = generator.generateDiagramGraph();
-	            	    
+	            	    	    
 	    saveDiagramConfig(diagramConfig, args.targetDirectory);
 		
 	}

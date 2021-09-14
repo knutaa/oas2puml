@@ -131,6 +131,9 @@ public class Args {
 		@Parameter(names = { "--keep-inheritance-decorations" }, description = "Keep inheritance decoractions")
 		public boolean keepInheritanceDecoractions = false;
 
+		@Parameter(names = { "--subresources" }, description = "Configuration file for splitting resources into sub-resources")
+		public String subResourceConfig = "";
+		
 	}
 
 	public class Usage {

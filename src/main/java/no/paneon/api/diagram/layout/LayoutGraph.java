@@ -25,7 +25,6 @@ import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import no.paneon.api.diagram.puml.AllOfEdge;
-import no.paneon.api.diagram.puml.AllOfReverseEdge;
 import no.paneon.api.diagram.puml.ClassEntity;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
@@ -37,7 +36,6 @@ import no.paneon.api.diagram.puml.ForcedHiddenEdge;
 import no.paneon.api.diagram.puml.HiddenEdge;
 import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.AllOf;
-import no.paneon.api.graph.AllOfReverse;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Discriminator;
 import no.paneon.api.graph.Edge;
@@ -283,9 +281,10 @@ public class LayoutGraph extends Positions {
 	    
 	    LOG.debug("placeEdgeHelper: from={} to={} direction={} edge={} rule={}", from, to, direction, edge.getClass(), rule);
 	    
-	    if(edge instanceof AllOfReverse) {
-	    	cls.addEdge(new AllOfReverseEdge(direction,edge, rule));
-	    } else if(edge instanceof AllOf) {
+//	    if(edge instanceof AllOfReverse) {
+//	    	cls.addEdge(new AllOfReverseEdge(direction,edge, rule));
+//	    } else 
+	    if(edge instanceof AllOf) {
 	    	cls.addEdge(new AllOfEdge(direction,edge, rule));
 	    } else if(edge instanceof Discriminator) {
 	    	cls.addEdge(new DiscriminatorEdge(direction,edge, rule));
@@ -293,6 +292,10 @@ public class LayoutGraph extends Positions {
 	    	cls.addEdge(new EdgeEntity(direction,edge, rule));
 	    }
 	    addPlacedEdge(edge);
+	    
+	    LOG.debug("placeEdgeHelper:: edge={}", edge);
+	    LOG.debug("placeEdgeHelper:: placedEdges=\n{}", this.placedEdges.stream().map(Object::toString).collect(Collectors.joining("\n")));
+	    LOG.debug("");
 	    
 	    return true;
 	}

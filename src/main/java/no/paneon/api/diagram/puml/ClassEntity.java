@@ -200,7 +200,9 @@ public class ClassEntity extends Entity {
 	    	String format = Config.getString("inheritedFormatting");
 			String finalFormat = format.isEmpty() ? "%s" : format;
 						
-	    	this.inheritedDiscriminatorMapping.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
+	    	this.inheritedDiscriminatorMapping.stream()
+	    		.filter(n -> !this.discriminatorMapping.contains(n))
+	    		.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
 	    }
 	    
 	    List<String> nullableProperties = classProperties.stream()

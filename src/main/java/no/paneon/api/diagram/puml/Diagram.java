@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -174,10 +175,62 @@ public class Diagram extends Entity {
 			});
 		}
 		
+		if(Config.getBoolean("includeDiagramLegend")) {
+			getLegend(res);			
+		}
+
 		res.append( "@enduml" );
-		
+				
 		return res.toString();
 	
+	}
+
+	private void getLegend(StringBuilder puml) {
+		List<String> legendPrefix = Config.get("legendPrefix");
+		String legendBody = Config.getString("legendBody");
+		List<String> legendPostfix = Config.get("legendPostfix");
+
+		List<String> legendSequence = Config.get("legendSequence");
+		JSONObject legendConfig = Config.getConfig("legendConfig");
+
+		String content = puml.toString();
+		
+		String[] lines = content.split("\n");
+		
+		StringBuilder legends = new StringBuilder();
+		
+		int legendCount=0;
+		
+		for(String stereoType : legendSequence) {
+			for(String line : lines) {
+				if(line.contains(stereoType) && line.contains("class ")) {
+					JSONObject config = Config.getConfig(legendConfig,  stereoType);
+					if(config!=null) {
+						String item = legendBody.replace("$COLOR", config.optString("color"));
+						item = item.replace("$TEXT", config.optString("text"));
+						
+						if(!legends.isEmpty()) legends.append(NEWLINE);
+						legends.append(item);
+						legendCount++;
+						break;
+					}
+				}
+			}
+		}
+
+		if(!legends.isEmpty() && legendCount>1) {
+			legends.insert(0,  legendPrefix.stream().collect(Collectors.joining(NEWLINE)) );
+			legends.append(NEWLINE);
+
+			legends.append( legendPostfix.stream().collect(Collectors.joining(NEWLINE)) );
+			legends.append(NEWLINE); 
+
+			puml.append(NEWLINE);
+			puml.append(legends);
+			puml.append(NEWLINE);
+		
+		}
+		
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -189,6 +242,8 @@ public class Diagram extends Entity {
 										.sorted(Comparator.comparingInt(Core::getSeq))
 										.collect(toList());
 			
+		LOG.debug("getPumlForEdges:: {}", edges);
+		
 		Set<String> seenEntities = new HashSet<>();
 		for(EdgeEntity edge : edges) {
 				

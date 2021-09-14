@@ -72,6 +72,10 @@ public class EdgeEntity extends Entity {
 		
 		String label = edge!=null ? edge.relation : "";
 		
+		if(label.contains("xor")) {
+			return res;
+		}
+		
 		String strLabel = label;
 		if(required) {
 			String format = Config.getRequiredFormatting();

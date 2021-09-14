@@ -1,7 +1,13 @@
 {
 	"###NOTE###": "This configuration is included in the jar file",
 		
+	"subResourceConfig_EXAMPLE": {
+		"Quote": [ "Quote", "QuoteItem", "Product", "QuotePrice", "ProductPrice" ]
+	},
+	
 	"includeMetaProperties": false,
+	
+	"includeDiscriminator": true,
 	
 	"default_config": {
 	},
@@ -12,7 +18,6 @@
 		"EventSubscription": "Hub"
 	},
 
-	
 	"parentPresentCondition": " (if present)",
 	
 	"minimizeResourceDetails": true,
@@ -111,8 +116,9 @@
 		"   backgroundColor<<Enumeration>> #E6F5F7",
 		"   backgroundColor<<Ref>> #FFFFE0",
 		"   backgroundColor<<Pivot>> #FFFFFFF",
-		"   backgroundColor #FCF2E3",
-		"   backgroundColor<<SubResource>> MistyRose",
+		"   backgroundColor<<Resource>> #FCF2E3",
+		"   backgroundColor<<SubResource>> #FFFFFFF",
+		"   backgroundColor<<SubResourceReference>> #FADADD",
 		"}",
 		"",
 		"skinparam legend {",
@@ -124,6 +130,42 @@
 		""
 	],
 		
+	"stereoTypes" : [
+		"<<Enumeration>>", 
+		"<<Ref>>", 
+		"<<Pivot>>", 
+		"<<SubResource>>", 
+		"<<SubResourceReference>>"
+	],
+	
+	"includeDiagramLegend": true,
+	
+	"legendPrefix" : [
+		"skinparam legendBackgroundColor #transparent",
+		"skinparam legendBorderColor #transparent",
+		"",
+		"legend", 
+	    "   |= <size:10>Color </size>|= <size:10>Description </size>|",
+	    ""
+	],
+	
+	"legendBody" : "   | <$COLOR> | <size:10>$TEXT </size>|",
+	
+	"legendPostfix" : [
+		"endlegend"
+	],
+	
+	"legendConfig" : {
+		"<<Enumeration>>" : 			{ "color": "#E6F5F7",  "text": "Enumeration" },
+		"<<Pivot>>" : 					{ "color": "#FFFFFFF", "text": "Resource (entry point)" },
+		"<<Resource>>" : 				{ "color": "#FCF2E3",  "text": "Sub-resource" },
+		"<<Ref>>" : 					{ "color": "#FFFFE0",  "text": "Sub-resource (reference entity)" },
+		"<<SubResource>>" : 			{ "color": "#FFFFFFF", "text": "Sub-resource (sub-graph in current diagram)" },
+		"<<SubResourceReference>>" : 	{ "color": "#FADADD",  "text": "Sub-resource with details in separate diagram" }
+	},
+	
+	"legendSequence": [ "<<Pivot>>", "<<SubResource>>", "<<Resource>>", "<<Ref>>", "<<SubResourceReference>>", "<<Enumeration>>" ],
+
 	"coreInheritanceTypes": [
 		"Entity",
 		"EntityRef",
