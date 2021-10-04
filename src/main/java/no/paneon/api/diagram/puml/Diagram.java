@@ -209,7 +209,7 @@ public class Diagram extends Entity {
 						String item = legendBody.replace("$COLOR", config.optString("color"));
 						item = item.replace("$TEXT", config.optString("text"));
 						
-						if(!legends.isEmpty()) legends.append(NEWLINE);
+						if(legends.length()>0) legends.append(NEWLINE);
 						legends.append(item);
 						legendCount++;
 						break;
@@ -218,7 +218,7 @@ public class Diagram extends Entity {
 			}
 		}
 
-		if(!legends.isEmpty() && legendCount>1) {
+		if(legends.length()>0 && legendCount>1) {
 			legends.insert(0,  legendPrefix.stream().collect(Collectors.joining(NEWLINE)) );
 			legends.append(NEWLINE);
 
