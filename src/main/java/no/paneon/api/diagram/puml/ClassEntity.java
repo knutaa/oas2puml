@@ -45,6 +45,8 @@ public class ClassEntity extends Entity {
 
 	static final String BLANK_LINE = INDENT + "{field}//" + BLANK + "//" + NEWLINE;
 
+	static final String SHOW_ALL_DISCRIMINATORS = "showAllDiscriminators";
+	
 	private ClassEntity(String name) {
 		super();
 		this.name = name;
@@ -80,7 +82,8 @@ public class ClassEntity extends Entity {
 		this.description = node.getDescription();
 		this.inheritance.addAll(node.getInheritance());
 		
-		this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
+		// this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
+		this.discriminatorMapping.addAll(node.getLocalDiscriminators());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
 		
 	}
@@ -156,14 +159,24 @@ public class ClassEntity extends Entity {
 		    }
 	    }
 	    
+	    LOG.debug("ClassEntity: node={} classProperties={}",  this.name, this.classProperties);
+	    
+	    
+	    int maxLineLength = classProperties.stream()
+	    						.map(ClassProperty::toString)
+	    						.map(s -> s.split(NEWLINE))
+	    						.map(Arrays::asList)
+	    						.flatMap(List::stream)
+	    						.mapToInt(String::length).max().orElse(0);
+			
 	    classProperties.stream()
 			.sorted(Comparator.comparing(p -> p.name))
 			.collect(Collectors.partitioningBy(p -> p.name.startsWith("@")))
 			.values().stream()
 			.flatMap(List::stream)
-	    	.map(p -> INDENT + p.toString() + NEWLINE )
+	    	.map(p -> INDENT + p.toString(maxLineLength) + NEWLINE )
 	    	.forEach(res::append);
-		    
+	    
 	    List<String> customSimple = classProperties.stream()
 	    		.map(ClassProperty::getType)
 	    		.filter(APIModel::isCustomSimple)
@@ -189,21 +202,35 @@ public class ClassEntity extends Entity {
 
 	    }
 	    
-	    
-	    if(!this.discriminatorMapping.isEmpty() || !this.inheritedDiscriminatorMapping.isEmpty()) {
-	    	
-	    	res.append( INDENT + "--" + NEWLINE);
-	    	res.append( INDENT + "mapping (discriminator):" + NEWLINE);
+	    	    
+    	if(this.discriminatorMapping.size()>1 || this.inheritedDiscriminatorMapping.size()>1) {
+    		
+    	   	Set<String> discriminators = new HashSet<>();
+    	    if(!this.discriminatorMapping.isEmpty()) 
+    	    	discriminators.addAll(this.discriminatorMapping);
+    	    else
+    	    	discriminators.addAll(this.inheritedDiscriminatorMapping);
 
-	    	this.discriminatorMapping.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
+    	    LOG.debug("ClassEntity: node={} discriminators={}", this.name, discriminators);
 
-	    	String format = Config.getString("inheritedFormatting");
-			String finalFormat = format.isEmpty() ? "%s" : format;
-						
-	    	this.inheritedDiscriminatorMapping.stream()
-	    		.filter(n -> !this.discriminatorMapping.contains(n))
-	    		.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
-	    }
+    	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
+    	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
+    	    
+    	    if(showDiscriminator) {
+		    	res.append( INDENT + "--" + NEWLINE);
+		    	res.append( INDENT + "discriminator:" + NEWLINE);
+	
+		    	discriminators.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
+    	    }
+
+//	    	String format = Config.getString("inheritedFormatting");
+//			String finalFormat = format.isEmpty() ? "%s" : format;
+//						
+//	    	this.inheritedDiscriminatorMapping.stream()
+//	    		.filter(n -> !this.discriminatorMapping.contains(n))
+//	    		.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
+    	}
+
 	    
 	    List<String> nullableProperties = classProperties.stream()
 		    	.filter(ClassProperty::isNullable)
@@ -215,8 +242,10 @@ public class ClassEntity extends Entity {
 	    	nullableProperties.forEach(label -> res.append(INDENT + label + " is nullable" + NEWLINE));
 	    }
 
-	    if(!inline.isEmpty()) {
-	    	res.append( INDENT + inline + NEWLINE);
+	    LOG.debug("ClassEntity: node={} inline='{}'", this.name, inline);
+
+	    if(!this.inline.isEmpty()) {
+	    	res.append( INDENT + this.inline + NEWLINE);
 	    }
 	    
 	    res.append( "}" + NEWLINE );

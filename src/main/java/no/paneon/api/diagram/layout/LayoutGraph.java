@@ -96,6 +96,8 @@ public class LayoutGraph extends Positions {
 				
 		this.setPosition(resourceNode);
 		
+		LOG.debug("LayoutGraph:: nodes={}",  this.layoutGraph.vertexSet());
+		
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)

@@ -7,7 +7,11 @@
 	
 	"includeMetaProperties": false,
 	
-	"includeDiscriminator": true,
+	"includeDiscriminatorEdge": false,
+		
+	"includeAllDiscriminator": false,
+	"showAllDiscriminators": false,
+	"setDiscriminatorDefault": true,
 	
 	"default_config": {
 	},
@@ -63,8 +67,12 @@
 	"showDefaultCardinality": true,
 	
 	"defaultCardinality": "0..1",
+	"cardinalityOne":     "1",
+	"cardinalityZeroOne": "0..1",
 	
-	"requiredHighlighting": "<u>%s</u>",
+	"requiredHighlighting_not_used_underline": "<u>%s</u>",
+	
+	"requiredHighlighting": "%s",
 	
 	"inheritedFormatting": "<color:MediumBlue>%s</color>",
 	

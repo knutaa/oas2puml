@@ -11,7 +11,8 @@ public class Core {
 
     static final Logger LOG = LogManager.getLogger(Core.class);
 
-	protected static final String INDENT = "    ";
+	protected static final String INDENT       = "    ";
+	protected static final String INDENT_SMALL = " ";
 	protected static final String BLANK =  "                                        ";
 
 	protected static final String NEWLINE = "\n";

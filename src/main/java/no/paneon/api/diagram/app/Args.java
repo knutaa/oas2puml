@@ -70,9 +70,12 @@ public class Args {
 		@Parameter(names = { "-f", "--file", "--swagger", "--openapi" }, description = "Input OpenAPI file (or optionally as default argument)")
 		public String openAPIFile;
 
-		@Parameter(names = { "--resource" }, description = "Specific resource to process (default is all)")
+		@Parameter(names = { "--resource" }, description = "Specific comma delimited resource(s) to process (default is all)")
 		public String resource = null;
-
+		
+		@Parameter(names = { "--include-default-resources" }, description = "Include all default resources when specific resources are added (defaults to false")
+		public boolean includeDefaultResources = false;
+		
 		@Parameter(names = { "-s", "--source" }, description = "Include source details in footer (0=no, 1=basic, >1 include filename)")
 		public Integer source = 0;
 

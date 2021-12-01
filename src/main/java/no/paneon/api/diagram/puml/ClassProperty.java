@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import no.paneon.api.graph.OtherProperty;
 import no.paneon.api.graph.Property;
-import no.paneon.api.graph.Property.Visibility;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
@@ -23,6 +22,8 @@ public class ClassProperty extends Entity {
 	Visibility visibility;
 	List<String> values;
 
+	String defaultValue;
+	
 	boolean isNullable;
 	
 	public enum Visibility {
@@ -51,6 +52,9 @@ public class ClassProperty extends Entity {
 		this.addValues(property.getValues());
 
 		this.visibility=visibility;
+		
+		this.defaultValue = property.getDefaultValue();
+		
 	}
 	
 	public ClassProperty(OtherProperty property, Visibility visibility) {
@@ -82,6 +86,11 @@ public class ClassProperty extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public String toString() {
+		return toString(0);
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public String toString(int maxLength) {
 		
 		String res="";
 		StringBuilder stype = new StringBuilder();
@@ -127,9 +136,28 @@ public class ClassProperty extends Entity {
 			String format = Config.getString("inheritedFormatting");
 			if(!format.isEmpty()) res = String.format(format,res);
 		}
-			
-		if(!cardinality.isEmpty() && !Config.hideCardinaltyForProperty(cardinality)) res = res + " [" + cardinality + "]";
+		
+		if(!cardinality.isEmpty() && !Config.hideCardinaltyForProperty(cardinality)) {
+			if(cardinality.contentEquals("1")) {
+				res = "{field}" + res + " (" + cardinality + ")";
+			} else {
+				res = res + " [" + cardinality + "]";
+			}
+		}
+		
+		int length = res.replace("{field}","").length();
+		
+		LOG.debug("property: name={} defaultValue={}",  this.name, this.defaultValue);
 
+		if(this.defaultValue!=null && maxLength>0) {
+			if(length+this.defaultValue.length()>maxLength) {
+				res = res + NEWLINE;
+				res = res + INDENT + "{field}" + "\"\"" + INDENT_SMALL + "\"\"";
+			}
+			res = res + " = " + this.defaultValue;
+			
+		}
+		
 		if(!values.isEmpty()) {
 			final String indent = "                             ".substring(0,res.indexOf(':'));
 			res = res + "\n";

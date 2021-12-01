@@ -55,6 +55,9 @@ public class Diagram extends Entity {
 	
 	Collection<String> baseTypes;
 	Collection<String> simpleTypes;
+	
+	Map<String,Entity> discriminators; 
+
 
 	public Diagram(Args.Diagram args, String file, String resource) {
 		this.args = args;
@@ -71,6 +74,8 @@ public class Diagram extends Entity {
 		this.classes = new HashMap<>();
 		this.edgeEntities = new LinkedList<>();
 		
+		this.discriminators = new HashMap<>();
+
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 		
@@ -89,6 +94,12 @@ public class Diagram extends Entity {
 	@LogMethod(level=LogLevel.DEBUG)
 	public Diagram addClass(ClassEntity c) {
         if(c!=null) classes.put(c.name,c);
+		return this;
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	public Diagram addClass(Entity c) {
+        if(c!=null) discriminators.put(c.getName(),c);
 		return this;
 	}
 	
@@ -162,7 +173,9 @@ public class Diagram extends Entity {
 		}
 		
 		getPumlForClasses(res);
-						
+					
+		getPumlForDiscriminatorNodes(res);
+
 		getPumlForEdges(res);
 		
 		res.append( NEWLINE );
@@ -517,4 +530,13 @@ public class Diagram extends Entity {
 	public String getResource() {
 		return resource;
 	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private void getPumlForDiscriminatorNodes(StringBuilder res) {		
+		for(Entity entity : this.discriminators.values() ) {                                  
+			res.append(entity.toString());
+			res.append(NEWLINE);
+		}		
+	}
+	
 }

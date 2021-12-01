@@ -12,6 +12,7 @@ import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.EnumNode;
 import no.paneon.api.graph.Node;
 import no.paneon.api.graph.OneOf;
+import no.paneon.api.graph.Property;
 import no.paneon.api.graph.complexity.Complexity;
 import no.paneon.api.graph.complexity.ComplexityAdjustedAPIGraph;
 import no.paneon.api.model.APIModel;
@@ -25,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +60,8 @@ public class DiagramGenerator
 	String target;
 
 	List<String> resources;
+	
+	static String REMOVE_INHERITED = "removeInherited";
 		
 	public DiagramGenerator(Args.Diagram args, String file, String target) {
 		this.args = args;	
@@ -71,10 +75,28 @@ public class DiagramGenerator
 				
 		if(args.resource==null || args.resource.isEmpty()) {
 			this.resources.addAll(getResources(args));
-		} else {
-			this.resources.add(args.resource);
+		}  
+		
+		if(args.resource!=null) {
+			String[] parts = args.resource.split(",");
+			ArrayList<String> list = new ArrayList<String>(Arrays.asList(parts));
+			if(args.includeDefaultResources)
+				this.resources.addAll(list);
+			else
+				this.resources = list;
 		}
 	
+		Set<String> allDefinitions = APIModel.getAllDefinitions().stream().collect(toSet());
+		List<String> invalidArguments = this.resources.stream().filter(r -> !allDefinitions.contains(r)).collect(toList());
+		
+		for(String s : invalidArguments) {
+			Out.printAlways("... resource '" + s + "' not found in API - diagram not generated");
+		}
+		
+		this.resources.retainAll(allDefinitions);
+		
+		LOG.debug("this.resources=" + this.resources);
+		
 		if(!args.subResourceConfig.isEmpty()) {
 			JSONObject subResourceConfig = Utils.readJSONOrYaml(args.subResourceConfig);
 			if(subResourceConfig!=null && !subResourceConfig.keySet().isEmpty()) {
@@ -94,7 +116,7 @@ public class DiagramGenerator
 		}
 		
 	    createDirectory(target);
-	    removeExistingFiles(target, ".puml");
+	    if(!Config.getBoolean("keepExistingPuml")) removeExistingFiles(target, ".puml");
 
 		LOG.debug("DiagramGenerator() resources={}", this.resources);
 		
@@ -117,7 +139,7 @@ public class DiagramGenerator
 		Set<String> seenResources = new HashSet<>();	
 
 		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
-
+		
 		for(String resource : this.resources) {
 			
 			LOG.debug("generateDiagramGraph: resource={}", resource);
@@ -283,6 +305,10 @@ public class DiagramGenerator
 		        
 	    Diagram diagram = new Diagram(args, file, resource);
 	       	    
+	    if(true || Config.getBoolean(REMOVE_INHERITED)) {
+	    //	removeInherited(apiGraph);
+	    }
+	    
 	    layout = new Layout(apiGraph, layoutConfig);
 	            	    	    
 	    List<Node> nodesInGraph = getSequenceOfNodesInGraph(apiGraph,resource);
@@ -301,6 +327,16 @@ public class DiagramGenerator
 
 	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
 	    	}
+	    }
+	    
+	    // Set<Node> discriminatorNodes = apiGraph.getGraphNodeList().stream().filter(Node::isDiscriminatorNode).collect(toSet());
+	    Set<Node> discriminatorNodes = apiGraph.getCompleteGraph().vertexSet().stream().filter(Node::isDiscriminatorNode).collect(toSet());
+
+    	LOG.debug("generateDiagramForGraph:: discriminatorNodes={}", discriminatorNodes);
+
+	    for(Node node: apiGraph.getGraphNodeList().stream().filter(Node::isDiscriminatorNode).collect(toSet()) ) {	    		
+	    	LOG.debug("generateDiagramForGraph:: resource={} isDiscriminatorNode={}", resource, node);
+
 	    }
 	            
 	    LOG.debug("generateDiagramForGraph: resource={} processed classes",  resource);
@@ -321,6 +357,35 @@ public class DiagramGenerator
   	    return diagram;
   	    
 	}
+
+	private void removeInherited(APIGraph apiGraph) {
+				
+		Collection<String> allNodes = apiGraph.getAllNodes();
+		
+		for(String nodeName : allNodes) {
+			Node node = apiGraph.getNode(nodeName);
+			
+			Collection<Property> allOfsProperties = apiGraph.getOutboundEdges(node).stream()
+														.filter(Edge::isAllOf)
+														.map(apiGraph::getEdgeTarget)
+														.map(Node::getProperties)
+														.flatMap(List::stream)
+														.collect(toSet());
+			
+			LOG.debug("node={} allOfs={} ", node, allOfsProperties);								
+									
+			allOfsProperties = allOfsProperties.stream().filter(p->!p.getName().contentEquals("@type")).collect(toSet());
+			
+			LOG.debug("node={} allOfs={} ", node, allOfsProperties);	
+			
+			node.removeProperties(allOfsProperties);
+			
+			LOG.debug("node={} properties={} ", node, node.getProperties());	
+
+		}
+			
+	}
+
 
 	private boolean isResourceNode(Node node, String resource) {
 		return node.getName().contentEquals(resource);

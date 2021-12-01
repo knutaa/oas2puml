@@ -41,7 +41,11 @@ public class DiscriminatorEdge extends HiddenEdge {
 	public String toString() {
 		String res="";
 		
-		if(!Config.getBoolean("includeDiscriminator")) {
+		if(!Config.getBoolean("includeDiscriminatorEdge")) {
+			return res;
+		}
+		
+		if(!this.isMarked && !Config.getBoolean("includeDiscriminatorEdge")) {
 			return res;
 		}
 		

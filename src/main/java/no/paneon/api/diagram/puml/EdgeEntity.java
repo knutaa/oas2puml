@@ -21,6 +21,8 @@ public class EdgeEntity extends Entity {
 	boolean required = false;
 
 	Entity containedIn;
+	
+	boolean isMarked = false;
 		
 	public EdgeEntity(Node from, Place place, Node to, boolean required) {
 		super();
@@ -58,6 +60,9 @@ public class EdgeEntity extends Entity {
 	public EdgeEntity(Place direction, Edge edge, String rule) {
 		this(direction, edge);
 		addComment(new Comment("'rule: " + rule));
+		
+		this.isMarked = edge.isMarked;
+		
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)

@@ -2,12 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>no.paneon.api.diagram</groupId>
 	<artifactId>apidiagram</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.2-SNAPSHOT</version>
 	<name>API diagram generator</name>
     <packaging>jar</packaging>
 
 	<properties>
-		<jexcel.version>1.0.6</jexcel.version>
 		<version.java>1.8</version.java>
 		<java.version>1.8</java.version>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -35,7 +34,7 @@
 		<dependency>
 			<groupId>no.paneon.api</groupId>
 			<artifactId>apicore</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<version>2.0.2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
@@ -90,10 +89,15 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.11</version>
-				<configuration> <complianceLevel>1.8</complianceLevel> <source>1.8</source> 
-					<target>1.8</target> <showWeaveInfo>true</showWeaveInfo> <verbose>true</verbose> 
-					<Xlint>ignore</Xlint> <encoding>UTF-8 </encoding> 
+				<version>1.8</version>
+				<configuration> 
+					<complianceLevel>11</complianceLevel> 
+					<source>11</source> 
+					<target>11</target> 
+					<showWeaveInfo>true</showWeaveInfo> 
+					<verbose>true</verbose> 
+					<Xlint>ignore</Xlint> 
+					<encoding>UTF-8 </encoding> 
 				</configuration>
 				<executions>
 					<execution>
@@ -156,7 +160,7 @@
 										aspectj-maven-plugin
 									</artifactId>
 									<versionRange>
-										[1.11,)
+										[1.9,)
 									</versionRange>
 									<goals>
 										<goal>test-compile</goal>

@@ -26,14 +26,17 @@ import org.jgrapht.Graph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import no.paneon.api.diagram.puml.Entity;
 import no.paneon.api.diagram.puml.ClassEntity;
 import no.paneon.api.diagram.puml.ClassProperty;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
+import no.paneon.api.diagram.puml.DiscriminatorEntity;
 import no.paneon.api.diagram.puml.EnumEntity;
 import no.paneon.api.diagram.puml.ClassProperty.Visibility;
 import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.CoreAPIGraph;
+import no.paneon.api.graph.DiscriminatorNode;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.EnumNode;
 import no.paneon.api.graph.Node;
@@ -68,12 +71,21 @@ public class Layout {
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	public ClassEntity generateUMLClasses(Diagram diagram, Node node, String resource, List<String> subGraphs) {
+	public Entity generateUMLClasses(Diagram diagram, Node node, String resource, List<String> subGraphs) {
 		String stereoType = Utils.getStereoType(apiGraph, node.getName(), resource, subGraphs);
 						
 		Collection<String> incomplete = new HashSet<>();
 		
-		List<ClassProperty> properties = getPropertiesForClass(node, apiGraph.getOutboundNeighbours(node), incomplete);
+		List<ClassProperty> properties = getPropertiesForClass(apiGraph, node, incomplete);
+		
+		LOG.debug("generateUMLClasses: node={} properties={}",  node, properties);
+		LOG.debug("generateUMLClasses: node={} discriminatorNode={}",  node, node.getClass());
+
+		if(node instanceof DiscriminatorNode) {
+			Entity cls = new DiscriminatorEntity(node);
+			diagram.addClass(cls);
+			return cls;
+		}
 		
 		ClassEntity cls = new ClassEntity(node);
 		
@@ -101,17 +113,36 @@ public class Layout {
 		return cls;
 	}
 
-	private List<ClassProperty> getPropertiesForClass(Node node, Collection<Node> referencedNodes, Collection<String> incomplete) {
+	private List<ClassProperty> getPropertiesForClass(APIGraph apiGraph, Node node, Collection<String> incomplete) {
 		
 		List<ClassProperty> properties = new LinkedList<>();
 		
+		Collection<Node> referencedNodes = apiGraph.getOutboundNeighbours(node);
+		
 		Collection<String> referenced = APIGraph.getNodeNames( referencedNodes.stream().filter(n -> !(n instanceof EnumNode)).collect(toSet()) );
 		
+		Collection<String> allOfsProperties = apiGraph.getOutboundEdges(node).stream()
+													.filter(Edge::isAllOf)
+													.map(apiGraph::getEdgeTarget)
+													.map(Node::getProperties)
+													.flatMap(List::stream)
+													.map(Property::getName)
+													.collect(toSet());
+		
+		LOG.debug("node={} allOfs={} ", node, allOfsProperties);								
+								
+		allOfsProperties.remove("@type");
+		
+		LOG.debug("node={} allOfs={} ", node, allOfsProperties);								
+
 		node.getProperties().stream()
 			.filter(p -> !referenced.contains(p.getType()))
+			.filter(p -> !allOfsProperties.contains(p.getName()))
 			.forEach(p -> {
 					
 				ClassProperty.Visibility visibility = getClassPropertyVisibility(p);
+				
+				LOG.debug("node={} p={} #1 visibility={}", node, p, visibility);
 				
 				properties.add( new ClassProperty(p,visibility));
 
@@ -122,6 +153,8 @@ public class Layout {
 		node.getOtherProperties().forEach(prop -> {
 		
 			ClassProperty.Visibility visibility = ClassProperty.VISIBLE;
+
+			LOG.debug("node={} p={} #2 visibility={}", node, prop, visibility);
 
 			properties.add( new ClassProperty(prop, visibility));
 		

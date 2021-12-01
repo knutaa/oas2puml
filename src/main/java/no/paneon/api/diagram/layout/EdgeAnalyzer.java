@@ -650,7 +650,7 @@ public class EdgeAnalyzer {
 			linearPath = (inbound.size()==1 && outbound.size()<=1);
 			if(linearPath) {
 				Optional<Edge> edge = Utils.getFirstElement(outbound);
-				if(!edge.isEmpty()) {
+				if(edge.isPresent()) {
 					next = apiGraph.getGraph().getEdgeTarget(edge.get());
 					if(!seen.contains(next)) {
 						nextNode = Optional.of( next );
