@@ -36,6 +36,7 @@ public class ClassProperty extends Entity {
 	public static Visibility INHERITED = Visibility.INHERITED;
 	public static Visibility HIDDEN = Visibility.HIDDEN;
 	
+	private static String ATTYPE = "@type";
 	
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
@@ -122,13 +123,25 @@ public class ClassProperty extends Entity {
 
 			LOG.debug("property: name={} required={} useRequiredHighlighting={} requiredFormatting={}", 
 					this.name, this.required, useRequiredFormatting, format);
-
-			if(required && useRequiredFormatting) {
-				String sname = String.format(format,name);
-				res = sname + " : " + enumLabel + type;
-			} else {
-				res = name + " : " + enumLabel + type;
-			}
+			
+			res = (required && useRequiredFormatting) ? String.format(format,name) : name;
+			
+			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
+				res = res + " : " + enumLabel + type;
+				
+			} else if(maxLength>0 && !Config.getBoolean("keepTypeForDefaultValue")) {
+				int length = res.length();
+				
+				if(length+this.defaultValue.length()>maxLength) {
+					res = res + NEWLINE;
+					res = res + INDENT + "{field}" + "\"\"" + INDENT_SMALL + "\"\"";
+				}
+				res = res + " = " + this.defaultValue;
+				
+				return res;
+				
+			} 
+			
 		}
 		
 		LOG.debug("property: name={} visibility={}",  this.name, this.visibility);
@@ -137,25 +150,28 @@ public class ClassProperty extends Entity {
 			if(!format.isEmpty()) res = String.format(format,res);
 		}
 		
-		if(!cardinality.isEmpty() && !Config.hideCardinaltyForProperty(cardinality)) {
-			if(cardinality.contentEquals("1")) {
-				res = "{field}" + res + " (" + cardinality + ")";
+		
+		String cardinalityToShow = Config.showDefaultCardinality() ? this.cardinality : this.cardinality.replace(Config.getDefaultCardinality(),"");
+		
+		if(cardinalityToShow.isEmpty() && this.required) cardinalityToShow = "1";
+		
+		if(!cardinalityToShow.isEmpty() && !Config.hideCardinaltyForProperty(cardinalityToShow)) {
+			if(cardinalityToShow.contentEquals("1")) {
+				res = "{field}" + res + " (" + cardinalityToShow + ")";
 			} else {
-				res = res + " [" + cardinality + "]";
+				res = res + " [" + cardinalityToShow + "]";
 			}
 		}
 		
-		int length = res.replace("{field}","").length();
-		
-		LOG.debug("property: name={} defaultValue={}",  this.name, this.defaultValue);
-
-		if(this.defaultValue!=null && maxLength>0) {
+		if(this.defaultValue!=null)  {
+			LOG.debug("property: name={} defaultValue={}",  this.name, this.defaultValue);
+			int length = res.replace("{field}","").length();
+			
 			if(length+this.defaultValue.length()>maxLength) {
 				res = res + NEWLINE;
 				res = res + INDENT + "{field}" + "\"\"" + INDENT_SMALL + "\"\"";
 			}
 			res = res + " = " + this.defaultValue;
-			
 		}
 		
 		if(!values.isEmpty()) {
@@ -198,6 +214,18 @@ public class ClassProperty extends Entity {
 		return this.isNullable;
 	}
 
+	public boolean isAtTypeProperty() {
+		return this.name.contentEquals(ATTYPE);
+	}
+	
+	public void resetDefaultValue() {
+		this.defaultValue=null;
+	}
+	
+	public boolean isRequired() {
+		return this.required;
+	}
+	
 }
 
 

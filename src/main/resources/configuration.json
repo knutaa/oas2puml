@@ -5,6 +5,14 @@
 		"Quote": [ "Quote", "QuoteItem", "Product", "QuotePrice", "ProductPrice" ]
 	},
 	
+	"includeAsRequiredIfNotInPost": true,
+	
+	"includeDefaultMandatoryProperties": [ "href", "id", "@type" ],
+	
+	"keepTypeForDefaultValue": false,
+	
+	"keepDefaultValueForAtType": false,
+	
 	"includeMetaProperties": false,
 	
 	"includeDiscriminatorEdge": false,
@@ -64,7 +72,7 @@
 		"RelatedParty": " <<Ref>>"
 	},
 	
-	"showDefaultCardinality": true,
+	"showDefaultCardinality": false,
 	
 	"defaultCardinality": "0..1",
 	"cardinalityOne":     "1",

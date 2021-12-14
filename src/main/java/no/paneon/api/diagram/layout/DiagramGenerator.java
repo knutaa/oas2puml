@@ -132,6 +132,16 @@ public class DiagramGenerator
 		
 		LOG.debug("generateDiagramGraph: coreGraph={}", coreGraph.getCompleteGraph().edgeSet());
 
+//	    coreGraph.getCompleteGraph().vertexSet().stream()
+//	       	.filter(n -> n.getName().contentEquals("PermissionSpecificationRefOrValue"))
+//	       	.forEach(n -> Out.debug("init: node={} discriminators={}", n.getName(), n.getAllDiscriminatorMapping()));
+//
+//	    coreGraph.getCompleteGraph().vertexSet().stream()
+//       	.filter(n -> n.getName().contentEquals("PermissionSpecificationRefOrValue"))
+//       	.map(n -> coreGraph.getCompleteGraph().outgoingEdgesOf(n))
+//       	.forEach(e -> Out.debug("init: edge={}", e));
+
+	    
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );

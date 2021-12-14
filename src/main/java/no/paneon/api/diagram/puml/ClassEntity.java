@@ -147,7 +147,7 @@ public class ClassEntity extends Entity {
             res.append( getCommentsBefore(this.seq) );
         }
 
-	    res.append( "class " + this.name + generateInheritance() + " " + this.stereotype + " {" + NEWLINE );
+	    res.append( "class " + this.name + generateInheritanceDecoration() + " " + this.stereotype + " {" + NEWLINE );
 	    	    
 	    String desc = description;
 	    if(Config.includeDescription()) {
@@ -160,6 +160,14 @@ public class ClassEntity extends Entity {
 	    }
 	    
 	    LOG.debug("ClassEntity: node={} classProperties={}",  this.name, this.classProperties);
+	    	    
+	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
+	    
+	    if(!discriminatorsToShow.isEmpty() && !Config.getBoolean("keepDefaultValueForAtType")) {
+	    	classProperties.stream()
+				.filter(ClassProperty::isAtTypeProperty)
+				.forEach(ClassProperty::resetDefaultValue);
+	    }
 	    
 	    
 	    int maxLineLength = classProperties.stream()
@@ -203,34 +211,13 @@ public class ClassEntity extends Entity {
 	    }
 	    
 	    	    
-    	if(this.discriminatorMapping.size()>1 || this.inheritedDiscriminatorMapping.size()>1) {
-    		
-    	   	Set<String> discriminators = new HashSet<>();
-    	    if(!this.discriminatorMapping.isEmpty()) 
-    	    	discriminators.addAll(this.discriminatorMapping);
-    	    else
-    	    	discriminators.addAll(this.inheritedDiscriminatorMapping);
+	    if(!discriminatorsToShow.isEmpty()) {
+	    	res.append( INDENT + "--" + NEWLINE);
+	    	res.append( INDENT + "discriminator:" + NEWLINE);
 
-    	    LOG.debug("ClassEntity: node={} discriminators={}", this.name, discriminators);
-
-    	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
-    	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
-    	    
-    	    if(showDiscriminator) {
-		    	res.append( INDENT + "--" + NEWLINE);
-		    	res.append( INDENT + "discriminator:" + NEWLINE);
-	
-		    	discriminators.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
-    	    }
-
-//	    	String format = Config.getString("inheritedFormatting");
-//			String finalFormat = format.isEmpty() ? "%s" : format;
-//						
-//	    	this.inheritedDiscriminatorMapping.stream()
-//	    		.filter(n -> !this.discriminatorMapping.contains(n))
-//	    		.forEach(mapping -> res.append(INDENT + String.format(finalFormat,mapping) + NEWLINE));
-    	}
-
+	    	discriminatorsToShow.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
+	    }
+	    
 	    
 	    List<String> nullableProperties = classProperties.stream()
 		    	.filter(ClassProperty::isNullable)
@@ -254,8 +241,32 @@ public class ClassEntity extends Entity {
 	    
 	}
 
+	private Set<String> getDiscriminatorsToShow() {
+	   	Set<String> discriminators = new HashSet<>();
+
+    	if(this.discriminatorMapping.size()>1 || this.inheritedDiscriminatorMapping.size()>1) {
+    		
+    	    if(!this.discriminatorMapping.isEmpty()) 
+    	    	discriminators.addAll(this.discriminatorMapping);
+    	    else
+    	    	discriminators.addAll(this.inheritedDiscriminatorMapping);
+
+    	    LOG.debug("ClassEntity: getDiscriminatorsToShow={}", this.name, discriminators);
+
+    	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
+    	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
+    	    
+    	    if(!showDiscriminator) discriminators.clear();
+
+    	}
+    	
+    	return discriminators;
+	}
+	
+	
+	
 	@LogMethod(level=LogLevel.DEBUG)
-	private String generateInheritance() {	
+	private String generateInheritanceDecoration() {	
 		if(Config.getBoolean("keepInheritanceDecoractions")) {
 			StringBuilder res = new StringBuilder();
 			if(!this.inheritance.isEmpty()) {
