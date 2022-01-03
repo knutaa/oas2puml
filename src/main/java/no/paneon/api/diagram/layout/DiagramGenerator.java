@@ -166,7 +166,7 @@ public class DiagramGenerator
 			
 			for(String pivot : subGraphs ) {
 				
-				if(Config.getBoolean("firatSeenSubResourceOnly") && seenResources.contains(pivot)) continue;
+				if(Config.getBoolean("onlyFirstSeenSubResource") && seenResources.contains(pivot)) continue;
 				
 				LOG.debug("generateDiagramGraph: resource={} subGraph={}", resource, pivot);
 
