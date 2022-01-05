@@ -22,6 +22,7 @@ import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.AllOf;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.Node;
+import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Utils;
 import no.paneon.api.logging.LogMethod;
@@ -64,6 +65,9 @@ public class EdgeAnalyzer {
 	final static Status ACCEPT = Status.ACCEPT;
 	final static Status INDETERMINATE = Status.INDETERMINATE;
 	
+	final static String THRESHOLD_VALUE = "balanceThresholdValue";
+	final static int    BALANCE_THRESHOLD = Config.getInteger(THRESHOLD_VALUE,7);
+
 	interface Condition {
 		Status isCandidate(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph);
 	}	
@@ -739,17 +743,18 @@ public class EdgeAnalyzer {
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfContainedDiscriminator(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		boolean isDiscriminator = apiGraph.getNeighbours(to).stream().map(child -> apiGraph.getEdges(to,child)).flatMap(Set::stream).anyMatch(Edge::isDiscriminator); 
-		
+		boolean hasManyNodes = apiGraph.getNeighbours(from).size()>BALANCE_THRESHOLD;;
+
 		if(isDiscriminator) LOG.debug("notIfContainedDiscriminator: from={} to={} isDiscriminator={}", from, to, isDiscriminator);
 
-		return rejectIfTrue( isDiscriminator );
+		return rejectIfTrue( isDiscriminator && !hasManyNodes );
 
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfPartOfCircle(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		boolean inCircle = apiGraph.getCircles().stream().flatMap(List::stream).anyMatch(to::equals);
-		
+
 		LOG.debug("notIfPartOfCircle: from={} to={} inCircle={}", from, to, inCircle);
 
 		return rejectIfFalse( !inCircle );
@@ -843,8 +848,9 @@ public class EdgeAnalyzer {
 		boolean isInheritance = apiGraph.getEdges(from, to).stream().anyMatch(edge -> edge instanceof AllOf);
 				
 		boolean isBelow = layoutGraph.isPlacedAt(from,Place.ABOVE);
-		
-		boolean isInheritanceAndBelow = isInheritance && isBelow;
+		boolean hasManyNodes = apiGraph.getNeighbours(from).size()>BALANCE_THRESHOLD;
+
+		boolean isInheritanceAndBelow = isInheritance && isBelow && !hasManyNodes;
 		
 		Status res = rejectIfFalse(!isInheritanceAndBelow);
 		
@@ -870,7 +876,9 @@ public class EdgeAnalyzer {
 	private static Status notIfInheritance(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
 		Set<Edge> isInheritance = apiGraph.getGraph().outgoingEdgesOf(to).stream().filter(Edge::isInheritance).collect(toSet());
 				
-		Status res = rejectIfFalse(isInheritance.size()>0);
+		boolean hasManyNodes = apiGraph.getNeighbours(from).size()>BALANCE_THRESHOLD;
+
+		Status res = rejectIfFalse(isInheritance.size()>0 && !hasManyNodes);
 		
 		LOG.debug("notIfInheritance:: to={} from={} res={}", to, from, res);
 
@@ -1138,7 +1146,10 @@ public class EdgeAnalyzer {
 		if(direction==Place.ABOVE) {
 			
 			Set<Node> inheritsFrom = options.stream().filter(n -> isSuperClass(n,node)).collect(toSet());
-			if(!inheritsFrom.isEmpty()) {
+			
+			boolean possiblyUnbalanced = apiGraph.getOutboundNeighbours(node).size()>BALANCE_THRESHOLD;
+			
+			if(!inheritsFrom.isEmpty() && !possiblyUnbalanced) {
 				return inheritsFrom;
 			}
 			
