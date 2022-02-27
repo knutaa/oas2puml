@@ -58,6 +58,8 @@ public class GenerateDiagram extends GenerateCommon {
 	    	System.exit(0);
 	    }
 	  
+	    generator.applyVendorExtensions();
+	    
 	    Map<String,String> diagramConfig = generator.generateDiagramGraph();
 	            	    	    
 	    saveDiagramConfig(diagramConfig, args.targetDirectory);

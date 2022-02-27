@@ -2,6 +2,7 @@ package no.paneon.api.diagram.puml;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import no.paneon.api.diagram.layout.Place;
 import no.paneon.api.graph.Edge;
@@ -24,6 +25,8 @@ public class EdgeEntity extends Entity {
 	
 	boolean isMarked = false;
 		
+	boolean vendorExtension = false;
+	
 	public EdgeEntity(Node from, Place place, Node to, boolean required) {
 		super();
 		this.from=from;
@@ -50,6 +53,8 @@ public class EdgeEntity extends Entity {
 		this.required=edge.isRequired();
 		this.to = edge.related;
 		this.from = edge.node;
+		this.vendorExtension = edge.getVendorExtension();
+		
 	}
 	
 	public EdgeEntity(Node from, Place place, Node to, boolean required, String id, String rule) {
@@ -87,34 +92,48 @@ public class EdgeEntity extends Entity {
 			strLabel = String.format(format,strLabel);
 		} 
 		
+		String edgeVendorExtension="";
+		
+		if(this.vendorExtension) {
+			JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
+			String color = vendorExtensions.optString("extensionColor");
+			
+			String vendorExtensionFormat = "<color:" + color + ">%s";
+			
+			strLabel = String.format(vendorExtensionFormat, strLabel);
+			
+			edgeVendorExtension = "[#" + color + "]";
+			
+		}
+		
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:
 		    // res = to + " " + cardinality + " <-left-* " + from + " : " + strLabel + '\n';
-			res = from + " *-left-> " + cardinality + " " + to + " : " + strLabel + '\n';
+			res = from + " *-left" + edgeVendorExtension + "-> " + cardinality + " " + to + " : " + strLabel + '\n';
 			break;
 			
 		case RIGHT:
 		case FORCERIGHT:
-			res = from + " *-right-> " + cardinality + " " + to + " : " + strLabel + '\n';
+			res = from + " *-right" + edgeVendorExtension + "-> " + cardinality + " " + to + " : " + strLabel + '\n';
 			break;
 			
 		case ABOVE:
 		case FORCEABOVE:
-		    res = to + " " + cardinality + " <--* " + from + " : " + strLabel + '\n';
+		    res = to + " " + cardinality + " <-" + edgeVendorExtension + "-* " + from + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW:
 		case FORCEBELOW:
-		    res = from + " *--> " + " " + cardinality + " " + to + " : " + strLabel + '\n';
+		    res = from + " *-" + edgeVendorExtension + "-> " + " " + cardinality + " " + to + " : " + strLabel + '\n';
 			break;
 			
 		case BELOW_LONG:
-		    res = from + " *---> " + " " + cardinality + " " + to + " : " + strLabel + '\n';
+		    res = from + " *-" + edgeVendorExtension + "--> " + " " + cardinality + " " + to + " : " + strLabel + '\n';
 			break;
 
 		case ABOVE_LONG:
-		    res = to + " " + cardinality + " <---* " + from + " : " + strLabel + '\n';
+		    res = to + " " + cardinality + " <-" + edgeVendorExtension + "--* " + from + " : " + strLabel + '\n';
 			break;
 
 		default:

@@ -1,5 +1,6 @@
 package no.paneon.api.diagram.layout;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import no.paneon.api.diagram.app.Args;
@@ -25,6 +26,7 @@ import no.paneon.api.logging.AspectLogger.LogLevel;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.security.cert.Extension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -61,6 +64,8 @@ public class DiagramGenerator
 
 	List<String> resources;
 	
+	CoreAPIGraph coreGraph = new CoreAPIGraph();
+
 	static String REMOVE_INHERITED = "removeInherited";
 		
 	public DiagramGenerator(Args.Diagram args, String file, String target) {
@@ -70,8 +75,7 @@ public class DiagramGenerator
 		this.file = file;    
 		this.target = target;
 		
-		this.resources = new LinkedList<>();
-		
+		this.resources = new LinkedList<>();		
 				
 		if(args.resource==null || args.resource.isEmpty()) {
 			this.resources.addAll(getResources(args));
@@ -127,8 +131,6 @@ public class DiagramGenerator
 	public Map<String,String> generateDiagramGraph() {
 		
 		Map<String,String> diagramConfig = new LinkedHashMap<>();
-
-		CoreAPIGraph coreGraph = new CoreAPIGraph();
 		
 		LOG.debug("generateDiagramGraph: coreGraph={}", coreGraph.getCompleteGraph().edgeSet());
 
@@ -683,6 +685,76 @@ public class DiagramGenerator
 
 	public boolean hasExplicitResources() {
 		return !this.resources.isEmpty();
+	}
+
+
+	public void applyVendorExtensions() {
+		JSONObject extensions = Config.getConfig("vendorExtensions");
+		
+		if(extensions==null) return;
+		
+		LOG.debug("vendorExtensions: {}", extensions.toString(2));
+		
+		JSONArray resourceExtension = extensions.optJSONArray("vendorResourceExtension");
+
+		
+		if(resourceExtension!=null) {			
+			List<String> extendedResources = StreamSupport.stream(resourceExtension.spliterator(), false)
+		            .map(val -> (JSONObject) val)
+		            .map(val -> val.optString("name"))
+		            .collect(Collectors.toList());
+			
+			LOG.debug("resourceExtension: {}", extendedResources);
+
+			extendedResources.stream()
+				.map(s -> CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), s))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.forEach(node -> {
+					LOG.debug("add extension: {}", node);
+					node.setVendorExtension();
+				});
+			
+			
+		}
+			
+		JSONArray resourceAttributeExtension = extensions.optJSONArray("resourceAttributeExtension");
+		
+		if(resourceAttributeExtension!=null) {			
+			StreamSupport.stream(resourceAttributeExtension.spliterator(), false)
+		            .map(val -> (JSONObject) val)
+		            .forEach(val -> {
+		            	String resource = val.optString("name");
+		            	Optional<Node> optNode = CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), resource);
+		            	if(optNode.isPresent()) {
+		            		Node node = optNode.get();
+							node.setVendorExtension();
+							
+							JSONArray attributeExtension = val.optJSONArray("vendorAttributesExtension");
+							if(attributeExtension!=null) {
+								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
+							            .map(attr -> (JSONObject) attr)
+							            .map(attr -> attr.optString("name"))
+							            .collect(Collectors.toList());
+								
+								LOG.debug("extendedAttributes: {}", extendedAttributes);
+	
+								node.setVendorAttributeExtension(extendedAttributes);
+								
+								APIGraph.getOutboundEdges(this.coreGraph.getCompleteGraph(), node).stream()
+								.filter(e -> extendedAttributes.contains(e.relation))
+								.forEach(Edge::setVendorExtension);
+								
+							}
+		            	}    	
+		            	
+		            });
+			
+		}
+				
+		
+		
+		
 	}
 
 

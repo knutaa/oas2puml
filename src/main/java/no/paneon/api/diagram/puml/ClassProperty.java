@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+
 import no.paneon.api.graph.OtherProperty;
 import no.paneon.api.graph.Property;
 import no.paneon.api.model.APIModel;
@@ -38,6 +40,8 @@ public class ClassProperty extends Entity {
 	
 	private static String ATTYPE = "@type";
 	
+	boolean vendorExtension = false;
+	
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
 		
@@ -55,6 +59,10 @@ public class ClassProperty extends Entity {
 		this.visibility=visibility;
 		
 		this.defaultValue = property.getDefaultValue();
+		
+		this.vendorExtension = property.getVendorExtension();
+		
+		if(this.vendorExtension) LOG.debug("vendor extension: property {}", this.name);
 		
 	}
 	
@@ -161,6 +169,15 @@ public class ClassProperty extends Entity {
 			} else {
 				res = res + " [" + cardinalityToShow + "]";
 			}
+		}
+		
+		if(this.vendorExtension) {
+			JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
+			String color = vendorExtensions.optString("extensionColor");
+			
+			String vendorExtensionFormat = "<color:" + color + ">%s";
+			
+			res = String.format(vendorExtensionFormat, res);
 		}
 		
 		if(this.defaultValue!=null)  {

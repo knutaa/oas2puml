@@ -47,6 +47,8 @@ public class ClassEntity extends Entity {
 
 	static final String SHOW_ALL_DISCRIMINATORS = "showAllDiscriminators";
 	
+	private boolean vendorExtension;
+	
 	private ClassEntity(String name) {
 		super();
 		this.name = name;
@@ -57,6 +59,8 @@ public class ClassEntity extends Entity {
 		this.inheritance = new HashSet<>();
 		this.discriminatorMapping = new HashSet<>();
 		this.inheritedDiscriminatorMapping = new HashSet<>();
+		
+		this.vendorExtension=false;
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
@@ -86,6 +90,8 @@ public class ClassEntity extends Entity {
 		this.discriminatorMapping.addAll(node.getLocalDiscriminators());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
 		
+		this.vendorExtension=node.getVendorExtension();
+
 	}
 	
 	public ClassEntity(String name, List<ClassProperty> properties, String stereotype, String description, Set<String> inheritance, Set<String> mapping) {
@@ -147,7 +153,13 @@ public class ClassEntity extends Entity {
             res.append( getCommentsBefore(this.seq) );
         }
 
-	    res.append( "class " + this.name + generateInheritanceDecoration() + " " + this.stereotype + " {" + NEWLINE );
+        String vendorExtensionStereoType="";
+        
+        if(this.vendorExtension) {
+        	vendorExtensionStereoType=" <<Extension>>";
+        }
+        
+	    res.append( "class " + this.name + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
 	    	    
 	    String desc = description;
 	    if(Config.includeDescription()) {
@@ -340,5 +352,8 @@ public class ClassEntity extends Entity {
 		this.inline=inline;
 	}
 	
+	public boolean getVendorExtension() {
+		return this.vendorExtension;
+	}
 }
 	

@@ -231,6 +231,24 @@ public class Diagram extends Entity {
 			}
 		}
 
+		boolean vendorExtension = this.getClasses().stream().anyMatch(ClassEntity::getVendorExtension);
+            
+		if(vendorExtension) {
+			JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
+			String color = vendorExtensions.optString("extensionColor");
+			String vendor = vendorExtensions.optString("vendorName");
+
+			color = "#" + color;
+			
+			String item = legendBody.replace("$COLOR", color);
+			item = item.replace("$TEXT", vendor);
+		
+			if(legends.length()>0) legends.append(NEWLINE);
+			legends.append(item);
+			legendCount++;
+			
+		}
+			
 		if(legends.length()>0 && legendCount>1) {
 			legends.insert(0,  legendPrefix.stream().collect(Collectors.joining(NEWLINE)) );
 			legends.append(NEWLINE);
