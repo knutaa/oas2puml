@@ -14,20 +14,29 @@ public class VendorExtensions  {
 	private static final String VENDOR = "vendor extension";
 
 	public static String getColor() {
-		JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
-		String color = vendorExtensions.optString("extensionColor");
+		String color = COLOR;
 
-		if (color.isEmpty()) color = COLOR;
+		JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
+		
+		if(vendorExtensions!=null) {
+			color = vendorExtensions.optString("extensionColor");
+	
+			if (color.isEmpty()) color = COLOR;
+		}
 		
 		return color;
 	}
 
 	public static String getVendor() {
+		String vendor = VENDOR;
+
 		JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
-		String vendor = vendorExtensions.optString("vendorName");
-
-		if (vendor.isEmpty()) vendor = VENDOR;
-
+		
+		if(vendorExtensions!=null) {
+			vendor = vendorExtensions.optString("vendorName");	
+			if (vendor.isEmpty()) vendor = VENDOR;
+		}
+		
 		return vendor;
 	}
 	
