@@ -95,9 +95,8 @@ public class EdgeEntity extends Entity {
 		String edgeVendorExtension="";
 		
 		if(this.vendorExtension) {
-			JSONObject vendorExtensions = Config.getConfig("vendorExtensions");
-			String color = vendorExtensions.optString("extensionColor");
-			
+			String color = VendorExtensions.getColor();
+
 			String vendorExtensionFormat = "<color:" + color + ">%s";
 			
 			strLabel = String.format(vendorExtensionFormat, strLabel);
