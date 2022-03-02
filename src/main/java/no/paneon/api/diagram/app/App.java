@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.beust.jcommander.JCommander;
 
 import no.paneon.api.diagram.GenerateDiagram;
+import no.paneon.api.extensions.ExtractExtensions;
 import no.paneon.api.gql.GenerateGQLGraph;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Timestamp;
@@ -19,10 +20,11 @@ public class App {
 
 	Args args;
 	
-	Args.Diagram       argsDiagram       ;
-	Args.GQLGraph  	   argsGQLGraph      ;
-	Args.Usage  	   argsUsage         ;
-
+	Args.Diagram            argsDiagram;
+	Args.GQLGraph  	        argsGQLGraph;
+	Args.Usage  	        argsUsage;
+	Args.ExtractExtensions  argsExtractExtensions;
+	
 	App(String ... argv) {
 		     				
 		args = new Args();
@@ -31,11 +33,14 @@ public class App {
 		argsGQLGraph       = args.new GQLGraph();
 		argsUsage          = args.new Usage();
 
+		argsExtractExtensions = args.new ExtractExtensions();
+		
 		commandLine = JCommander.newBuilder()
-		    .addCommand("diagrams",     argsDiagram)
-		    .addCommand("gqlgraph",     argsGQLGraph)
-		    .addCommand("--help",       argsUsage)
-		    .addCommand("help",         argsUsage)
+		    .addCommand("diagrams",            argsDiagram)
+		    .addCommand("gqlgraph",            argsGQLGraph)
+		    .addCommand("extract-extensions",  argsExtractExtensions)
+		    .addCommand("--help",              argsUsage)
+		    .addCommand("help",                argsUsage)
 		    .build();
 
 		try {
@@ -96,6 +101,11 @@ public class App {
     		}
     		break;
     		
+       	case "extract-extensions":
+       		ExtractExtensions extensions = new ExtractExtensions(argsExtractExtensions);
+       		extensions.execute();
+			break;
+			
     	default:
     		Out.println("... unrecognized command " + commandLine.getParsedCommand());
     		Out.println("... use --help for command line options");

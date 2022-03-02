@@ -146,4 +146,16 @@ public class Args {
 
 	}
 
+	public class ExtractExtensions extends Common {
+		@Parameter(names = { "--base" }, description = "Base OpenAPI specification")
+		public String baseSpecification = "";
+
+		@Parameter(names = { "--vendor" }, description = "Extension vendor name")
+		public String vendorName = null;
+		
+		@Parameter(names = { "--extension-color" }, description = "Extension color")
+		public String extensionColor = null;
+		
+	}
+	
 }

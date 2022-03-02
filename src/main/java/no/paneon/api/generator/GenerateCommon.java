@@ -1,6 +1,7 @@
 package no.paneon.api.generator;
 
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.Args.Common;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
@@ -29,17 +30,19 @@ public class GenerateCommon {
 	public GenerateCommon(Args.Common common) {
 		this.common = common;
 		
-		List<String> dirs = getDirectories(common.workingDirectory);
-				
-		try {
-			APIModel.loadAPI(common.openAPIFile, Utils.getFile(common.openAPIFile, dirs));
-		
-			Timestamp.timeStamp("api specification loaded");
-			
-		} catch(Exception ex) {
-			Out.println("... unable to read API specification from " + common.openAPIFile);
-			System.exit(0);
-		}
+//		List<String> dirs = getDirectories(common.workingDirectory);
+//				
+//		try {
+//			APIModel.loadAPI(common.openAPIFile, Utils.getFile(common.openAPIFile, dirs));
+//		
+//			Timestamp.timeStamp("api specification loaded");
+//			
+//		} catch(Exception ex) {
+//			Out.println("... unable to read API specification from " + common.openAPIFile);
+//			System.exit(0);
+//		}
+//		
+		loadAPI(common);
 		
 		Out.silentMode = common.silentMode;
 		
@@ -70,8 +73,24 @@ public class GenerateCommon {
     	   
 	}
 	
+	
+	public static void loadAPI(Common args) {
+		List<String> dirs = getDirectories(args.workingDirectory);
+		
+		try {
+			APIModel.loadAPI(args.openAPIFile, Utils.getFile(args.openAPIFile, dirs));
+		
+			Timestamp.timeStamp("api specification loaded");
+			
+		} catch(Exception ex) {
+			Out.println("... unable to read API specification from " + args.openAPIFile);
+			System.exit(0);
+		}
+		
+	}
+
 	@LogMethod(level=LogLevel.DEBUG)
-	private List<String> getDirectories(String baseDir) {
+	private static List<String> getDirectories(String baseDir) {
 		List<String> res = new LinkedList<>();
 		if(baseDir!=null) {
 			res.add(baseDir);
