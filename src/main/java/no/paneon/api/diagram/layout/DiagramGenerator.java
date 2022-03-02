@@ -706,7 +706,10 @@ public class DiagramGenerator
 			
 			LOG.debug("resourceExtension: {}", extendedResources);
 
+			List<String> excludeAsExtensions = Config.get("excludeAsVendorExtension");
+			
 			extendedResources.stream()
+				.filter(r -> !excludeAsExtensions.contains(r))
 				.map(s -> CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), s))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
