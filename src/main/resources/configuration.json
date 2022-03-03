@@ -4,6 +4,8 @@
 	"subResourceConfig_EXAMPLE": {
 		"Quote": [ "Quote", "QuoteItem", "Product", "QuotePrice", "ProductPrice" ]
 	},
+    
+    "showSubResourceProperties": false,
 	
 	"includeAsRequiredIfNotInPost": true,
 	

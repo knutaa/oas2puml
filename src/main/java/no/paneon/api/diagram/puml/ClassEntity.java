@@ -26,6 +26,8 @@ public class ClassEntity extends Entity {
 	
     static final Logger LOG = LogManager.getLogger(ClassEntity.class);
 
+	static final String SUBRESOURCEREFERENCE = "SubResourceReference";
+
 	List<ClassProperty> classProperties;
 	List<EnumEntity> enumEntities;
 	List<EdgeEntity> edges;
@@ -189,6 +191,10 @@ public class ClassEntity extends Entity {
 	    						.flatMap(List::stream)
 	    						.mapToInt(String::length).max().orElse(0);
 			
+	    if(this.stereotype.contains(SUBRESOURCEREFERENCE) && !Config.getBoolean("showSubResourceProperties")) {
+	    	classProperties.clear();
+	    }
+	    
 	    classProperties.stream()
 			.sorted(Comparator.comparing(p -> p.name))
 			.collect(Collectors.partitioningBy(p -> p.name.startsWith("@")))
