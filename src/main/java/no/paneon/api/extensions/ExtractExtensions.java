@@ -93,9 +93,9 @@ public class ExtractExtensions extends GenerateCommon {
 		extensions.put("resourceAttributeExtension", resourceAttributeExtension);
 
 		if(args.vendorName!=null) {
-			extensions.put("vendor", args.vendorName);
+			extensions.put("vendorName", args.vendorName);
 		} else {
-			extensions.put("vendor", VendorExtensions.getVendor());
+			extensions.put("vendorName", VendorExtensions.getVendor());
 		}
 		
 		if(args.extensionColor!=null) {
