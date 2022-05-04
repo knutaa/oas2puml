@@ -2,6 +2,7 @@ package no.paneon.api.diagram.layout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.convert.converter.ConditionalGenericConverter;
 
 import no.paneon.api.diagram.app.Args;
 import no.paneon.api.diagram.puml.Comment;
@@ -731,8 +732,12 @@ public class DiagramGenerator
 		            	Optional<Node> optNode = CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), resource);
 		            	if(optNode.isPresent()) {
 		            		Node node = optNode.get();
-							node.setVendorExtension();
-							
+		            		
+		            		if(Config.getBoolean("resourceAttributeExtensionAsExtensions")) {
+		            			Out.debug("resourceAttributeExtensionAsExtensions: true");
+		            			node.setVendorExtension();
+		            		}
+		            		
 							JSONArray attributeExtension = val.optJSONArray("vendorAttributesExtension");
 							if(attributeExtension!=null) {
 								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
