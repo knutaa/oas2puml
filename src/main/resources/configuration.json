@@ -5,6 +5,14 @@
 		"Quote": [ "Quote", "QuoteItem", "Product", "QuotePrice", "ProductPrice" ]
 	},
     
+    "subResourceConfig_XX": {
+		"ShoppingCart": [ "ShoppingCart" , "CartItem", "Product", "Price", "CartPrice", "Validation" ]
+	},
+
+    "subResourceConfig_XXX": {
+		"ShoppingCart": [ "ShoppingCart" , "Product", "Validation" ]
+	},
+		
     "showSubResourceProperties": false,
 	
 	"includeAsRequiredIfNotInPost": true,

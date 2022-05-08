@@ -691,13 +691,13 @@ public class DiagramGenerator
 
 
 	public void applyVendorExtensions() {
-		JSONObject extensions = Config.getConfig(VendorExtensions.VENDOR_EXTENSIONS);
+		JSONObject extensions = Config.getConfig(VendorExtensions.EXTENSIONS);
 		
 		if(extensions==null) return;
 		
 		LOG.debug("vendorExtensions: {}", extensions.toString(2));
 		
-		JSONArray resourceExtension = extensions.optJSONArray(VendorExtensions.VENDOR_RESOURCE_EXTENSION);
+		JSONArray resourceExtension = extensions.optJSONArray(VendorExtensions.RESOURCE_EXTENSION);
 
 		
 		if(resourceExtension!=null) {			
@@ -739,7 +739,7 @@ public class DiagramGenerator
 		            			node.setVendorExtension();
 		            		}
 		            		
-							JSONArray attributeExtension = val.optJSONArray(VendorExtensions.VENDOR_ATTRIBUTE_EXTENSION);
+							JSONArray attributeExtension = val.optJSONArray(VendorExtensions.ATTRIBUTE_EXTENSION);
 							if(attributeExtension!=null) {
 								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
 							            .map(attr -> (JSONObject) attr)

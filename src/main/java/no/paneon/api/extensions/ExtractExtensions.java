@@ -53,7 +53,7 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		allNodes.forEach(node -> resourceExtensions.put(new JSONObject().put(VendorExtensions.EXTENSION_NAME,node)));
 	
-		extensions.put(VendorExtensions.VENDOR_RESOURCE_EXTENSION, resourceExtensions);
+		extensions.put(VendorExtensions.RESOURCE_EXTENSION, resourceExtensions);
 	
 		allNodes = actualAPI.getNodes();
 		allNodes.retainAll(baseAPI.getNodes());
@@ -83,7 +83,7 @@ public class ExtractExtensions extends GenerateCommon {
 			if(!vendorAttributesExtension.isEmpty()) {
 				JSONObject attributesExtension = new JSONObject();
 				attributesExtension.put(VendorExtensions.EXTENSION_NAME, node.getName());
-				attributesExtension.put(VendorExtensions.VENDOR_ATTRIBUTE_EXTENSION, vendorAttributesExtension);
+				attributesExtension.put(VendorExtensions.ATTRIBUTE_EXTENSION, vendorAttributesExtension);
 			
 				resourceAttributeExtension.put(attributesExtension);
 			}
@@ -94,9 +94,9 @@ public class ExtractExtensions extends GenerateCommon {
 		extensions.put(VendorExtensions.RESOURCE_ATTRIBUTE_EXTENSION, resourceAttributeExtension);
 
 		if(args.vendorName!=null) {
-			extensions.put(VendorExtensions.VENDOR_NAME, args.vendorName);
+			extensions.put(VendorExtensions.LEGEND_LABEL, args.vendorName);
 		} else {
-			extensions.put(VendorExtensions.VENDOR_NAME, VendorExtensions.getVendor());
+			extensions.put(VendorExtensions.LEGEND_LABEL, VendorExtensions.getVendor());
 		}
 		
 		if(args.extensionColor!=null) {
@@ -105,7 +105,7 @@ public class ExtractExtensions extends GenerateCommon {
 			extensions.put(VendorExtensions.EXTENSION_COLOR, VendorExtensions.getColor());
 		}
 		
-		extensions = new JSONObject().put(VendorExtensions.VENDOR_EXTENSIONS, extensions);
+		extensions = new JSONObject().put(VendorExtensions.EXTENSIONS, extensions);
 		
 		LOG.debug("extensions={}", extensions.toString(2));
 		LOG.debug("outputFileName={}", args.outputFileName);
