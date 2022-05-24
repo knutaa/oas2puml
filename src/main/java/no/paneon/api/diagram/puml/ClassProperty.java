@@ -172,7 +172,7 @@ public class ClassProperty extends Entity {
 		}
 		
 		if(this.vendorExtension) {
-			String color = VendorExtensions.getColor();
+			String color = Extensions.getColor();
 
 			String vendorExtensionFormat = "<color:" + color + ">%s";
 			
@@ -240,6 +240,10 @@ public class ClassProperty extends Entity {
 	
 	public boolean isRequired() {
 		return this.required;
+	}
+	
+	public boolean getVendorExtension() {
+		return this.vendorExtension;
 	}
 	
 }

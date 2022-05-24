@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import no.paneon.api.diagram.app.Args;
-import no.paneon.api.diagram.puml.VendorExtensions;
+import no.paneon.api.diagram.puml.Extensions;
 import no.paneon.api.generator.GenerateCommon;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Property;
@@ -51,9 +51,9 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		JSONArray resourceExtensions = new JSONArray();
 		
-		allNodes.forEach(node -> resourceExtensions.put(new JSONObject().put(VendorExtensions.EXTENSION_NAME,node)));
+		allNodes.forEach(node -> resourceExtensions.put(new JSONObject().put(Extensions.EXTENSION_NAME,node)));
 	
-		extensions.put(VendorExtensions.RESOURCE_EXTENSION, resourceExtensions);
+		extensions.put(Extensions.RESOURCE_EXTENSION, resourceExtensions);
 	
 		allNodes = actualAPI.getNodes();
 		allNodes.retainAll(baseAPI.getNodes());
@@ -78,12 +78,12 @@ public class ExtractExtensions extends GenerateCommon {
 
 			JSONArray vendorAttributesExtension = new JSONArray();
 
-			actualProperties.forEach(property -> vendorAttributesExtension.put(new JSONObject().put(VendorExtensions.EXTENSION_NAME,property.getName())));
+			actualProperties.forEach(property -> vendorAttributesExtension.put(new JSONObject().put(Extensions.EXTENSION_NAME,property.getName())));
 
 			if(!vendorAttributesExtension.isEmpty()) {
 				JSONObject attributesExtension = new JSONObject();
-				attributesExtension.put(VendorExtensions.EXTENSION_NAME, node.getName());
-				attributesExtension.put(VendorExtensions.ATTRIBUTE_EXTENSION, vendorAttributesExtension);
+				attributesExtension.put(Extensions.EXTENSION_NAME, node.getName());
+				attributesExtension.put(Extensions.ATTRIBUTE_EXTENSION, vendorAttributesExtension);
 			
 				resourceAttributeExtension.put(attributesExtension);
 			}
@@ -91,21 +91,21 @@ public class ExtractExtensions extends GenerateCommon {
 			
 		});
 
-		extensions.put(VendorExtensions.RESOURCE_ATTRIBUTE_EXTENSION, resourceAttributeExtension);
+		extensions.put(Extensions.RESOURCE_ATTRIBUTE_EXTENSION, resourceAttributeExtension);
 
-		if(args.vendorName!=null) {
-			extensions.put(VendorExtensions.LEGEND_LABEL, args.vendorName);
+		if(args.extensionLabel!=null) {
+			extensions.put(Extensions.LEGEND_LABEL, args.extensionLabel);
 		} else {
-			extensions.put(VendorExtensions.LEGEND_LABEL, VendorExtensions.getVendor());
+			extensions.put(Extensions.LEGEND_LABEL, Extensions.getLabel());
 		}
 		
 		if(args.extensionColor!=null) {
-			extensions.put(VendorExtensions.EXTENSION_COLOR, args.extensionColor);
+			extensions.put(Extensions.EXTENSION_COLOR, args.extensionColor);
 		} else {
-			extensions.put(VendorExtensions.EXTENSION_COLOR, VendorExtensions.getColor());
+			extensions.put(Extensions.EXTENSION_COLOR, Extensions.getColor());
 		}
 		
-		extensions = new JSONObject().put(VendorExtensions.EXTENSIONS, extensions);
+		extensions = new JSONObject().put(Extensions.EXTENSIONS, extensions);
 		
 		LOG.debug("extensions={}", extensions.toString(2));
 		LOG.debug("outputFileName={}", args.outputFileName);

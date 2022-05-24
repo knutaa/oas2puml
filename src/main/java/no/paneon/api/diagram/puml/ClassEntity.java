@@ -359,7 +359,7 @@ public class ClassEntity extends Entity {
 	}
 	
 	public boolean getVendorExtension() {
-		return this.vendorExtension;
+		return this.vendorExtension || this.getProperties().stream().anyMatch(ClassProperty::getVendorExtension);
 	}
 }
 	

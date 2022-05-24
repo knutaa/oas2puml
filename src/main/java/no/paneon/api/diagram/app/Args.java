@@ -150,8 +150,8 @@ public class Args {
 		@Parameter(names = { "--base" }, description = "Base OpenAPI specification")
 		public String baseSpecification = "";
 
-		@Parameter(names = { "--vendor" }, description = "Extension vendor name")
-		public String vendorName = null;
+		@Parameter(names = { "--extension-label" }, description = "Extension vendor name")
+		public String extensionLabel = null;
 		
 		@Parameter(names = { "--extension-color" }, description = "Extension color")
 		public String extensionColor = null;

@@ -6,12 +6,12 @@ import org.json.JSONObject;
 
 import no.paneon.api.utils.Config;
 
-public class VendorExtensions  {
+public class Extensions  {
 	
-    static final Logger LOG = LogManager.getLogger(VendorExtensions.class);
+    static final Logger LOG = LogManager.getLogger(Extensions.class);
 
 	private static final String COLOR = "blue";
-	private static final String VENDOR = "vendor extension";
+	private static final String LABEL = "extension";
 
 	public static final String LEGEND_LABEL = "legendLabel";
 	public static final String EXTENSIONS = "extensions";
@@ -40,17 +40,17 @@ public class VendorExtensions  {
 		return color;
 	}
 
-	public static String getVendor() {
-		String vendor = VENDOR;
+	public static String getLabel() {
+		String label = LABEL;
 
-		JSONObject vendorExtensions = Config.getConfig(EXTENSIONS);
+		JSONObject extensions = Config.getConfig(EXTENSIONS);
 		
-		if(vendorExtensions!=null) {
-			vendor = vendorExtensions.optString(LEGEND_LABEL);	
-			if (vendor.isEmpty()) vendor = VENDOR;
+		if(extensions!=null) {
+			label = extensions.optString(LEGEND_LABEL);	
+			if (label.isEmpty()) label = LABEL;
 		}
 		
-		return vendor;
+		return label;
 	}
 	
 	

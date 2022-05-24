@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import no.paneon.api.diagram.app.Args;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
-import no.paneon.api.diagram.puml.VendorExtensions;
+import no.paneon.api.diagram.puml.Extensions;
 import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.APISubGraph;
 import no.paneon.api.graph.CoreAPIGraph;
@@ -691,24 +691,24 @@ public class DiagramGenerator
 
 
 	public void applyVendorExtensions() {
-		JSONObject extensions = Config.getConfig(VendorExtensions.EXTENSIONS);
+		JSONObject extensions = Config.getConfig(Extensions.EXTENSIONS);
 		
 		if(extensions==null) return;
 		
 		LOG.debug("vendorExtensions: {}", extensions.toString(2));
 		
-		JSONArray resourceExtension = extensions.optJSONArray(VendorExtensions.RESOURCE_EXTENSION);
+		JSONArray resourceExtension = extensions.optJSONArray(Extensions.RESOURCE_EXTENSION);
 
 		
 		if(resourceExtension!=null) {			
 			List<String> extendedResources = StreamSupport.stream(resourceExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
-		            .map(val -> val.optString(VendorExtensions.EXTENSION_NAME))
+		            .map(val -> val.optString(Extensions.EXTENSION_NAME))
 		            .collect(Collectors.toList());
 			
 			LOG.debug("resourceExtension: {}", extendedResources);
 
-			List<String> excludeAsExtensions = Config.get(VendorExtensions.EXCLUDE_AS_EXTENSION);
+			List<String> excludeAsExtensions = Config.get(Extensions.EXCLUDE_AS_EXTENSION);
 			
 			extendedResources.stream()
 				.filter(r -> !excludeAsExtensions.contains(r))
@@ -723,27 +723,27 @@ public class DiagramGenerator
 			
 		}
 			
-		JSONArray resourceAttributeExtension = extensions.optJSONArray(VendorExtensions.RESOURCE_ATTRIBUTE_EXTENSION);
+		JSONArray resourceAttributeExtension = extensions.optJSONArray(Extensions.RESOURCE_ATTRIBUTE_EXTENSION);
 		
 		if(resourceAttributeExtension!=null) {			
 			StreamSupport.stream(resourceAttributeExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
 		            .forEach(val -> {
-		            	String resource = val.optString(VendorExtensions.EXTENSION_NAME);
+		            	String resource = val.optString(Extensions.EXTENSION_NAME);
 		            	Optional<Node> optNode = CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), resource);
 		            	if(optNode.isPresent()) {
 		            		Node node = optNode.get();
 		            		
-		            		if(Config.getBoolean(VendorExtensions.RESOURCE_ATTRIBUTE_AS_EXTENSION)) {
+		            		if(Config.getBoolean(Extensions.RESOURCE_ATTRIBUTE_AS_EXTENSION)) {
 		            			Out.debug("resourceAttributeExtensionAsExtensions: true");
 		            			node.setVendorExtension();
 		            		}
 		            		
-							JSONArray attributeExtension = val.optJSONArray(VendorExtensions.ATTRIBUTE_EXTENSION);
+							JSONArray attributeExtension = val.optJSONArray(Extensions.ATTRIBUTE_EXTENSION);
 							if(attributeExtension!=null) {
 								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
 							            .map(attr -> (JSONObject) attr)
-							            .map(attr -> attr.optString(VendorExtensions.EXTENSION_NAME))
+							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
 							            .collect(Collectors.toList());
 								
 								LOG.debug("extendedAttributes: {}", extendedAttributes);

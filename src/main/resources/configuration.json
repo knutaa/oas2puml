@@ -13,7 +13,7 @@
 		"ShoppingCart": [ "ShoppingCart" , "Product", "Validation" ]
 	},
 		
-    "showSubResourceProperties": false,
+    "showSubResourceProperties": true,
 	
 	"includeAsRequiredIfNotInPost": true,
 	

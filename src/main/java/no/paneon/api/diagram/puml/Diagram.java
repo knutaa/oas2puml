@@ -86,7 +86,7 @@ public class Diagram extends Entity {
 				
 		this.variables.put("FILE", new File(file).getName());
 		
-		this.variables.put("VENDOR_COLOR", VendorExtensions.getColor());
+		this.variables.put("VENDOR_COLOR", Extensions.getColor());
 		
 		Core.reset();
 		ClassEntity.clear();			
@@ -236,8 +236,8 @@ public class Diagram extends Entity {
 		boolean vendorExtension = this.getClasses().stream().anyMatch(ClassEntity::getVendorExtension);
             
 		if(vendorExtension) {
-			String color = VendorExtensions.getColor();
-			String vendor = VendorExtensions.getVendor();
+			String color = Extensions.getColor();
+			String vendor = Extensions.getLabel();
 
 			String item = legendBody.replace("$COLOR", "#" + color);
 			item = item.replace("$TEXT", vendor);
