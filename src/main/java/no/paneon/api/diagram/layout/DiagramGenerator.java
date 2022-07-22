@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -50,6 +51,8 @@ import static java.util.stream.Collectors.toSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
+
+import java.util.Objects;
 
 public class DiagramGenerator 
 {
@@ -202,6 +205,8 @@ public class DiagramGenerator
 					label = resource + "_" + pivot;
 				} 
 				
+				addExplicitSubResource(pivot, apiGraph);
+				
 				LOG.debug("generateDiagramGraph:: graph edges={}", apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
 				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph, subGraphs);
@@ -219,6 +224,44 @@ public class DiagramGenerator
 
 	}
 	        	
+
+	private void addExplicitSubResource(String resource, APIGraph apiGraph) {
+		JSONObject includeSubResources = Config.getConfig("includeSubResources");
+		if(includeSubResources==null || includeSubResources.isEmpty()) return;
+
+		LOG.debug("addExplicitSubResource: resource={} includeSubResources={}", resource, includeSubResources.toString(2));
+
+		Graph<Node, Edge> completeGraph = apiGraph.getCompleteGraph();
+		Graph<Node, Edge> g = apiGraph.getGraph();
+		
+		includeSubResources.keySet().stream()
+			.filter(n -> n.contentEquals(resource))
+			.map(includeSubResources::optJSONArray)
+			.filter(Objects::nonNull)
+			.map(JSONArray::toList)
+			.flatMap(List::stream)
+			.map(Object::toString)
+			.map(apiGraph::getNode)
+			.filter(Objects::nonNull)
+			.forEach(node -> {
+			
+				LOG.debug("generateDiagramGraph: graph={} node={}", resource, node);
+
+				if(!g.containsVertex(node)) g.addVertex(node);
+				
+				completeGraph.edgeSet().stream()
+					.filter(e -> completeGraph.getEdgeTarget(e).equals(node))
+					.filter(e -> completeGraph.getEdgeSource(e)!=node)
+					.filter(e -> !g.edgeSet().contains(e))
+					.filter(e -> g.vertexSet().contains(completeGraph.getEdgeSource(e)))
+					.forEach(edge -> {
+						g.addEdge(g.getEdgeSource(edge), node, edge);
+						LOG.debug("generateDiagramGraph: graph={} add edge edge={}", resource, edge);
+					});
+			});
+					
+	}
+
 
 	private boolean onlyDiscriminatorEdgesToPivot(Graph<Node, Edge> graph, String resource, String pivot) {
 		boolean res = false;
@@ -265,54 +308,54 @@ public class DiagramGenerator
 	}
 
 
-	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram generateDiagramForResource(String resource, Set<String> producedDiagrams, List<String> subGraphs) {
-		
-        List<Object> generated = new ArrayList<>();
-
-	    Diagram diagram = new Diagram(args, file, resource);
-
-	    producedDiagrams.add(resource);
-	    
-	    APIGraph graph = new APIGraph(resource);
-
-	    LOG.debug("#1 generateDiagramForResource: resource=" + resource);
-	    
-	    graph.filterSimpleTypes();
-	    
-		if(Config.processComplexity()) {						
-			graph = complexityAdjustedGraph(graph,diagram);
-		} 
-		
-	    graph.filterSimpleTypes();
-
-	    LOG.debug("filtering adjusted apiGraph: " + graph.getAllNodes().size() + " " + graph);
-	       	    
-	    layout = new Layout(graph, layoutConfig);
-	            	    
-	    LOG.debug("#4 adjusted apiGraph nodes: " + graph.getNodes());
-
-	    for(Node node: graph.getGraphNodes() ) {
-	    	if(!(node instanceof EnumNode)) {
-	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
-	    	}
-	    }
-	            
-	    LOG.debug("incomplete: " + diagram.getIncomplete());
-	    
-	    layout.processEdgesForCoreGraph(diagram, subGraphs);
-        
-	    layout.processEdgesForRemainingNodes(diagram);
-	    	               
-	    addOrphanEnums(graph,diagram);
-	      	    	    
-  	    addDiagramForBaseTypes(diagram, producedDiagrams, subGraphs);
-  	    
-  	    layout.getNodePlacement();
-  	    		
-  	    return diagram;
-  	    
-	}
+//	@LogMethod(level=LogLevel.DEBUG)
+//	private Diagram generateDiagramForResource(String resource, Set<String> producedDiagrams, List<String> subGraphs) {
+//		
+//        List<Object> generated = new ArrayList<>();
+//
+//	    Diagram diagram = new Diagram(args, file, resource);
+//
+//	    producedDiagrams.add(resource);
+//	    
+//	    APIGraph graph = new APIGraph(resource);
+//
+//	    LOG.debug("#1 generateDiagramForResource: resource=" + resource);
+//	    
+//	    graph.filterSimpleTypes();
+//	    
+//		if(Config.processComplexity()) {						
+//			graph = complexityAdjustedGraph(graph,diagram);
+//		} 
+//		
+//	    graph.filterSimpleTypes();
+//
+//	    LOG.debug("filtering adjusted apiGraph: " + graph.getAllNodes().size() + " " + graph);
+//	       	    
+//	    layout = new Layout(graph, layoutConfig);
+//	            	    
+//	    LOG.debug("#4 adjusted apiGraph nodes: " + graph.getNodes());
+//
+//	    for(Node node: graph.getGraphNodes() ) {
+//	    	if(!(node instanceof EnumNode)) {
+//	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
+//	    	}
+//	    }
+//	            
+//	    LOG.debug("incomplete: " + diagram.getIncomplete());
+//	    
+//	    layout.processEdgesForCoreGraph(diagram, subGraphs);
+//        
+//	    layout.processEdgesForRemainingNodes(diagram);
+//	    	               
+//	    addOrphanEnums(graph,diagram);
+//	      	    	    
+//  	    addDiagramForBaseTypes(diagram, producedDiagrams, subGraphs);
+//  	    
+//  	    layout.getNodePlacement();
+//  	    		
+//  	    return diagram;
+//  	    
+//	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private Diagram generateDiagramForGraph(String resource, APIGraph apiGraph, List<String> subGraphs) {
@@ -421,31 +464,31 @@ public class DiagramGenerator
 	}
 
 
-	@LogMethod(level=LogLevel.DEBUG)
-	private Diagram generateDiagramForResource(String resource, String stereoType, Set<String> producedDiagrams, List<String> subGraphs) {
-		
-		Diagram diagram = generateDiagramForResource(resource, producedDiagrams, subGraphs);
-		
-		producedDiagrams.add(resource);
-				
-		diagram.getClassEntityForResource(resource).setStereoType(stereoType);
-		
-		return diagram;
-		
-	}
+//	@LogMethod(level=LogLevel.DEBUG)
+//	private Diagram generateDiagramForResource(String resource, String stereoType, Set<String> producedDiagrams, List<String> subGraphs) {
+//		
+//		Diagram diagram = generateDiagramForResource(resource, producedDiagrams, subGraphs);
+//		
+//		producedDiagrams.add(resource);
+//				
+//		diagram.getClassEntityForResource(resource).setStereoType(stereoType);
+//		
+//		return diagram;
+//		
+//	}
 	
-	private void addDiagramForBaseTypes(Diagram diagram, Set<String> producedDiagrams, List<String> subGraphs) {
-		
-		Collection<String> missingDiagrams = diagram.getBaseTypes();
-				
-		for(String baseType : missingDiagrams) { 
-	    	if(!producedDiagrams.contains(baseType)) {
-	  	    	String stereoType = Config.getDefaultStereoType();
-	  	    	Diagram subDiagram = generateDiagramForResource(baseType, stereoType, producedDiagrams, subGraphs);
-	  	    	diagram.addSubDiagram(subDiagram);
-	    	}
-  	    }		
-	}
+//	private void addDiagramForBaseTypes(Diagram diagram, Set<String> producedDiagrams, List<String> subGraphs) {
+//		
+//		Collection<String> missingDiagrams = diagram.getBaseTypes();
+//				
+//		for(String baseType : missingDiagrams) { 
+//	    	if(!producedDiagrams.contains(baseType)) {
+//	  	    	String stereoType = Config.getDefaultStereoType();
+//	  	    	Diagram subDiagram = generateDiagramForResource(baseType, stereoType, producedDiagrams, subGraphs);
+//	  	    	diagram.addSubDiagram(subDiagram);
+//	    	}
+//  	    }		
+//	}
 
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -485,7 +528,7 @@ public class DiagramGenerator
     		LOG.debug("complexityAdjustedGraph: node=" + node.getName() + " complexity=" + analyser.getContribution(node.getName()));
     	}
     	
-	    LOG.debug("complexityAdjustedGraph: invalidBaseTypes=" + invalidBaseTypes);
+    	Out.debug("complexityAdjustedGraph: invalidBaseTypes=" + invalidBaseTypes);
 
     	final APIGraph g = rawGraph;
     	
@@ -544,7 +587,9 @@ public class DiagramGenerator
 	    Complexity analyser = new Complexity(graph.getGraph(),graph.getResourceNode());
 	    	    
 	    analyser.computeGraphComplexity();
-		    								
+		    						
+    	Out.debug("processComplexity:: resource={} analyser={}", resource, analyser);
+
 		return analyser;
 	}
 
