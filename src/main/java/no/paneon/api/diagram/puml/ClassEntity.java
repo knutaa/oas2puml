@@ -285,6 +285,8 @@ public class ClassEntity extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private String generateInheritanceDecoration() {	
+		LOG.debug("inheritance: resource={} inheritance={}", this.name, this.inheritance);	
+		
 		if(Config.getBoolean("keepInheritanceDecoractions")) {
 			StringBuilder res = new StringBuilder();
 			if(!this.inheritance.isEmpty()) {
