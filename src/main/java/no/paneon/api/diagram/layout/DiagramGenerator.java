@@ -152,7 +152,8 @@ public class DiagramGenerator
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
-		
+		LOG.debug("generateDiagramGraph: coreGraph edges={}", coreGraph.getCompleteGraph().edgeSet() );
+
 		Set<String> seenResources = new HashSet<>();	
 
 		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
@@ -201,7 +202,7 @@ public class DiagramGenerator
 					apiGraph = new APIGraph(coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
 					label = resource;
 				} else {
-					apiGraph = new APISubGraph(coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
+					apiGraph = new APISubGraph(coreGraph, currentGraph, resource, pivot, args.keepTechnicalEdges);
 					label = resource + "_" + pivot;
 				} 
 				
@@ -528,7 +529,7 @@ public class DiagramGenerator
     		LOG.debug("complexityAdjustedGraph: node=" + node.getName() + " complexity=" + analyser.getContribution(node.getName()));
     	}
     	
-    	Out.debug("complexityAdjustedGraph: invalidBaseTypes=" + invalidBaseTypes);
+    	LOG.debug("complexityAdjustedGraph: invalidBaseTypes=" + invalidBaseTypes);
 
     	final APIGraph g = rawGraph;
     	
@@ -588,7 +589,7 @@ public class DiagramGenerator
 	    	    
 	    analyser.computeGraphComplexity();
 		    						
-    	Out.debug("processComplexity:: resource={} analyser={}", resource, analyser);
+    	LOG.debug("processComplexity:: resource={} analyser={}", resource, analyser);
 
 		return analyser;
 	}
@@ -780,7 +781,7 @@ public class DiagramGenerator
 		            		Node node = optNode.get();
 		            		
 		            		if(Config.getBoolean(Extensions.RESOURCE_ATTRIBUTE_AS_EXTENSION)) {
-		            			Out.debug("resourceAttributeExtensionAsExtensions: true");
+		            			LOG.debug("resourceAttributeExtensionAsExtensions: true");
 		            			node.setVendorExtension();
 		            		}
 		            		

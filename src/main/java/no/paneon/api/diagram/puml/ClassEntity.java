@@ -92,6 +92,9 @@ public class ClassEntity extends Entity {
 		this.discriminatorMapping.addAll(node.getLocalDiscriminators());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
 		
+		LOG.debug("ClassEntity: node={} discriminatorMapping={} inheritedDiscriminatorMapping={}", 
+				node.getName(), this.discriminatorMapping, this.inheritance);
+		
 		this.vendorExtension=node.getVendorExtension();
 
 	}
@@ -242,6 +245,9 @@ public class ClassEntity extends Entity {
 				.map(ClassProperty::getName)
 		    	.collect(Collectors.toList());
 	    
+	    LOG.debug("ClassEntity: node={} nullableProperties='{}'", this.name, nullableProperties);
+
+	    
 	    if(!nullableProperties.isEmpty()) {
 	    	res.append( INDENT + "--" + NEWLINE);
 	    	nullableProperties.forEach(label -> res.append(INDENT + label + " is nullable" + NEWLINE));
@@ -249,7 +255,7 @@ public class ClassEntity extends Entity {
 
 	    LOG.debug("ClassEntity: node={} inline='{}'", this.name, inline);
 
-	    if(!this.inline.isEmpty()) {
+	    if(!this.inline.isEmpty() && !this.inline.contains("object")) {
 	    	res.append( INDENT + this.inline + NEWLINE);
 	    }
 	    
@@ -274,9 +280,13 @@ public class ClassEntity extends Entity {
     	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
     	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
     	    
+    	    LOG.debug("ClassEntity: getDiscriminatorsToShow={} showDiscriminator={}", this.name, discriminators, showDiscriminator);
+
     	    if(!showDiscriminator) discriminators.clear();
 
     	}
+    	
+    	LOG.debug("getDiscriminatorsToShow: node={} discriminators={}", this.name, discriminators);
     	
     	return discriminators;
 	}

@@ -248,18 +248,38 @@ public class Diagram extends Entity {
 			
 		}
 			
-		if(legends.length()>0 && legendCount>1) {
+		boolean showColorLegend=legends.length()>0 && legendCount>1;
+		if(showColorLegend) {
 			legends.insert(0,  legendPrefix.stream().collect(Collectors.joining(NEWLINE)) );
 			legends.append(NEWLINE);
+		}
+		
+		boolean hasMandatoryProperties = this.getClasses().stream()
+				.map(ClassEntity::getProperties)
+				.flatMap(Collection::stream)
+				.anyMatch(ClassProperty::isRequired);
 
+		if(hasMandatoryProperties) {
+
+			if(!showColorLegend) {
+				List<String> legendPrefixBasic = Config.get("legendPrefixBasic");
+				legends = new StringBuilder();
+				legends.append(NEWLINE);
+				legends.append( legendPrefixBasic.stream().collect(Collectors.joining(NEWLINE)) );				
+			}
+			legends.append(Config.getString("legendMandatoryProperties"));
+			legends.append(NEWLINE);			
+		}
+		
+		if(legends.length()>0 && (legendCount>1 || hasMandatoryProperties)) {
 			legends.append( legendPostfix.stream().collect(Collectors.joining(NEWLINE)) );
 			legends.append(NEWLINE); 
-
+		
 			puml.append(NEWLINE);
 			puml.append(legends);
 			puml.append(NEWLINE);
-		
 		}
+		
 		
 	}
 

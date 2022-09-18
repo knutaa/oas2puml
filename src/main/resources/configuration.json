@@ -25,7 +25,7 @@
 	
 	"includeMetaProperties": false,
 	
-	"includeDiscriminatorEdge": false,
+	"includeDiscriminatorEdge": true,
 		
 	"includeAllDiscriminator": false,
 	"showAllDiscriminators": false,
@@ -168,6 +168,16 @@
 	
 	"includeDiagramLegend": true,
 	
+    "legendMandatoryProperties": " <size:10>(1) : Mandatory property</size>",
+    
+    "legendPrefixBasic": [
+        "skinparam legendBackgroundColor #transparent",
+        "skinparam legendBorderColor #transparent",
+        "",
+        "legend",
+        "",
+    ],
+    
 	"legendPrefix" : [
 		"skinparam legendBackgroundColor #transparent",
 		"skinparam legendBorderColor #transparent",
@@ -196,14 +206,30 @@
 
 	"coreInheritanceTypes": [
 		"Entity",
+        "Entity_FVO",
+        "Entity_MVO",
+
 		"EntityRef",
+        "EntityRef_FVO",
+        "EntityRef_MVO",
+
 		"Extensible",
+        "Extensible_FVO",
+        "Extensible_MVO",
+
 		"Addressable",
+        "Addressable_FVO",
+        "Addressable_MVO",
+
 		"SchemaContext",
-		
+        "SchemaContext_FVO",
+        "SchemaContext_MVO",
+
 		"GcEntityRef",
 		
-		"Reference"
+		"Reference",
+        "Reference_FVO",
+        "Reference_MVO"
 		
 	],
 	
@@ -213,7 +239,9 @@
 	
 	"subClassExcludeRegexp": [
 		".*_Create$",
-		".*_Update$"
+		".*_Update$",
+        ".*_FVO$",
+        ".*_MVO$"
 	],
 	
 	"includeInherited": true,
@@ -230,6 +258,8 @@
 	
 	"diagrams.yaml": "generated/diagrams/diagrams.yaml",
 	
-	"keepInheritanceDecoractions": false
+	"keepInheritanceDecoractions": false,
+    
+    "maxDiscriminators": 4
 	
 }

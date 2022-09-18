@@ -8,6 +8,7 @@ import no.paneon.api.graph.Discriminator;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.Node;
 import no.paneon.api.utils.Config;
+import no.paneon.api.utils.Out;
 import no.paneon.api.logging.LogMethod;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
@@ -44,6 +45,8 @@ public class DiscriminatorEdge extends HiddenEdge {
 		if(!Config.getBoolean("includeDiscriminatorEdge")) {
 			return res;
 		}
+		
+		LOG.debug("DiscriminatorEdge: from={} to={} isMarked={}", from, to, this.isMarked);
 		
 		if(!this.isMarked && !Config.getBoolean("includeDiscriminatorEdge")) {
 			return res;
