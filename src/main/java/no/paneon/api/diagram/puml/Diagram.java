@@ -58,7 +58,8 @@ public class Diagram extends Entity {
 	
 	Map<String,Entity> discriminators; 
 
-
+	static final String INCLUDE_COMMENTS = "includeCommentsInRules";
+	
 	public Diagram(Args.Diagram args, String file, String resource) {
 		this.args = args;
 		this.file = file;
@@ -299,7 +300,9 @@ public class Diagram extends Entity {
 				
 			Entity containedIn = edge.getContainingEntity();
 			if(!seenEntities.contains(containedIn.getName())) {
-				res.append( containedIn.getCommentsBefore(edge.getSeq()) );
+				if(Config.getBoolean(INCLUDE_COMMENTS)) {
+					res.append( containedIn.getCommentsBefore(edge.getSeq()) );
+				}
 				seenEntities.add( containedIn.getName());
 			}
 		

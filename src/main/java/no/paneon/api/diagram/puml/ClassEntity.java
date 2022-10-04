@@ -45,6 +45,8 @@ public class ClassEntity extends Entity {
 	Set<String> discriminatorMapping;
 	Set<String> inheritedDiscriminatorMapping;
 
+	List<String> discriminatorExtension;
+	
 	static final String BLANK_LINE = INDENT + "{field}//" + BLANK + "//" + NEWLINE;
 
 	static final String SHOW_ALL_DISCRIMINATORS = "showAllDiscriminators";
@@ -63,6 +65,7 @@ public class ClassEntity extends Entity {
 		this.inheritedDiscriminatorMapping = new HashSet<>();
 		
 		this.vendorExtension=false;
+		this.discriminatorExtension = new LinkedList<>();
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
@@ -77,6 +80,7 @@ public class ClassEntity extends Entity {
 		
 		this.inheritance = new HashSet<>();
 		this.discriminatorMapping = new HashSet<>();
+		this.discriminatorExtension = new LinkedList<>();
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
@@ -96,6 +100,7 @@ public class ClassEntity extends Entity {
 				node.getName(), this.discriminatorMapping, this.inheritance);
 		
 		this.vendorExtension=node.getVendorExtension();
+		this.discriminatorExtension=node.getDiscriminatorExtension();
 
 	}
 	
@@ -236,7 +241,18 @@ public class ClassEntity extends Entity {
 	    	res.append( INDENT + "--" + NEWLINE);
 	    	res.append( INDENT + "discriminator:" + NEWLINE);
 
-	    	discriminatorsToShow.forEach(mapping -> res.append(INDENT + mapping + NEWLINE));
+			String color = Extensions.getColor();
+
+			String vendorExtensionFormat = "<color:" + color + ">%s";
+				
+	    	discriminatorsToShow.forEach(mapping -> {
+	    		if(this.discriminatorExtension.contains(mapping)) {
+	    			String coloredMapping = String.format(vendorExtensionFormat, mapping);
+	    			res.append(INDENT + coloredMapping + NEWLINE);
+	    		} else {
+	    			res.append(INDENT + mapping + NEWLINE);
+	    		}
+	    	});
 	    }
 	    
 	    

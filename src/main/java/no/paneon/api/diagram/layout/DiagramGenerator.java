@@ -12,6 +12,7 @@ import no.paneon.api.graph.APIGraph;
 import no.paneon.api.graph.APISubGraph;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Edge;
+import no.paneon.api.graph.EdgeEnum;
 import no.paneon.api.graph.EnumNode;
 import no.paneon.api.graph.Node;
 import no.paneon.api.graph.OneOf;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -405,7 +407,7 @@ public class DiagramGenerator
 
 	    layout.processEdgesForRemainingNodes(diagram);
 	    	            
-	    addOrphanEnums(apiGraph,diagram);
+	    // addOrphanEnums(apiGraph,diagram);
 	      	    	
   	    List<String> placement = layout.getNodePlacement();
   	    placement.forEach(line -> diagram.addComment(new Comment(line)));
@@ -492,22 +494,31 @@ public class DiagramGenerator
 //	}
 
 
-	@LogMethod(level=LogLevel.DEBUG)
-	private void addOrphanEnums(APIGraph graph, Diagram diagram) {
-  	    List<String> orphans = Config.getOrphanEnums();
-  	    if(Config.getIncludeOrphanEnums() || orphans.contains(graph.getResource())) {
-  	    	List<String> orphanEnums = Config.getOrphanEnums(graph.getResource());
-  	    	if(orphanEnums.isEmpty()) {
-  	    		layout.addOrphanEnums(diagram, graph.getNode(graph.getResource()));   	
-  	    	} else {
-  	    		Node resource = graph.getNode(graph.getResource());
-  	    		for(String orphan : orphanEnums) {
-  	    			Node orphanNode = graph.getNode(orphan);
-  	    			layout.addOrphanEnum(diagram, resource, orphanNode);
-  	    		}
-  	    	}    		
-  	    }
-	}
+//	@LogMethod(level=LogLevel.DEBUG)
+//	private void addOrphanEnums(APIGraph graph, Diagram diagram) {
+//  	    List<String> orphans = Config.getOrphanEnums();
+//  	    Out.debug("addOrphanEnums: orphans={}", orphans);
+//  	    if(Config.getIncludeOrphanEnums() || orphans.contains(graph.getResource())) {
+//  	    	List<String> orphanEnums = Config.getOrphanEnums(graph.getResource());
+//  	    	
+//  	  	    Out.debug("addOrphanEnums: resource={} orphanEnums={}", graph.getResource(), orphans);
+//
+//  	    	if(orphanEnums.isEmpty()) {
+//  	    		layout.addOrphanEnums(diagram, graph.getNode(graph.getResource()));   	
+//  	    	} else {
+//  	    		Node resource = graph.getNode(graph.getResource());
+//  	    		for(String orphan : orphanEnums) {
+//  	    			Node orphanNode = graph.getNode(orphan);
+//  	    	  	    Out.debug("addOrphanEnums: resource={} orphanEnumNode={}", graph.getResource(), orphanNode);
+//
+//  	    	  	    Edge edge = new EdgeEnum(resource,"", orphanNode,"",false);
+//  	    	  	    graph.getCompleteGraph().addEdge(resource, orphanNode, edge);
+//  	    	  	    
+//  	    			layout.addOrphanEnum(diagram, resource, orphanNode);
+//  	    		}
+//  	    	}    		
+//  	    }
+//	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private APIGraph complexityAdjustedGraph(APIGraph rawGraph, Diagram diagram) {
@@ -739,6 +750,8 @@ public class DiagramGenerator
 	public void applyVendorExtensions() {
 		JSONObject extensions = Config.getConfig(Extensions.EXTENSIONS);
 		
+		LOG.debug("vendorExtensions: extensions={}", extensions==null ? "null" : extensions.toString(2));
+
 		if(extensions==null) return;
 		
 		LOG.debug("vendorExtensions: {}", extensions.toString(2));
@@ -764,6 +777,7 @@ public class DiagramGenerator
 				.forEach(node -> {
 					LOG.debug("add extension: {}", node);
 					node.setVendorExtension();
+					this.coreGraph.getCompleteGraph().outgoingEdgesOf(node).stream().forEach(Edge::setVendorExtension);
 				});
 			
 			
@@ -771,6 +785,8 @@ public class DiagramGenerator
 			
 		JSONArray resourceAttributeExtension = extensions.optJSONArray(Extensions.RESOURCE_ATTRIBUTE_EXTENSION);
 		
+		LOG.debug("resourceAttributeExtension: {}", resourceAttributeExtension.toString());
+
 		if(resourceAttributeExtension!=null) {			
 			StreamSupport.stream(resourceAttributeExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
@@ -800,14 +816,56 @@ public class DiagramGenerator
 								.filter(e -> extendedAttributes.contains(e.relation))
 								.forEach(Edge::setVendorExtension);
 								
+								Map<String,JSONObject> extendedAttributesDetails = StreamSupport.stream(attributeExtension.spliterator(), false)
+							            .map(attr -> (JSONObject) attr)
+							            .collect(Collectors.toMap(o -> o.getString(Extensions.EXTENSION_NAME),Function.identity()));
+						
+		            			LOG.debug("extendedAttributesDetails: {}", extendedAttributesDetails);
+
+								APIGraph.getOutboundEdges(this.coreGraph.getCompleteGraph(), node).stream()
+								.filter(edge -> extendedAttributesDetails.containsKey(edge.relation))
+								.forEach(edge -> {
+									boolean cardinalityExtension = extendedAttributesDetails.get(edge.relation).optBoolean(Extensions.EXTENSION_CARDINALITY);
+						
+			            			LOG.debug("cardinalityExtension: edge={} {}", edge, cardinalityExtension);
+
+									if(cardinalityExtension) {
+										edge.setCardinalityExtension();
+									}
+								});
+								
 							}
+							
 		            	}    	
 		            	
 		            });
 			
 		}
 				
+		JSONArray resourceDiscriminatorExtension = extensions.optJSONArray(Extensions.RESOURCE_DISCRIMINATOR_EXTENSION);
 		
+		if(resourceDiscriminatorExtension!=null) {			
+			StreamSupport.stream(resourceDiscriminatorExtension.spliterator(), false)
+	            .map(val -> (JSONObject) val)
+	            .forEach(val -> {
+	            	String resource = val.optString(Extensions.EXTENSION_NAME);
+	            	Optional<Node> optNode = CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), resource);
+	            	if(optNode.isPresent()) {
+	            		Node node = optNode.get();
+	            		
+						JSONArray discriminatorExtension = val.optJSONArray(Extensions.DISCRIMINATOR_EXTENSION);
+						if(discriminatorExtension!=null) {
+							
+							LOG.debug("discriminatorExtension: {}", discriminatorExtension);
+							List<String> discriminators = discriminatorExtension.toList().stream().map(Object::toString).collect(toList());
+									
+							node.setVendorDiscriminatorExtension(discriminators);
+							
+						}
+	            	}    	
+	            });
+			
+		}
 		
 		
 	}

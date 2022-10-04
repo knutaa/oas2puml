@@ -44,7 +44,7 @@
 	
 	"minimizeResourceDetails": true,
 	
-	"includeCommentsInRules": true,
+	"includeCommentsInRules": false,
 	
 	"onlyMandatoryForPost": true,
 	
@@ -168,7 +168,7 @@
 	
 	"includeDiagramLegend": true,
 	
-    "legendMandatoryProperties": " <size:10>(1) : Mandatory property</size>",
+    "legendMandatoryProperties": " <size:10>(1) : Mandatory property",
     
     "legendPrefixBasic": [
         "skinparam legendBackgroundColor #transparent",
@@ -183,11 +183,11 @@
 		"skinparam legendBorderColor #transparent",
 		"",
 		"legend", 
-	    "   |= <size:10>Color </size>|= <size:10>Description </size>|",
+	    "   |= <size:10>Color |= <size:10>Description |",
 	    ""
 	],
 	
-	"legendBody" : "   | <$COLOR> | <size:10>$TEXT </size>|",
+	"legendBody" : "   | <$COLOR> | <size:10>$TEXT |",
 	
 	"legendPostfix" : [
 		"endlegend"

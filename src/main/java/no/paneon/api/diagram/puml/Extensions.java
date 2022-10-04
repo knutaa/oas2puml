@@ -26,6 +26,11 @@ public class Extensions  {
 	public static final String EXCLUDE_AS_EXTENSION = "excludeAsExtension";
 	public static final String RESOURCE_ATTRIBUTE_AS_EXTENSION = "resourceAttributeExtensionAsExtensions";
 	
+	public static final String DISCRIMINATOR_EXTENSION = "discriminatorExtension";
+	public static final String RESOURCE_DISCRIMINATOR_EXTENSION = "resourceDiscriminatorExtension";
+
+	public static final String EXTENSION_CARDINALITY = "cardinality";
+	
 	public static String getColor() {
 		String color = COLOR;
 
