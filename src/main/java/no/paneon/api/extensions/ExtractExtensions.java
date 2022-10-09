@@ -67,7 +67,6 @@ public class ExtractExtensions extends GenerateCommon {
 		actualAPI.getNodesByNames(allNodes).forEach(node -> {
 			
 			List<String> inherited = node.getInheritedProperties(actualAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());			
-			// List<Property> actualProperties = node.getProperties().stream().filter(p->!inherited.contains(p.getName())).collect(toList());
 			List<Property> actualProperties = node.getProperties();
 
 			Node baseNode = baseAPI.getNode(node.getName());
