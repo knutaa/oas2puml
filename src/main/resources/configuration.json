@@ -250,6 +250,8 @@
 	
 	"expandPropertiesFromAllOfs": false,
 	
+	"removeInheritedAllOfEdges": false,	
+	
 	"minimum_complexity" : 200,
 	
 	"includeDiscriminatorMapping": true,

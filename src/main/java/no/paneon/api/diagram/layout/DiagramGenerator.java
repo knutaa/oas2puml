@@ -868,6 +868,31 @@ public class DiagramGenerator
 		}
 		
 		
+		JSONArray resourceInheritanceExtension = extensions.optJSONArray(Extensions.RESOURCE_INHERITANCE_EXTENSION);
+		
+		if(resourceInheritanceExtension!=null) {			
+			StreamSupport.stream(resourceInheritanceExtension.spliterator(), false)
+	            .map(val -> (JSONObject) val)
+	            .forEach(val -> {
+	            	String resource = val.optString(Extensions.EXTENSION_NAME);
+	            	Optional<Node> optNode = CoreAPIGraph.getNodeByName(this.coreGraph.getCompleteGraph(), resource);
+	            	if(optNode.isPresent()) {
+	            		Node node = optNode.get();
+	            		
+						JSONArray inheritanceExtension = val.optJSONArray(Extensions.INHERITANCE_EXTENSION);
+						if(inheritanceExtension!=null) {
+							
+							LOG.debug("inheritanceExtension: node={} {}", resource, inheritanceExtension);
+							List<String> inheritance = inheritanceExtension.toList().stream().map(Object::toString).collect(toList());
+									
+							node.setVendorInheritanceExtension(inheritance);
+							
+						}
+	            	}    	
+	            });
+			
+		}
+		
 	}
 
 

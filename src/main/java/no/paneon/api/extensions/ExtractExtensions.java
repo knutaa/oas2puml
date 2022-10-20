@@ -63,6 +63,7 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		JSONArray resourceAttributeExtension = new JSONArray();
 		JSONArray resourceDiscriminatorExtension = new JSONArray();
+		JSONArray resourceInheritanceExtension = new JSONArray();
 
 		actualAPI.getNodesByNames(allNodes).forEach(node -> {
 			
@@ -151,10 +152,26 @@ public class ExtractExtensions extends GenerateCommon {
 				resourceDiscriminatorExtension.put(discriminatorExtension);	
 			}
 				
+			Set<String> actualInheritance = node.getActualInheritance();
+			Set<String> baseInheritance   = baseNode.getActualInheritance();
+
+			LOG.debug("node: {} actualInheritance: {}", node.getName(), actualInheritance);
+			LOG.debug("node: {} baseInheritance: {}", node.getName(), baseInheritance);
+
+			actualInheritance.removeAll(baseInheritance);
+			if(!actualInheritance.isEmpty()) {
+				JSONObject inheritanceExtension = new JSONObject();
+				inheritanceExtension.put(Extensions.EXTENSION_NAME, node.getName());
+				inheritanceExtension.put(Extensions.INHERITANCE_EXTENSION, actualInheritance);
+			
+				resourceInheritanceExtension.put(inheritanceExtension);	
+			}
+			
 		});
 
 		extensions.put(Extensions.RESOURCE_ATTRIBUTE_EXTENSION, resourceAttributeExtension);
 		extensions.put(Extensions.RESOURCE_DISCRIMINATOR_EXTENSION, resourceDiscriminatorExtension);
+		extensions.put(Extensions.RESOURCE_INHERITANCE_EXTENSION, resourceInheritanceExtension);
 
 		if(args.extensionLabel!=null) {
 			extensions.put(Extensions.LEGEND_LABEL, args.extensionLabel);

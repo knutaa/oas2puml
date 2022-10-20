@@ -30,7 +30,11 @@ public class Extensions  {
 	public static final String RESOURCE_DISCRIMINATOR_EXTENSION = "resourceDiscriminatorExtension";
 
 	public static final String EXTENSION_CARDINALITY = "cardinality";
-	
+
+	public static final String INHERITANCE_EXTENSION = "inheritance";
+
+	public static final String RESOURCE_INHERITANCE_EXTENSION = "resourceInheritance";
+
 	public static String getColor() {
 		String color = COLOR;
 

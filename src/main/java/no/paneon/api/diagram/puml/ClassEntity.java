@@ -42,11 +42,14 @@ public class ClassEntity extends Entity {
 	String inline = "";
 	
 	Set<String> inheritance;
+	Set<String> actualInheritance;
+
 	Set<String> discriminatorMapping;
 	Set<String> inheritedDiscriminatorMapping;
 
 	List<String> discriminatorExtension;
-	
+	List<String> inheritanceExtension;
+
 	static final String BLANK_LINE = INDENT + "{field}//" + BLANK + "//" + NEWLINE;
 
 	static final String SHOW_ALL_DISCRIMINATORS = "showAllDiscriminators";
@@ -61,11 +64,14 @@ public class ClassEntity extends Entity {
 		this.edges = new LinkedList<>();
 		
 		this.inheritance = new HashSet<>();
+		this.actualInheritance = new HashSet<>();
+
 		this.discriminatorMapping = new HashSet<>();
 		this.inheritedDiscriminatorMapping = new HashSet<>();
 		
 		this.vendorExtension=false;
 		this.discriminatorExtension = new LinkedList<>();
+		this.inheritanceExtension = new LinkedList<>();
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
@@ -79,6 +85,8 @@ public class ClassEntity extends Entity {
 		this.edges = new LinkedList<>();
 		
 		this.inheritance = new HashSet<>();
+		this.actualInheritance = new HashSet<>();
+
 		this.discriminatorMapping = new HashSet<>();
 		this.discriminatorExtension = new LinkedList<>();
 
@@ -91,7 +99,8 @@ public class ClassEntity extends Entity {
 
 		this.description = node.getDescription();
 		this.inheritance.addAll(node.getInheritance());
-		
+		this.actualInheritance.addAll(node.getActualInheritance());
+
 		// this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
 		this.discriminatorMapping.addAll(node.getLocalDiscriminators());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
@@ -101,6 +110,7 @@ public class ClassEntity extends Entity {
 		
 		this.vendorExtension=node.getVendorExtension();
 		this.discriminatorExtension=node.getDiscriminatorExtension();
+		this.inheritanceExtension=node.getInheritanceExtension();
 
 	}
 	
@@ -311,15 +321,18 @@ public class ClassEntity extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private String generateInheritanceDecoration() {	
-		LOG.debug("inheritance: resource={} inheritance={}", this.name, this.inheritance);	
+		LOG.debug("inheritance: resource={} inheritance={} actual={}", this.name, this.inheritance, this.actualInheritance);	
 		
 		if(Config.getBoolean("keepInheritanceDecoractions")) {
 			StringBuilder res = new StringBuilder();
 			if(!this.inheritance.isEmpty()) {
 				res.append(" <extends  ");
-				inheritance.stream().map(ClassEntity::formatInheritance).forEach(res::append);
+				inheritance.stream().map(this::formatInheritance).forEach(res::append);
+				res.append(">");	
+			} else if(!this.actualInheritance.isEmpty()) {
+				res.append(" <extends  ");
+				actualInheritance.stream().map(this::formatInheritance).forEach(res::append);
 				res.append(">");
-	
 			}
 			return res.toString();
 		} else {
@@ -329,8 +342,15 @@ public class ClassEntity extends Entity {
 
 	
 	@LogMethod(level=LogLevel.DEBUG)
-	private static String formatInheritance(String s) {
-		return "\\n" + s + " ";
+	private String formatInheritance(String s) {
+		String format = "\\n%s";
+		
+		Out.debug("formatInheritance: s={} inheritance={}", s, this.inheritanceExtension);
+		if(this.inheritanceExtension.contains(s)) {
+			String color = Extensions.getColor();
+			format = "\\n<color:" + color + ">%s";
+		}
+		return String.format(format, s);
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
