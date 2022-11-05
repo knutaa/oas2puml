@@ -152,6 +152,10 @@ public class ClassProperty extends Entity {
 			
 		}
 		
+		if(this.enumStatus) {
+			LOG.debug("ClassProperty:: #1 res={}", res);
+		}
+		
 		LOG.debug("property: name={} visibility={}",  this.name, this.visibility);
 		if(this.visibility==INHERITED && Config.getBoolean("keepInheritanceDecoractions")) {
 			String format = Config.getString("inheritedFormatting");
@@ -190,12 +194,15 @@ public class ClassProperty extends Entity {
 			res = res + " = " + this.defaultValue;
 		}
 		
+		if(this.enumStatus) {
+			LOG.debug("ClassProperty:: #2 res={}", res);
+		}
+		
 		if(!values.isEmpty()) {
 			final String indent = "                             ".substring(0,res.indexOf(':'));
 			res = res + "\n";
 			res = res + values.stream().map(v -> "{field} //" + indent + v + "//").collect(Collectors.joining("\n"));
-		}
-		
+		}		
 		
 		return res;
 	}

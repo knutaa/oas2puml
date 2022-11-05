@@ -670,7 +670,12 @@ public class LayoutGraph extends Positions {
 				
 				rule = "general floating nodeA";
 
-				if(!isPlacedAt(nodeB,Place.RIGHT)) {
+				boolean isMultiple = EdgeAnalyzer.notIfMultipleWithSameRelationship(nodeB, nodeA, this.apiGraph, null)==EdgeAnalyzer.REJECT;
+				
+				
+				if(isMultiple) {
+					func = funcBelowAbove;
+				} else if(!isPlacedAt(nodeB,Place.RIGHT)) {
 					func = funcRightLeft;
 				} else if(!isPlacedAt(nodeB,Place.LEFT)) {
 					func = funcLeftRight;

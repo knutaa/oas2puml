@@ -48,18 +48,19 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		JSONObject extensions = new JSONObject();
 		
-		List<String> allNodes = actualAPI.getNodes();
-		
-		allNodes.removeAll(baseAPI.getNodes());
+		List<String> allNodes = actualAPI.getNodes().stream().map(APIModel::getMappedResource).collect(toList());
+		List<String> baseAPINodes = baseAPI.getNodes().stream().map(APIModel::getMappedResource).collect(toList());
+	
+		allNodes.removeAll(baseAPINodes);
 		
 		JSONArray resourceExtensions = new JSONArray();
 		
 		allNodes.forEach(node -> resourceExtensions.put(new JSONObject().put(Extensions.EXTENSION_NAME,node)));
 	
 		extensions.put(Extensions.RESOURCE_EXTENSION, resourceExtensions);
-	
+			
 		allNodes = actualAPI.getNodes();
-		allNodes.retainAll(baseAPI.getNodes());
+		allNodes.retainAll(baseAPINodes);
 		
 		JSONArray resourceAttributeExtension = new JSONArray();
 		JSONArray resourceDiscriminatorExtension = new JSONArray();
@@ -70,7 +71,7 @@ public class ExtractExtensions extends GenerateCommon {
 			List<String> inherited = node.getInheritedProperties(actualAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());			
 			List<Property> actualProperties = node.getProperties();
 
-			Node baseNode = baseAPI.getNode(node.getName());
+			Node baseNode = baseAPI.getNode(APIModel.getReverseResourceMapping(node.getName()));
 			List<String> baseInherited = baseNode.getInheritedProperties(baseAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());
 			List<Property> baseProperties = baseNode.getProperties().stream().filter(p->!baseInherited.contains(p.getName())).collect(toList());
 			List<String>   basePropertiesName = baseProperties.stream().map(Property::getName).collect(toList());
@@ -94,7 +95,9 @@ public class ExtractExtensions extends GenerateCommon {
 						diff = diff || !opt.getName().contentEquals(prop.getName());
 						diff = diff || !opt.getType().contentEquals(prop.getType());
 						diff = diff || (opt.isRequired() != prop.isRequired() );
+						diff = diff || !prop.getCardinality().contentEquals(opt.getCardinality());
 					}
+					
 					
 					LOG.debug("filter: name={} prop={} diff={}", node.getName(), prop.getName(), diff);
 					if(diff) LOG.debug("filter: name={} prop={} optProp={}", node.getName(), prop, optProp);
@@ -103,9 +106,9 @@ public class ExtractExtensions extends GenerateCommon {
 				})
 				.collect(toList());
 			
-			LOG.debug("node: {} vendor properties: {}", node.getName(), actualProperties);
+			LOG.debug("node: {} extension properties: {}", node.getName(), actualProperties);
 
-			JSONArray vendorAttributesExtension = new JSONArray();
+			JSONArray attributesExtension = new JSONArray();
 
 			actualProperties.forEach(property -> {
 				JSONObject ext = new JSONObject(); 
@@ -113,28 +116,31 @@ public class ExtractExtensions extends GenerateCommon {
 				
 				Optional<Property> optProp = baseProperties.stream().filter(p -> p.getName().contentEquals(property.getName())).findFirst();
 				
+				
 				if(optProp.isPresent()) {
 					
+					Property p = optProp.get();
+					
 					LOG.debug("node: {} property={} type={} actCard={} basedCard={}", 
-							node.getName(), optProp.get().getName(), optProp.get().getType(),
-							property.getCardinality(), optProp.get().getCardinality() 
+							node.getName(), p.getName(), p.getType(),
+							property.getCardinality(), p.getCardinality() 
 							);
 
-					if(!property.getCardinality().contentEquals(optProp.get().getCardinality())) {
+					if(!property.getCardinality().contentEquals(p.getCardinality())) {
 						ext.put(Extensions.EXTENSION_CARDINALITY, true);
 					}
 				}
 				
-				vendorAttributesExtension.put(ext);
+				attributesExtension.put(ext);
 
 			});
 
-			if(!vendorAttributesExtension.isEmpty()) {
-				JSONObject attributesExtension = new JSONObject();
-				attributesExtension.put(Extensions.EXTENSION_NAME, node.getName());
-				attributesExtension.put(Extensions.ATTRIBUTE_EXTENSION, vendorAttributesExtension);
+			if(!attributesExtension.isEmpty()) {
+				JSONObject extension = new JSONObject();
+				extension.put(Extensions.EXTENSION_NAME, node.getName());
+				extension.put(Extensions.ATTRIBUTE_EXTENSION, attributesExtension);
 			
-				resourceAttributeExtension.put(attributesExtension);
+				resourceAttributeExtension.put(extension);
 			}
 			
 			Set<String> actualDiscriminators = node.getAllDiscriminatorMapping();
@@ -205,7 +211,7 @@ public class ExtractExtensions extends GenerateCommon {
 
 	    Utils.saveJSON(extensions, fileName);
 
-		Out.printAlways("... extracted vendor extensions: output={}", filename);
+		Out.printAlways("... extracted extensions: output={}", filename);
 
 	}
 

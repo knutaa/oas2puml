@@ -84,6 +84,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.LEFT, Arrays.asList(
 				
+				EdgeAnalyzer::notIfMultipleWithSameRelationship,
+				
 				EdgeAnalyzer::ifMultipleToInheritance,
 
 				EdgeAnalyzer::notIfPivotSpecialCase,
@@ -177,6 +179,8 @@ public class EdgeAnalyzer {
 
 		edgeConditions.put(Place.RIGHT, Arrays.asList( 
 				
+				EdgeAnalyzer::notIfMultipleWithSameRelationship,
+
 				EdgeAnalyzer::ifMultipleToInheritance,
 
 				EdgeAnalyzer::notIfPivotSpecialCase,
@@ -440,6 +444,31 @@ public class EdgeAnalyzer {
 	}
 	
 	
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	static Status notIfMultipleWithSameRelationship(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		
+		boolean res=false;
+		
+		Optional<String> relationship = apiGraph.getEdges(from, to).stream().map(Edge::getRelationship).findFirst();
+		
+		LOG.debug("notIfMultipleWithSameRelationship: from={} to={} relationship={}",  from, to, relationship);
+
+		if(relationship.isPresent()) {
+			Predicate<String> isSameRelationship = r -> r.contentEquals(relationship.get());
+			
+			List<String> inbound = apiGraph.getInboundEdges(to).stream().map(Edge::getRelationship).collect(toList());
+			
+			res = inbound.stream()
+					.filter(isSameRelationship)
+					.collect(toList())
+					.size()>2;	
+					
+			if(res) LOG.debug("notIfMultipleWithSameRelationship: from={} to={} relationship={} inboundTo={}",  from, to, relationship, inbound);
+
+		}
+		
+		return rejectIfTrue(res);
+	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notFromCircleNodeAndBelowInCircle(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {		

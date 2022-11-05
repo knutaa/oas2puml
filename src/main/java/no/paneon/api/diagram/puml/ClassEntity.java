@@ -179,7 +179,8 @@ public class ClassEntity extends Entity {
         	vendorExtensionStereoType=" <<Extension>>";
         }
         
-	    res.append( "class " + this.name + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
+        String className = APIModel.getMappedResource(this.name);
+	    res.append( "class " + className + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
 	    	    
 	    String desc = description;
 	    if(Config.includeDescription()) {
@@ -256,8 +257,15 @@ public class ClassEntity extends Entity {
 			String vendorExtensionFormat = "<color:" + color + ">%s";
 				
 	    	discriminatorsToShow.forEach(mapping -> {
+	    			    		
 	    		if(this.discriminatorExtension.contains(mapping)) {
+	    			
+		    		LOG.debug("discriminatorsToShow: discriminatorExtension={} mapping={}", this.discriminatorExtension, mapping);
+
 	    			String coloredMapping = String.format(vendorExtensionFormat, mapping);
+	    			
+		    		LOG.debug("discriminatorsToShow: coloredMapping={}", coloredMapping);
+
 	    			res.append(INDENT + coloredMapping + NEWLINE);
 	    		} else {
 	    			res.append(INDENT + mapping + NEWLINE);
@@ -345,7 +353,7 @@ public class ClassEntity extends Entity {
 	private String formatInheritance(String s) {
 		String format = "\\n%s";
 		
-		Out.debug("formatInheritance: s={} inheritance={}", s, this.inheritanceExtension);
+		LOG.debug("formatInheritance: s={} inheritance={}", s, this.inheritanceExtension);
 		if(this.inheritanceExtension.contains(s)) {
 			String color = Extensions.getColor();
 			format = "\\n<color:" + color + ">%s";

@@ -307,6 +307,9 @@ public class Diagram extends Entity {
 			}
 		
 			res.append( edge.toString() );
+			
+			LOG.debug("getPumlForEdges: edge={} comments={}",  edge, edge.getComments());
+			
 			res.append( NEWLINE );
 		}
 		

@@ -213,8 +213,10 @@ public class DiagramGenerator
 				LOG.debug("generateDiagramGraph:: graph edges={}", apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
 				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph, subGraphs);
-							
-				Out.printAlways("... generated diagram for " + pivot);
+
+				label = label.replace(resource, APIModel.getMappedResource(resource) );
+				
+				Out.printAlways("... generated diagram for " + pivot + " label=" + label);
 
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );
 					
