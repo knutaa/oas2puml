@@ -216,7 +216,8 @@ public class DiagramGenerator
 
 				label = label.replace(resource, APIModel.getMappedResource(resource) );
 				
-				Out.printAlways("... generated diagram for " + pivot + " label=" + label);
+				// Out.printAlways("... generated diagram for " + pivot + " label=" + label);
+				Out.printAlways("... generated diagram for " + pivot);
 
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );
 					
@@ -805,14 +806,36 @@ public class DiagramGenerator
 		            		
 							JSONArray attributeExtension = val.optJSONArray(Extensions.ATTRIBUTE_EXTENSION);
 							if(attributeExtension!=null) {
-								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
-							            .map(attr -> (JSONObject) attr)
-							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
-							            .collect(Collectors.toList());
+//								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
+//							            .map(attr -> (JSONObject) attr)
+//							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
+//							            .collect(Collectors.toList());
+//								
+//								LOG.debug("extendedAttributes: {}", extendedAttributes);
+//	
+//								node.setVendorAttributeExtension(extendedAttributes);
 								
-								LOG.debug("extendedAttributes: {}", extendedAttributes);
+								StreamSupport.stream(attributeExtension.spliterator(), false)
+							            .map(attr -> (JSONObject) attr)
+							            .forEach(attr -> {
+							            	String propName = attr.optString(Extensions.EXTENSION_NAME);
+							            	boolean required = attr.optBoolean(Extensions.EXTENSION_REQUIRED);
+							            	boolean type = attr.optBoolean(Extensions.EXTENSION_TYPE);
+
+							            	node.setVendorAttributeExtension(propName,required,type);
+							            });
+								
+//							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
+//							            .collect(Collectors.toList());
+//								
+//								LOG.debug("extendedAttributes: {}", extendedAttributes);
+//	
+//								node.setVendorAttributeExtension(extendedAttributes);
 	
-								node.setVendorAttributeExtension(extendedAttributes);
+								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
+									            .map(attr -> (JSONObject) attr)
+									            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
+									            .collect(Collectors.toList());
 								
 								APIGraph.getOutboundEdges(this.coreGraph.getCompleteGraph(), node).stream()
 								.filter(e -> extendedAttributes.contains(e.relation))
@@ -834,6 +857,19 @@ public class DiagramGenerator
 									if(cardinalityExtension) {
 										edge.setCardinalityExtension();
 									}
+									
+									try {
+										boolean requiredExtension = extendedAttributesDetails.get(edge.relation).getBoolean(Extensions.EXTENSION_REQUIRED);
+									
+										LOG.debug("requiredExtension: edge={} {}", edge, requiredExtension);
+
+										if(requiredExtension) {
+											edge.setRequiredExtension(requiredExtension);
+										}
+									} catch(Exception e) {
+										// nothing to do
+									}
+									
 								});
 								
 							}

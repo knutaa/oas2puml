@@ -30,6 +30,8 @@ public class Extensions  {
 	public static final String RESOURCE_DISCRIMINATOR_EXTENSION = "resourceDiscriminatorExtension";
 
 	public static final String EXTENSION_CARDINALITY = "cardinality";
+	public static final String EXTENSION_REQUIRED = "required";
+	public static final String EXTENSION_TYPE = "type";
 
 	public static final String INHERITANCE_EXTENSION = "inheritance";
 

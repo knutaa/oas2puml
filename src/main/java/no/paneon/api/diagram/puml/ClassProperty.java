@@ -41,7 +41,9 @@ public class ClassProperty extends Entity {
 	private static String ATTYPE = "@type";
 	
 	boolean vendorExtension = false;
-	
+	boolean requiredExtension = false;
+	boolean typeExtension = false;
+
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
 		
@@ -61,7 +63,9 @@ public class ClassProperty extends Entity {
 		this.defaultValue = property.getDefaultValue();
 		
 		this.vendorExtension = property.getVendorExtension();
-		
+		this.requiredExtension = property.getRequiredExtension();
+		this.typeExtension = property.getTypeExtension();
+
 		if(this.vendorExtension) LOG.debug("vendor extension: property {}", this.name);
 		
 	}
@@ -79,6 +83,10 @@ public class ClassProperty extends Entity {
 		this.enumStatus = false;
 		
 		this.visibility=visibility;
+		
+		// this.vendorExtension = property.getVendorExtension();
+		// this.requiredExtension = property.getRequiredExtension();
+
 	}
 	
 	
@@ -104,7 +112,7 @@ public class ClassProperty extends Entity {
 		String res="";
 		StringBuilder stype = new StringBuilder();
 		
-		int nlen = name.length()+3;
+		int nlen = this.name.length()+3;
 		List<String> lines = Utils.splitString(type, Config.getMaxLineLength()-nlen);
 		if(lines.size()>1) {
 			final String indent = "                                       ".substring(nlen);
@@ -121,8 +129,18 @@ public class ClassProperty extends Entity {
 			stype.append(type);
 		}
 		
-		if(name.isEmpty()) {
-			res=stype.toString();
+		if(this.name.isEmpty()) {
+			
+			String extensionFormat = "%s";
+			if(this.vendorExtension && this.typeExtension) {
+				String color = Extensions.getColor();
+				extensionFormat = "<color:" + color + ">%s";			
+			}
+			
+			LOG.debug("ClassProperty::property: name={} type extensionFormat={}",  this.name, extensionFormat);
+
+			res=String.format(extensionFormat,stype.toString());
+			
 		} else {
 			String enumLabel = this.enumStatus && !this.values.isEmpty() ? "ENUM " : "";
 
@@ -135,8 +153,17 @@ public class ClassProperty extends Entity {
 			res = (required && useRequiredFormatting) ? String.format(format,name) : name;
 			
 			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
-				res = res + " : " + enumLabel + type;
 				
+				String extensionFormat = "%s";
+				if(this.vendorExtension && this.typeExtension) {
+					String color = Extensions.getColor();
+					extensionFormat = "<color:" + color + ">%s";			
+				}
+				
+				LOG.debug("ClassProperty::property: name={} type extensionFormat={}",  this.name, extensionFormat);
+
+				res = res + " : " + String.format(extensionFormat,enumLabel + type);
+								
 			} else if(maxLength>0 && !Config.getBoolean("keepTypeForDefaultValue")) {
 				int length = res.length();
 				
@@ -168,19 +195,31 @@ public class ClassProperty extends Entity {
 		if(cardinalityToShow.isEmpty() && this.required) cardinalityToShow = "1";
 		
 		if(!cardinalityToShow.isEmpty() && !Config.hideCardinaltyForProperty(cardinalityToShow)) {
+			String extensionFormat = "%s";
+			if(this.vendorExtension && this.requiredExtension) {
+				String color = Extensions.getColor();
+				extensionFormat = "<color:" + color + ">%s";			
+			}
+			
+			LOG.debug("ClassProperty::property: name={} extensionFormat={}",  this.name, extensionFormat);
+
 			if(cardinalityToShow.contentEquals("1")) {
-				res = "{field}" + res + " (" + cardinalityToShow + ")";
+				res = "{field}" + res + String.format(extensionFormat," (" + cardinalityToShow + ")");
 			} else {
-				res = res + " [" + cardinalityToShow + "]";
+				res = res + String.format(extensionFormat," [" + cardinalityToShow + "]");
 			}
 		}
 		
-		if(this.vendorExtension) {
-			String color = Extensions.getColor();
-
-			String vendorExtensionFormat = "<color:" + color + ">%s";
+		if(this.vendorExtension && !hasPartialExtension()) {
+			String extensionFormat = "%s";
+			if(this.vendorExtension) {
+				String color = Extensions.getColor();
+				extensionFormat = "<color:" + color + ">%s";			
+			}
 			
-			res = String.format(vendorExtensionFormat, res);
+			LOG.debug("ClassProperty::property: name={} extensionFormat={}",  this.name, extensionFormat);
+
+			res = String.format(extensionFormat, res);
 		}
 		
 		if(this.defaultValue!=null)  {
@@ -207,6 +246,10 @@ public class ClassProperty extends Entity {
 		return res;
 	}
 	
+	private boolean hasPartialExtension() {
+		return this.requiredExtension || this.typeExtension;
+	}
+
 	@LogMethod(level=LogLevel.DEBUG)
 	public boolean isSimpleType() {
 		

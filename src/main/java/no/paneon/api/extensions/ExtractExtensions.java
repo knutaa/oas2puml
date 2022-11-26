@@ -92,10 +92,15 @@ public class ExtractExtensions extends GenerateCommon {
 					boolean diff = optProp.isEmpty();
 					if(optProp.isPresent()) {
 						Property opt = optProp.get();
-						diff = diff || !opt.getName().contentEquals(prop.getName());
-						diff = diff || !opt.getType().contentEquals(prop.getType());
-						diff = diff || (opt.isRequired() != prop.isRequired() );
-						diff = diff || !prop.getCardinality().contentEquals(opt.getCardinality());
+						boolean a = !opt.getName().contentEquals(prop.getName());
+						boolean b = !opt.getType().contentEquals(prop.getType());
+						boolean c = (opt.isRequired() != prop.isRequired() );
+						boolean d = !prop.getCardinality().contentEquals(opt.getCardinality());
+						
+						diff = a || b || c || d;
+						
+						LOG.debug("filter: name={} prop={} a={} b={} c={} d={}", node.getName(), prop, a, b, c, d);
+
 					}
 					
 					
@@ -129,6 +134,15 @@ public class ExtractExtensions extends GenerateCommon {
 					if(!property.getCardinality().contentEquals(p.getCardinality())) {
 						ext.put(Extensions.EXTENSION_CARDINALITY, true);
 					}
+					
+					if(property.isRequired() != p.isRequired()) {
+						ext.put(Extensions.EXTENSION_REQUIRED, true); // property.isRequired());
+					}
+					
+					if(!property.getType().contentEquals(p.getType())) {
+						ext.put(Extensions.EXTENSION_TYPE, true);
+					}
+					
 				}
 				
 				attributesExtension.put(ext);
@@ -211,7 +225,7 @@ public class ExtractExtensions extends GenerateCommon {
 
 	    Utils.saveJSON(extensions, fileName);
 
-		Out.printAlways("... extracted extensions: output={}", filename);
+		LOG.debug("... extracted extensions: output={}", filename);
 
 	}
 

@@ -27,6 +27,7 @@ public class EdgeEntity extends Entity {
 		
 	boolean vendorExtension = false;
 	boolean cardinalityExtension = false;
+	boolean requiredExtension = false;
 
 	public EdgeEntity(Node from, Place place, Node to, boolean required) {
 		super();
@@ -56,7 +57,8 @@ public class EdgeEntity extends Entity {
 		this.from = edge.node;
 		this.vendorExtension = edge.getVendorExtension();
 		this.cardinalityExtension = edge.getCardinalityExtension();
-		
+		this.requiredExtension = edge.getRequiredExtension();
+
 	}
 	
 	public EdgeEntity(Node from, Place place, Node to, boolean required, String id, String rule) {
@@ -104,7 +106,7 @@ public class EdgeEntity extends Entity {
 		
 		String edgeVendorExtension="";
 		
-		if(this.vendorExtension) {
+		if(this.vendorExtension && !this.requiredExtension) {
 			String color = Extensions.getColor();
 
 			String vendorExtensionFormat = "<color:" + color + ">%s";
