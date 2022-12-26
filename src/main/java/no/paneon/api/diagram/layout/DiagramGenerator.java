@@ -71,7 +71,7 @@ public class DiagramGenerator
 
 	List<String> resources;
 	
-	CoreAPIGraph coreGraph = new CoreAPIGraph();
+	CoreAPIGraph coreGraph;
 
 	static String REMOVE_INHERITED = "removeInherited";
 		
@@ -86,7 +86,11 @@ public class DiagramGenerator
 				
 		if(args.resource==null || args.resource.isEmpty()) {
 			this.resources.addAll(getResources(args));
-		}  
+		} else {
+			this.resources.add(args.resource);
+		}
+		
+		this.coreGraph = new CoreAPIGraph(this.resources);
 		
 		if(args.resource!=null) {
 			String[] parts = args.resource.split(",");
@@ -150,7 +154,7 @@ public class DiagramGenerator
 //       	.map(n -> coreGraph.getCompleteGraph().outgoingEdgesOf(n))
 //       	.forEach(e -> Out.debug("init: edge={}", e));
 
-	    
+	    		
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
@@ -162,12 +166,12 @@ public class DiagramGenerator
 		
 		for(String resource : this.resources) {
 			
-			LOG.debug("generateDiagramGraph: resource={}", resource);
+			LOG.debug("### generateDiagramGraph: resource={}", resource);
 
 			if(subResourceConfig!=null && subResourceConfig.has(resource)) {
-				graphs.generateSubGraphsFromConfig(resource, Config.getList(subResourceConfig, resource));
+				graphs.generateSubGraphsFromConfig(this.resources, resource, Config.getList(subResourceConfig, resource));
 			} else {
-				graphs.generateSubGraphsForResource(resource);
+				graphs.generateSubGraphsForResource(this.resources, resource);
 			}
 			
 			List<String> subGraphs = graphs.getSubGraphLabels(resource);
@@ -179,6 +183,10 @@ public class DiagramGenerator
 				if(Config.getBoolean("onlyFirstSeenSubResource") && seenResources.contains(pivot)) continue;
 				
 				LOG.debug("generateDiagramGraph: resource={} subGraph={}", resource, pivot);
+
+				Node n = CoreAPIGraph.getNodeByName(coreGraph.getCompleteGraph(), pivot).get();
+				
+				LOG.debug("#00 generateDiagramGraph: resource={} pivot={} edges={}", resource, pivot, coreGraph.getCompleteGraph().outgoingEdgesOf(n));
 
 				Optional<Graph<Node,Edge>> pivotGraph = graphs.getSubGraph(resource, pivot);
 			
@@ -201,13 +209,15 @@ public class DiagramGenerator
 				APIGraph apiGraph;
 				
 				if(pivot.contentEquals(resource)) {
-					apiGraph = new APIGraph(coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
+					apiGraph = new APIGraph(this.resources, resource, coreGraph, currentGraph, pivot, args.keepTechnicalEdges);
 					label = resource;
 				} else {
-					apiGraph = new APISubGraph(coreGraph, currentGraph, resource, pivot, args.keepTechnicalEdges);
+					apiGraph = new APISubGraph(this.resources, resource, coreGraph, currentGraph, resource, pivot, args.keepTechnicalEdges);
 					label = resource + "_" + pivot;
 				} 
 				
+				LOG.debug("generateDiagramGraph:: graph pivot={} edges={}", pivot, apiGraph.getGraph().edgeSet().stream().filter(Edge::isDiscriminator).collect(Collectors.toSet()));
+
 				addExplicitSubResource(pivot, apiGraph);
 				
 				LOG.debug("generateDiagramGraph:: graph edges={}", apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
@@ -217,8 +227,12 @@ public class DiagramGenerator
 				label = label.replace(resource, APIModel.getMappedResource(resource) );
 				
 				// Out.printAlways("... generated diagram for " + pivot + " label=" + label);
-				Out.printAlways("... generated diagram for " + pivot);
-
+				if(pivot.contentEquals(resource)) {
+					Out.printAlways("... generated diagram(s) for " + pivot);
+				} else {
+					Out.printAlways("... generated sub-diagram(s) of " + pivot + " for " + resource);
+				}
+				
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );
 					
 				seenResources.add(pivot);
@@ -500,11 +514,11 @@ public class DiagramGenerator
 //	@LogMethod(level=LogLevel.DEBUG)
 //	private void addOrphanEnums(APIGraph graph, Diagram diagram) {
 //  	    List<String> orphans = Config.getOrphanEnums();
-//  	    Out.debug("addOrphanEnums: orphans={}", orphans);
+//  	    LOG.debug("addOrphanEnums: orphans={}", orphans);
 //  	    if(Config.getIncludeOrphanEnums() || orphans.contains(graph.getResource())) {
 //  	    	List<String> orphanEnums = Config.getOrphanEnums(graph.getResource());
 //  	    	
-//  	  	    Out.debug("addOrphanEnums: resource={} orphanEnums={}", graph.getResource(), orphans);
+//  	  	    LOG.debug("addOrphanEnums: resource={} orphanEnums={}", graph.getResource(), orphans);
 //
 //  	    	if(orphanEnums.isEmpty()) {
 //  	    		layout.addOrphanEnums(diagram, graph.getNode(graph.getResource()));   	
@@ -512,7 +526,7 @@ public class DiagramGenerator
 //  	    		Node resource = graph.getNode(graph.getResource());
 //  	    		for(String orphan : orphanEnums) {
 //  	    			Node orphanNode = graph.getNode(orphan);
-//  	    	  	    Out.debug("addOrphanEnums: resource={} orphanEnumNode={}", graph.getResource(), orphanNode);
+//  	    	  	    LOG.debug("addOrphanEnums: resource={} orphanEnumNode={}", graph.getResource(), orphanNode);
 //
 //  	    	  	    Edge edge = new EdgeEnum(resource,"", orphanNode,"",false);
 //  	    	  	    graph.getCompleteGraph().addEdge(resource, orphanNode, edge);
@@ -599,7 +613,7 @@ public class DiagramGenerator
 	private Complexity processComplexity(String resource) {
 	    APIGraph graph = new APIGraph(resource);
 	    
-	    Complexity analyser = new Complexity(graph.getGraph(),graph.getResourceNode());
+	    Complexity analyser = new Complexity(this.resources, graph.getGraph(),graph.getResourceNode());
 	    	    
 	    analyser.computeGraphComplexity();
 		    						
@@ -671,7 +685,7 @@ public class DiagramGenerator
 		
 	    APIGraph preGraph = new APIGraph(resource);
 	
-	    Complexity analyser = new Complexity(preGraph.getGraph(),preGraph.getResourceNode());
+	    Complexity analyser = new Complexity(this.resources, preGraph.getGraph(),preGraph.getResourceNode());
 	    
 	    displayComplexity(analyser, resource, "Resource diagram complexity", "... Total graph complexity");
 	    		
@@ -679,7 +693,7 @@ public class DiagramGenerator
 	    
 	    graph.applyComplexity(analyser, resource);
 	    		
-	    analyser = new Complexity(graph.getGraph(),graph.getResourceNode());
+	    analyser = new Complexity(this.resources, graph.getGraph(),graph.getResourceNode());
 	    
 	    displayComplexity(analyser, resource, "Complexity after applying configuration of base types", "... Total graph complexity");
 

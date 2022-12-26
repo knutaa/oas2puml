@@ -2,7 +2,6 @@ package no.paneon.api.extensions;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,13 +32,14 @@ public class ExtractExtensions extends GenerateCommon {
 	public ExtractExtensions(Args.ExtractExtensions args) {
 		super(args);
 		this.args = args;
+		
 	}
 
 	public void execute() {
 		
 		super.execute();
 		CoreAPIGraph actualAPI = new CoreAPIGraph();
-		
+				
 		APIModel.clean();
 		args.openAPIFile = args.baseSpecification;
 		GenerateCommon.loadAPI(args);

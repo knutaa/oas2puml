@@ -80,6 +80,7 @@
 						</goals>
 						<configuration>
 							<mainClass>no.paneon.api.diagram.app.App</mainClass>
+				            <classifier>exec</classifier>
 						</configuration>
 					</execution>
 				</executions>

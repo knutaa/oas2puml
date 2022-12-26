@@ -2192,7 +2192,8 @@ public class Layout {
 	}
 
 	private int getSubGraphSize(Node node) {
-		int res = CoreAPIGraph.getSubGraphWithInheritance(this.apiGraph.getGraph(), node, node).vertexSet().size();
+		Set<String> dummy = new HashSet<>();
+		int res = CoreAPIGraph.getSubGraphWithInheritance(dummy, this.apiGraph.getGraph(), node, node).vertexSet().size();
 		
 		LOG.debug("getSubGraphSize: node={} size={}",  node, res);
 		

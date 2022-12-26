@@ -238,7 +238,10 @@ public class ClassProperty extends Entity {
 		}
 		
 		if(!values.isEmpty()) {
-			final String indent = "                             ".substring(0,res.indexOf(':'));
+			int pos = res.indexOf(':');
+			if(pos<0) pos=0;
+			
+			final String indent = "                             ".substring(0,pos);
 			res = res + "\n";
 			res = res + values.stream().map(v -> "{field} //" + indent + v + "//").collect(Collectors.joining("\n"));
 		}		
