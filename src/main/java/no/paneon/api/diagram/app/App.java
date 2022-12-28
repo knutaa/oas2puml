@@ -26,7 +26,7 @@ public class App {
 	Args.ExtractExtensions  argsExtractExtensions;
 	
 	App(String ... argv) {
-		     				
+		     		
 		args = new Args();
 				
 		argsDiagram        = args.new Diagram();
@@ -57,6 +57,8 @@ public class App {
 	public static void main(String ... args) {
 		App app = new App(args);
 				
+		System.setProperty("java.awt.headless", "true");
+
 		try {			
 			app.run();
 		} catch(Exception ex) {

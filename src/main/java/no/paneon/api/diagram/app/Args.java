@@ -137,6 +137,10 @@ public class Args {
 		@Parameter(names = { "--subresources" }, description = "Configuration file for splitting resources into sub-resources")
 		public String subResourceConfig = "";
 		
+		@Parameter(names = { "--generate-images" }, description = "Generate image of .puml files")
+		public boolean generateImages = false;
+
+		
 	}
 
 	public class Usage {

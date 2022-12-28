@@ -1,11 +1,14 @@
 package no.paneon.api.diagram;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import net.sourceforge.plantuml.GeneratedImage;
+import net.sourceforge.plantuml.SourceFileReader;
 import no.paneon.api.diagram.app.Args;
 import no.paneon.api.diagram.layout.DiagramGenerator;
 import no.paneon.api.generator.GenerateCommon;
@@ -65,10 +68,30 @@ public class GenerateDiagram extends GenerateCommon {
 	    Map<String,String> diagramConfig = generator.generateDiagramGraph();
 	            	    	    
 	    saveDiagramConfig(diagramConfig, args.targetDirectory);
+	    
+	    if(args.generateImages) {
+        	generateImage(args.targetDirectory, Utils.getFiles(".puml", args.targetDirectory));
+	    }
 		
 	}
 
-
+	   
+    public static void generateImage(String targetDirectory, List<String> baseFileNames) {
+        for(String base : baseFileNames) {
+	    	Out.debug("... generating image for {}", base);
+	    	try {
+	        	File source = new File(targetDirectory + "/" + base);
+		    	SourceFileReader reader = new SourceFileReader(source);
+		    	List<GeneratedImage> list = reader.getGeneratedImages();
+		    	// Generated files
+		    	File png = list.get(0).getPngFile();
+		    	// Out.debug("... {} png={}", base, png.getName());
+	    	} catch(Exception ex) {
+	    		Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
+	    	}
+        };		
+	}
+    
 	private void saveDiagramConfig(Map<String, String> diagramConfig, String target) {
 	    LOG.debug("saveDiagramConfig: diagramConfig={}",  diagramConfig);
 	    

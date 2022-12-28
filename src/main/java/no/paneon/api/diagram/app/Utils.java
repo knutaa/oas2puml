@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -92,6 +93,20 @@ public class Utils {
 	
 	private static final String EXCEPTION_MESSAGE  = "exeption: {}";
 	
+	public static List<String> getFiles(String fileType, String ... dirArgs) {
+		
+		String dir = Arrays.asList(dirArgs).stream().collect(Collectors.joining("/"));
+		
+    	List<String> res = Stream.of(new File(dir).listFiles())
+					        .filter(file -> !file.isDirectory())
+					        .map(File::getName)
+					        .filter(f -> f.endsWith(fileType))
+					        .collect(Collectors.toList());
+    	
+    	return res;
+    	
+	}
+
 	@LogMethod(level=LogLevel.TRACE)
 	public static JSONObject readJSON(String fileName, boolean errorOK) throws InvalidJsonYamlException {
 		try {
