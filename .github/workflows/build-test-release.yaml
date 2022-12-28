@@ -29,8 +29,9 @@ jobs:
          run: |
            ls -l
            mkdir -p tooling
-           cp target/${APP}*.jar tooling/${APP}.jar 
-            
+           cp target/${APP}*SNAPSHOT.jar tooling
+           cp target/${APP}*SNAPSHOT-exec.jar tooling/${APP}.jar
+  
        - name: Combine artifacts
          run: |
            tar -czvf ${{ env.ARTIFACT_NAME }} tooling
