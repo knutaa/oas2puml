@@ -1,0 +1,7 @@
+graphs:
+ -
+  ProductOffering_POPCharge: Resource_ProductOffering_POPCharge.puml
+ -
+  ProductOffering: Resource_ProductOffering.puml
+ -
+  ProductOffering_CharacteristicValueSpecification: Resource_ProductOffering_CharacteristicValueSpecification.puml
