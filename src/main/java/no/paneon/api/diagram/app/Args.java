@@ -140,7 +140,8 @@ public class Args {
 		@Parameter(names = { "--generate-images" }, description = "Generate image of .puml files")
 		public boolean generateImages = false;
 
-		
+		@Parameter(names = { "--remove-legend" }, description = "Do not include the diagram legend")
+		public boolean removeLegend = false;
 	}
 
 	public class Usage {

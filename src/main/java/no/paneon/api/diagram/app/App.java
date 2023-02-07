@@ -1,5 +1,7 @@
 package no.paneon.api.diagram.app;
 
+import java.util.Properties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,7 +60,7 @@ public class App {
 		App app = new App(args);
 				
 		System.setProperty("java.awt.headless", "true");
-
+		
 		try {			
 			app.run();
 		} catch(Exception ex) {
@@ -73,7 +75,20 @@ public class App {
 
 
 	void run() {
-								
+						
+		try {
+			final Properties properties = new Properties();
+			properties.load(this.getClass(). getClassLoader().getResourceAsStream("project.properties"));		
+			String version = properties.getProperty("version");
+			String artifactId = properties.getProperty("artifactId");
+			
+			Out.printAlways("{} {}", artifactId, version);
+			
+		} catch(Exception e) {
+			Out.printAlways("... version information not available: {}", e.getLocalizedMessage());
+		}
+
+		
 		if (commandLine.getParsedCommand()==null) {
             commandLine.usage();
             return;

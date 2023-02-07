@@ -228,9 +228,9 @@ public class DiagramGenerator
 				
 				// Out.printAlways("... generated diagram for " + pivot + " label=" + label);
 				if(pivot.contentEquals(resource)) {
-					Out.printAlways("... generated diagram(s) for " + pivot);
+					Out.printAlways("... generated diagrams for " + pivot);
 				} else {
-					Out.printAlways("... generated sub-diagram(s) of " + pivot + " for " + resource);
+					Out.printAlways("... generated diagrams of " + pivot + " for " + resource);
 				}
 				
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );

@@ -60,7 +60,11 @@
 		"int64": "Integer64",
 		"uint32": "UInteger32",
 		"uint64": "UInteger64",
-		"base64": "Base64"
+		"base64": "Base64",
+		
+		"double": "Double",
+		"uuid": "UUID"
+		
 	},
 	
 	"typeMapping": {
@@ -262,6 +266,8 @@
 	
 	"keepInheritanceDecoractions": false,
     
-    "maxDiscriminators": 4
+    "maxDiscriminators": 4,
+    
+    "getExpandException": [ "RefOrValue" ]
 	
 }

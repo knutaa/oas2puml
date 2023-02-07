@@ -125,10 +125,12 @@ public class ClassEntity extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public void addProperty(ClassProperty c) {
+		// Out.debug("ClassEntity::addProperty entity={} property={}",  this.name, c);
 		if(c!=null) classProperties.add(c);
 	}
 	
 	public void addProperties(List<ClassProperty> properties) {
+		// if(this.name.contentEquals("ProductOfferingRelationship")) Out.debug("ClassEntity::addProperties entity={} properties={}",  this.name, properties);
 		classProperties.addAll(properties);
 	}
 
@@ -222,12 +224,12 @@ public class ClassEntity extends Entity {
 	    	.map(p -> INDENT + p.toString(maxLineLength) + NEWLINE )
 	    	.forEach(res::append);
 	    
-	    List<String> customSimple = classProperties.stream()
+	    Set<String> customSimple = classProperties.stream()
 	    		.map(ClassProperty::getType)
 	    		.filter(APIModel::isCustomSimple)
-	    		.collect(Collectors.toList());
+	    		.collect(Collectors.toSet());
 		    
-    	LOG.debug("customSimple:: node={} customSimple={}", name, customSimple);
+    	if(!customSimple.isEmpty()) Out.debug("customSimple:: node={} customSimple={}", name, customSimple);
 
 	    if(!customSimple.isEmpty()) {
 	    		    	
@@ -287,7 +289,7 @@ public class ClassEntity extends Entity {
 	    	nullableProperties.forEach(label -> res.append(INDENT + label + " is nullable" + NEWLINE));
 	    }
 
-	    LOG.debug("ClassEntity: node={} inline='{}'", this.name, inline);
+	    if(!this.inline.isEmpty()) LOG.debug("ClassEntity: node={} inline='{}'", this.name, this.inline);
 
 	    if(!this.inline.isEmpty() && !this.inline.contains("object")) {
 	    	res.append( INDENT + this.inline + NEWLINE);

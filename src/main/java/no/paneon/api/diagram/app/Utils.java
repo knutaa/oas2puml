@@ -93,20 +93,6 @@ public class Utils {
 	
 	private static final String EXCEPTION_MESSAGE  = "exeption: {}";
 	
-	public static List<String> getFiles(String fileType, String ... dirArgs) {
-		
-		String dir = Arrays.asList(dirArgs).stream().collect(Collectors.joining("/"));
-		
-    	List<String> res = Stream.of(new File(dir).listFiles())
-					        .filter(file -> !file.isDirectory())
-					        .map(File::getName)
-					        .filter(f -> f.endsWith(fileType))
-					        .collect(Collectors.toList());
-    	
-    	return res;
-    	
-	}
-
 	@LogMethod(level=LogLevel.TRACE)
 	public static JSONObject readJSON(String fileName, boolean errorOK) throws InvalidJsonYamlException {
 		try {
