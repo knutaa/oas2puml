@@ -78,7 +78,7 @@ public class GenerateCommon {
 		List<String> dirs = getDirectories(args.workingDirectory);
 		
 		try {
-			APIModel.loadAPI(args.openAPIFile, Utils.getFile(args.openAPIFile, dirs));
+			APIModel.loadAPI(args.openAPIFile, Utils.getSource(args.openAPIFile, dirs));
 		
 			Timestamp.timeStamp("api specification loaded");
 			
