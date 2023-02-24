@@ -88,6 +88,9 @@ public class Args {
 		@Parameter(names = { "--time-stamp" }, description = "Include time stamp details")
 		public boolean timestamp = false;
 		
+		@Parameter(names = { "--whitelist" }, description = "Whitelist host for SSL processing")
+		public List<String> whitelisting = new ArrayList<>();
+		
 	}
 
 	public class Diagram extends Common {

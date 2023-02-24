@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,6 +19,7 @@ import no.paneon.api.logging.LogMethod;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Utils;
+import no.paneon.api.utils.WhitelistVerifier;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +39,7 @@ public class GenerateDiagram extends GenerateCommon {
 		Config.setBoolean("keepInheritanceDecoractions",this.args.keepInheritanceDecoractions);
 		Config.setBoolean("includeDefaultResources",this.args.includeDefaultResources);
 		Config.setBoolean("includeDiagramLegend",!this.args.removeLegend);
-
+		
 	}
 	
 	@Override
