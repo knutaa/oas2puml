@@ -7,13 +7,22 @@ import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Timestamp;
 import no.paneon.api.utils.Utils;
-
+import no.paneon.api.utils.WhitelistVerifier;
 import no.paneon.api.logging.LogMethod;
 import no.paneon.api.logging.AspectLogger;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,21 +36,14 @@ public class GenerateCommon {
 	
     static final Logger LOG = LogManager.getLogger(GenerateCommon.class);
 
-	public GenerateCommon(Args.Common common) {
+	public GenerateCommon(Args.Common common)  {
 		this.common = common;
 		
-//		List<String> dirs = getDirectories(common.workingDirectory);
-//				
-//		try {
-//			APIModel.loadAPI(common.openAPIFile, Utils.getFile(common.openAPIFile, dirs));
-//		
-//			Timestamp.timeStamp("api specification loaded");
-//			
-//		} catch(Exception ex) {
-//			Out.println("... unable to read API specification from " + common.openAPIFile);
-//			System.exit(0);
-//		}
-//		
+		if(!common.whitelisting.isEmpty()) {	
+			Out.debug("setTrustManager");
+			setTrustManager();
+		}
+		
 		loadAPI(common);
 		
 		Out.silentMode = common.silentMode;
@@ -74,6 +76,61 @@ public class GenerateCommon {
 	}
 	
 	
+	private void setTrustManager() {
+		
+		TrustManager[] trustAllCerts = new TrustManager[] {
+				new X509TrustManager() {
+					
+					public X509Certificate[] getAcceptedIssuers1() {
+						Out.debug("X509Certificate #1");
+						return null;
+					}
+					
+					public void checkClientTrusted1(X509Certificate[] certs, String authType) {
+						Out.debug("X509Certificate #2");
+					}
+					
+					public void checkServerTrusted1(X509Certificate[] certs, String authType) {
+						Out.debug("X509Certificate #3");
+					}
+					
+					@Override
+					public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+						Out.debug("X509Certificate #4 chain");
+					}
+					
+					@Override
+					public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+						Out.debug("X509Certificate #5 chain");
+					}
+					
+					@Override
+					public X509Certificate[] getAcceptedIssuers() {
+						Out.debug("X509Certificate #6");
+						return null;
+					}
+				}
+		};
+
+	    try {
+	    	SSLContext sc = SSLContext.getInstance("SSL");
+	    	sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	    	HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	    	
+			final WhitelistVerifier verifier = new WhitelistVerifier();
+			verifier.setValues(common.whitelisting);
+
+			HttpsURLConnection.setDefaultHostnameVerifier(verifier);
+
+			LOG.debug("verifier: {}", verifier.getValues());
+
+	    } catch(Exception e) {
+	    	e.printStackTrace();
+	    }
+				
+	}
+
+
 	public static void loadAPI(Common args) {
 		List<String> dirs = getDirectories(args.workingDirectory);
 		
@@ -84,6 +141,7 @@ public class GenerateCommon {
 			
 		} catch(Exception ex) {
 			Out.println("... unable to read API specification from " + args.openAPIFile);
+			ex.printStackTrace();
 			System.exit(0);
 		}
 		
