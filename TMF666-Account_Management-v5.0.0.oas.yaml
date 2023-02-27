@@ -1,0 +1,3301 @@
+openapi: 3.0.1
+info:
+  title: Account Management
+  description: Swagger for TMF666 Account Management API
+  version: 5.0.0
+servers:
+  - url: 'https://serverRoot/accountManagement/v5/'
+tags:
+  - name: partyAccount
+    description: Operations for PartyAccount Resource
+  - name: billingAccount
+    description: Operations for BillingAccount Resource
+  - name: settlementAccount
+    description: Operations for SettlementAccount Resource
+  - name: financialAccount
+    description: Operations for FinancialAccount Resource
+  - name: notification listener
+    description: Notifications for Resource Lifecycle and event notifications
+  - name: events subscription
+    description: Endpoints to register and terminate an Event Listener
+paths:
+  /partyAccount:
+    get:
+      tags:
+        - partyAccount
+      summary: List or find PartyAccount objects
+      description: >-
+        This operation retrieves a PartyAccount entity. Attribute selection enabled for all first
+        level attributes.
+      operationId: listPartyAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyAccountArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    post:
+      tags:
+        - partyAccount
+      summary: Creates a PartyAccount
+      description: This operation creates a PartyAccount entity.
+      operationId: createPartyAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+      requestBody:
+        $ref: '#/components/requestBodies/PartyAccount_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/201PartyAccount'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/partyAccount/{id}':
+    get:
+      tags:
+        - partyAccount
+      summary: Retrieves a PartyAccount by ID
+      description: List or find PartyAccount objects
+      operationId: retrievePartyAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyAccount_Get'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      tags:
+        - partyAccount
+      summary: Updates partially a PartyAccount
+      description: This operation updates partially a PartyAccount entity.
+      operationId: patchPartyAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/PartyAccount_MVO'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyAccount_Patch'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - partyAccount
+      summary: Deletes a PartyAccount
+      description: This operation deletes a PartyAccount entity.
+      operationId: deletePartyAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '204':
+          $ref: '#/components/responses/204'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /billingAccount:
+    get:
+      tags:
+        - billingAccount
+      summary: List or find BillingAccount objects
+      description: >-
+        This operation retrieves a BillingAccount entity. Attribute selection enabled for all first
+        level attributes.
+      operationId: listBillingAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200BillingAccountArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    post:
+      tags:
+        - billingAccount
+      summary: Creates a BillingAccount
+      description: This operation creates a BillingAccount entity.
+      operationId: createBillingAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+      requestBody:
+        $ref: '#/components/requestBodies/BillingAccount_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/201BillingAccount'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/billingAccount/{id}':
+    get:
+      tags:
+        - billingAccount
+      summary: Retrieves a BillingAccount by ID
+      description: List or find BillingAccount objects
+      operationId: retrieveBillingAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200BillingAccount_Get'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      tags:
+        - billingAccount
+      summary: Updates partially a BillingAccount
+      description: This operation updates partially a BillingAccount entity.
+      operationId: patchBillingAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/BillingAccount_MVO'
+      responses:
+        '200':
+          $ref: '#/components/responses/200BillingAccount_Patch'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - billingAccount
+      summary: Deletes a BillingAccount
+      description: This operation deletes a BillingAccount entity.
+      operationId: deleteBillingAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '204':
+          $ref: '#/components/responses/204'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /settlementAccount:
+    get:
+      tags:
+        - settlementAccount
+      summary: List or find SettlementAccount objects
+      description: >-
+        This operation retrieves a SettlementAccount entity. Attribute selection enabled for all
+        first level attributes.
+      operationId: listSettlementAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200SettlementAccountArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    post:
+      tags:
+        - settlementAccount
+      summary: Creates a SettlementAccount
+      description: This operation creates a SettlementAccount entity.
+      operationId: createSettlementAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+      requestBody:
+        $ref: '#/components/requestBodies/SettlementAccount_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/201SettlementAccount'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/settlementAccount/{id}':
+    get:
+      tags:
+        - settlementAccount
+      summary: Retrieves a SettlementAccount by ID
+      description: List or find SettlementAccount objects
+      operationId: retrieveSettlementAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200SettlementAccount_Get'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      tags:
+        - settlementAccount
+      summary: Updates partially a SettlementAccount
+      description: This operation updates partially a SettlementAccount entity.
+      operationId: patchSettlementAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/SettlementAccount_MVO'
+      responses:
+        '200':
+          $ref: '#/components/responses/200SettlementAccount_Patch'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - settlementAccount
+      summary: Deletes a SettlementAccount
+      description: This operation deletes a SettlementAccount entity.
+      operationId: deleteSettlementAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '204':
+          $ref: '#/components/responses/204'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /financialAccount:
+    get:
+      tags:
+        - financialAccount
+      summary: List or find FinancialAccount objects
+      description: >-
+        This operation retrieves a FinancialAccount entity. Attribute selection enabled for all
+        first level attributes.
+      operationId: listFinancialAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200FinancialAccountArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    post:
+      tags:
+        - financialAccount
+      summary: Creates a FinancialAccount
+      description: This operation creates a FinancialAccount entity.
+      operationId: createFinancialAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+      requestBody:
+        $ref: '#/components/requestBodies/FinancialAccount_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/201FinancialAccount'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/financialAccount/{id}':
+    get:
+      tags:
+        - financialAccount
+      summary: Retrieves a FinancialAccount by ID
+      description: List or find FinancialAccount objects
+      operationId: retrieveFinancialAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200FinancialAccount_Get'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      tags:
+        - financialAccount
+      summary: Updates partially a FinancialAccount
+      description: This operation updates partially a FinancialAccount entity.
+      operationId: patchFinancialAccount
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/FinancialAccount_MVO'
+      responses:
+        '200':
+          $ref: '#/components/responses/200FinancialAccount_Patch'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - financialAccount
+      summary: Deletes a FinancialAccount
+      description: This operation deletes a FinancialAccount entity.
+      operationId: deleteFinancialAccount
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '204':
+          $ref: '#/components/responses/204'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /hub:
+    post:
+      operationId: createHub
+      summary: Create a subscription (hub) to receive Events
+      description: Sets the communication endpoint to receive Events.
+      tags:
+        - events subscription
+      requestBody:
+        $ref: '#/components/requestBodies/Hub_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/Hub'
+        default:
+          $ref: '#/components/responses/Error'
+  '/hub/{id}':
+    delete:
+      operationId: hubDelete
+      summary: Remove a subscription (hub) to receive Events
+      description: ''
+      tags:
+        - events subscription
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    Account:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            Generic Account structure used to define commonalities between sub concepts of
+            PartyAccount and Financial Account.
+          properties:
+            creditLimit:
+              $ref: '#/components/schemas/Money'
+            description:
+              type: string
+              description: Detailed description of the party account
+            lastModified:
+              type: string
+              format: date-time
+              description: Date of last modification of the account
+            name:
+              type: string
+              description: Name of the account
+            state:
+              type: string
+              description: 'Contains the lifecycle state such as: Active, Closed, Suspended and so on.'
+            accountType:
+              type: string
+              description: >-
+                A categorization of an account, such as individual, joint, and so forth, whose
+                instances share some of the same characteristics. Note: for flexibility we use a
+                String here but an implementation may use an enumeration with a limited list of
+                valid values.
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            taxExemption:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxExemptionCertificate'
+            contact:
+              type: array
+              items:
+                $ref: '#/components/schemas/Contact'
+            accountBalance:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountBalance'
+            accountRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountRelationship'
+            id:
+              type: string
+              description: Unique identifier of the account
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Account: '#/components/schemas/Account'
+          PartyAccount: '#/components/schemas/PartyAccount'
+          SettlementAccount: '#/components/schemas/SettlementAccount'
+          BillingAccount: '#/components/schemas/BillingAccount'
+          FinancialAccount: '#/components/schemas/FinancialAccount'
+    AccountBalance:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Balances linked to the account
+          properties:
+            id:
+              type: string
+              description: Identifier of the balance within list of the balances (for entities with list)
+            amount:
+              $ref: '#/components/schemas/Money'
+            balanceType:
+              type: string
+              description: >-
+                Type of the balance : deposit balance, disputed balance, loyalty balance, receivable
+                balance...
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountBalance: '#/components/schemas/AccountBalance'
+    AccountBalance_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: Balances linked to the account
+          properties:
+            id:
+              type: string
+              description: Identifier of the balance within list of the balances (for entities with list)
+            amount:
+              $ref: '#/components/schemas/Money'
+            balanceType:
+              type: string
+              description: >-
+                Type of the balance : deposit balance, disputed balance, loyalty balance, receivable
+                balance...
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+          required:
+            - amount
+            - balanceType
+            - validFor
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountBalance: '#/components/schemas/AccountBalance_FVO'
+    AccountBalance_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Balances linked to the account
+          properties:
+            id:
+              type: string
+              description: Identifier of the balance within list of the balances (for entities with list)
+            amount:
+              $ref: '#/components/schemas/Money'
+            balanceType:
+              type: string
+              description: >-
+                Type of the balance : deposit balance, disputed balance, loyalty balance, receivable
+                balance...
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountBalance: '#/components/schemas/AccountBalance_MVO'
+    AccountRef:
+      type: object
+      description: >-
+        Account reference. A account may be a party account or a financial account, or other type of
+        account supported by the API.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRef: '#/components/schemas/AccountRef'
+    AccountRef_FVO:
+      type: object
+      description: >-
+        Account reference. A account may be a party account or a financial account, or other type of
+        account supported by the API.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRef: '#/components/schemas/AccountRef_FVO'
+    AccountRef_MVO:
+      type: object
+      description: >-
+        Account reference. A account may be a party account or a financial account, or other type of
+        account supported by the API.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRef: '#/components/schemas/AccountRef_MVO'
+    AccountRelationship:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Significant connection between accounts. For instance an aggregating account for a list
+            of shop branches each having its own billing account.
+          properties:
+            relationshipType:
+              type: string
+              description: Type of relationship
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            account:
+              $ref: '#/components/schemas/AccountRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRelationship: '#/components/schemas/AccountRelationship'
+    AccountRelationship_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            Significant connection between accounts. For instance an aggregating account for a list
+            of shop branches each having its own billing account.
+          properties:
+            relationshipType:
+              type: string
+              description: Type of relationship
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            account:
+              $ref: '#/components/schemas/AccountRef_FVO'
+          required:
+            - relationshipType
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRelationship: '#/components/schemas/AccountRelationship_FVO'
+    AccountRelationship_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Significant connection between accounts. For instance an aggregating account for a list
+            of shop branches each having its own billing account.
+          properties:
+            relationshipType:
+              type: string
+              description: Type of relationship
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            account:
+              $ref: '#/components/schemas/AccountRef_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AccountRelationship: '#/components/schemas/AccountRelationship_MVO'
+    Account_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_FVO'
+        - type: object
+          description: >-
+            Generic Account structure used to define commonalities between sub concepts of
+            PartyAccount and Financial Account.
+          properties:
+            creditLimit:
+              $ref: '#/components/schemas/Money'
+            description:
+              type: string
+              description: Detailed description of the party account
+            lastModified:
+              type: string
+              format: date-time
+              description: Date of last modification of the account
+            name:
+              type: string
+              description: Name of the account
+            state:
+              type: string
+              description: 'Contains the lifecycle state such as: Active, Closed, Suspended and so on.'
+            accountType:
+              type: string
+              description: >-
+                A categorization of an account, such as individual, joint, and so forth, whose
+                instances share some of the same characteristics. Note: for flexibility we use a
+                String here but an implementation may use an enumeration with a limited list of
+                valid values.
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_FVO'
+            taxExemption:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxExemptionCertificate_FVO'
+            contact:
+              type: array
+              items:
+                $ref: '#/components/schemas/Contact_FVO'
+            accountBalance:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountBalance_FVO'
+            accountRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountRelationship_FVO'
+            id:
+              type: string
+              description: Unique identifier of the account
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Account: '#/components/schemas/Account_FVO'
+          PartyAccount: '#/components/schemas/PartyAccount_FVO'
+          SettlementAccount: '#/components/schemas/SettlementAccount_FVO'
+          BillingAccount: '#/components/schemas/BillingAccount_FVO'
+          FinancialAccount: '#/components/schemas/FinancialAccount_FVO'
+    Account_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_MVO'
+        - type: object
+          description: >-
+            Generic Account structure used to define commonalities between sub concepts of
+            PartyAccount and Financial Account.
+          properties:
+            creditLimit:
+              $ref: '#/components/schemas/Money'
+            description:
+              type: string
+              description: Detailed description of the party account
+            lastModified:
+              type: string
+              format: date-time
+              description: Date of last modification of the account
+            name:
+              type: string
+              description: Name of the account
+            state:
+              type: string
+              description: 'Contains the lifecycle state such as: Active, Closed, Suspended and so on.'
+            accountType:
+              type: string
+              description: >-
+                A categorization of an account, such as individual, joint, and so forth, whose
+                instances share some of the same characteristics. Note: for flexibility we use a
+                String here but an implementation may use an enumeration with a limited list of
+                valid values.
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_MVO'
+            taxExemption:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxExemptionCertificate_MVO'
+            contact:
+              type: array
+              items:
+                $ref: '#/components/schemas/Contact_MVO'
+            accountBalance:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountBalance_MVO'
+            accountRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountRelationship_MVO'
+            id:
+              type: string
+              description: Unique identifier of the account
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Account: '#/components/schemas/Account_MVO'
+          PartyAccount: '#/components/schemas/PartyAccount_MVO'
+          SettlementAccount: '#/components/schemas/SettlementAccount_MVO'
+          BillingAccount: '#/components/schemas/BillingAccount_MVO'
+          FinancialAccount: '#/components/schemas/FinancialAccount_MVO'
+    Addressable:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+      required:
+        - id
+        - href
+    Addressable_FVO:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        id:
+          type: string
+          description: unique identifier
+    Attachment:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment'
+    AttachmentRef:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+    AttachmentRefOrValue:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      oneOf:
+        - $ref: '#/components/schemas/AttachmentRef'
+        - $ref: '#/components/schemas/AttachmentValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+          Attachment: '#/components/schemas/AttachmentValue'
+    AttachmentRefOrValue_FVO:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      oneOf:
+        - $ref: '#/components/schemas/AttachmentRef_FVO'
+        - $ref: '#/components/schemas/AttachmentValue_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_FVO'
+          Attachment: '#/components/schemas/AttachmentValue_FVO'
+    AttachmentRefOrValue_MVO:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      oneOf:
+        - $ref: '#/components/schemas/AttachmentRef_MVO'
+        - $ref: '#/components/schemas/AttachmentValue_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_MVO'
+          Attachment: '#/components/schemas/AttachmentValue_MVO'
+    AttachmentRef_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_FVO'
+    AttachmentRef_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_MVO'
+    AttachmentValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            id:
+              type: string
+              description: unique identifier
+            name:
+              type: string
+              description: The name of the attachment
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+              example: Photograph of the Product
+            url:
+              type: string
+              description: 'Uniform Resource Locator, is a web page address (a subset of URI)'
+              example: 'http://host/Content/4aafacbd-11ff-4dc8-b445-305f2215715f'
+            content:
+              type: string
+              format: base64
+              description: 'The actual contents of the attachment object, if embedded, encoded as base64'
+            size:
+              $ref: '#/components/schemas/Quantity'
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/AttachmentValue'
+    AttachmentValue_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            id:
+              type: string
+              description: unique identifier
+            name:
+              type: string
+              description: The name of the attachment
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+              example: Photograph of the Product
+            url:
+              type: string
+              description: 'Uniform Resource Locator, is a web page address (a subset of URI)'
+              example: 'http://host/Content/4aafacbd-11ff-4dc8-b445-305f2215715f'
+            content:
+              type: string
+              format: base64
+              description: 'The actual contents of the attachment object, if embedded, encoded as base64'
+            size:
+              $ref: '#/components/schemas/Quantity'
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/AttachmentValue_FVO'
+    AttachmentValue_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            id:
+              type: string
+              description: unique identifier
+            name:
+              type: string
+              description: The name of the attachment
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+              example: Photograph of the Product
+            url:
+              type: string
+              description: 'Uniform Resource Locator, is a web page address (a subset of URI)'
+              example: 'http://host/Content/4aafacbd-11ff-4dc8-b445-305f2215715f'
+            content:
+              type: string
+              format: base64
+              description: 'The actual contents of the attachment object, if embedded, encoded as base64'
+            size:
+              $ref: '#/components/schemas/Quantity'
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/AttachmentValue_MVO'
+    Attachment_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_FVO'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+          required:
+            - attachmentType
+            - mimeType
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment_FVO'
+    Attachment_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_MVO'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+          required:
+            - attachmentType
+            - mimeType
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment_MVO'
+    BillFormat:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      properties:
+        name:
+          type: string
+          description: A short descriptive name
+    BillFormatRef:
+      type: object
+      description: >-
+        BillFormat reference. A bill format is a description of the way in which a bill is
+        presented.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormatRef: '#/components/schemas/BillFormatRef'
+    BillFormatRef.:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+    BillFormatRef._FVO:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      allOf:
+        - $ref: '#/components/schemas/Reference_FVO'
+    BillFormatRef._MVO:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      allOf:
+        - $ref: '#/components/schemas/Reference_MVO'
+    BillFormatRefOrValue:
+      type: object
+      description: A bill format value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillFormatValue'
+        - $ref: '#/components/schemas/BillFormatRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue'
+          BillFormatRef: '#/components/schemas/BillFormatRef'
+    BillFormatRefOrValue_FVO:
+      type: object
+      description: A bill format value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillFormatValue_FVO'
+        - $ref: '#/components/schemas/BillFormatRef_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue_FVO'
+          BillFormatRef: '#/components/schemas/BillFormatRef_FVO'
+    BillFormatRefOrValue_MVO:
+      type: object
+      description: A bill format value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillFormatValue_MVO'
+        - $ref: '#/components/schemas/BillFormatRef_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue_MVO'
+          BillFormatRef: '#/components/schemas/BillFormatRef_MVO'
+    BillFormatRef_FVO:
+      type: object
+      description: >-
+        BillFormat reference. A bill format is a description of the way in which a bill is
+        presented.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormatRef: '#/components/schemas/BillFormatRef_FVO'
+    BillFormatRef_MVO:
+      type: object
+      description: >-
+        BillFormat reference. A bill format is a description of the way in which a bill is
+        presented.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormatRef: '#/components/schemas/BillFormatRef_MVO'
+    BillFormatValue:
+      allOf:
+        - $ref: '#/components/schemas/BillFormat'
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: A detailed description of the way in which a bill is presented.
+          properties:
+            description:
+              type: string
+              description: An explanatory text for this bill format
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue'
+    BillFormatValue_FVO:
+      allOf:
+        - $ref: '#/components/schemas/BillFormat_FVO'
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: A detailed description of the way in which a bill is presented.
+          properties:
+            description:
+              type: string
+              description: An explanatory text for this bill format
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue_FVO'
+    BillFormatValue_MVO:
+      allOf:
+        - $ref: '#/components/schemas/BillFormat_MVO'
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: A detailed description of the way in which a bill is presented.
+          properties:
+            description:
+              type: string
+              description: An explanatory text for this bill format
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillFormat: '#/components/schemas/BillFormatValue_MVO'
+    BillFormat_FVO:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      properties:
+        name:
+          type: string
+          description: A short descriptive name
+      required:
+        - name
+    BillFormat_MVO:
+      type: object
+      description: A detailed description of the way in which a bill is presented.
+      properties:
+        name:
+          type: string
+          description: A short descriptive name
+    BillPresentationMediaRef:
+      type: object
+      description: >-
+        PresentationMedia reference. A mean of communicating a bill, supported by the associated
+        bill format. For example, post mail, email, web page.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef'
+    BillPresentationMediaRefOrValue:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillPresentationMediaValue'
+        - $ref: '#/components/schemas/BillPresentationMediaRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMedia: '#/components/schemas/BillPresentationMediaValue'
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef'
+    BillPresentationMediaRefOrValue_FVO:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillPresentationMediaValue'
+        - $ref: '#/components/schemas/BillPresentationMediaRef_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMedia: '#/components/schemas/BillPresentationMediaValue'
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef_FVO'
+    BillPresentationMediaRefOrValue_MVO:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillPresentationMediaValue'
+        - $ref: '#/components/schemas/BillPresentationMediaRef_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMedia: '#/components/schemas/BillPresentationMediaValue'
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef_MVO'
+    BillPresentationMediaRef_FVO:
+      type: object
+      description: >-
+        PresentationMedia reference. A mean of communicating a bill, supported by the associated
+        bill format. For example, post mail, email, web page.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef_FVO'
+    BillPresentationMediaRef_MVO:
+      type: object
+      description: >-
+        PresentationMedia reference. A mean of communicating a bill, supported by the associated
+        bill format. For example, post mail, email, web page.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillPresentationMediaRef: '#/components/schemas/BillPresentationMediaRef_MVO'
+    BillPresentationMediaValue:
+      type: object
+      description: >-
+        A mean of communicating a bill, supported by the associated bill format. For example, post
+        mail, email, web page.
+      properties:
+        name:
+          type: string
+          description: A short descriptive name
+    BillStructure:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: The structure of the bill for party accounts (billing or settlement).
+          properties:
+            presentationMedia:
+              type: array
+              items:
+                $ref: '#/components/schemas/BillPresentationMediaRefOrValue'
+            format:
+              $ref: '#/components/schemas/BillFormatRefOrValue'
+            cycleSpecification:
+              $ref: '#/components/schemas/BillingCycleSpecificationRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillStructure: '#/components/schemas/BillStructure'
+    BillStructure_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: The structure of the bill for party accounts (billing or settlement).
+          properties:
+            presentationMedia:
+              type: array
+              items:
+                $ref: '#/components/schemas/BillPresentationMediaRefOrValue_FVO'
+            format:
+              $ref: '#/components/schemas/BillFormatRefOrValue_FVO'
+            cycleSpecification:
+              $ref: '#/components/schemas/BillingCycleSpecificationRefOrValue_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillStructure: '#/components/schemas/BillStructure_FVO'
+    BillStructure_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: The structure of the bill for party accounts (billing or settlement).
+          properties:
+            presentationMedia:
+              type: array
+              items:
+                $ref: '#/components/schemas/BillPresentationMediaRefOrValue_MVO'
+            format:
+              $ref: '#/components/schemas/BillFormatRefOrValue_MVO'
+            cycleSpecification:
+              $ref: '#/components/schemas/BillingCycleSpecificationRefOrValue_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillStructure: '#/components/schemas/BillStructure_MVO'
+    BillingAccount:
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount'
+        - type: object
+          description: >-
+            A party account used for billing purposes. It includes a description of the bill
+            structure (frequency, presentation media, format and so on). It is a specialization of
+            entity PartyAccount.
+          properties:
+            ratingType:
+              type: string
+              description: >-
+                Indicates whether the account follows a specific payment option such as prepaid or
+                postpaid
+    BillingAccount_FVO:
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount_FVO'
+        - type: object
+          description: >-
+            A party account used for billing purposes. It includes a description of the bill
+            structure (frequency, presentation media, format and so on). It is a specialization of
+            entity PartyAccount.
+          properties:
+            ratingType:
+              type: string
+              description: >-
+                Indicates whether the account follows a specific payment option such as prepaid or
+                postpaid
+          required:
+            - name
+            - relatedParty
+    BillingAccount_MVO:
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount_MVO'
+        - type: object
+          description: >-
+            A party account used for billing purposes. It includes a description of the bill
+            structure (frequency, presentation media, format and so on). It is a specialization of
+            entity PartyAccount.
+          properties:
+            ratingType:
+              type: string
+              description: >-
+                Indicates whether the account follows a specific payment option such as prepaid or
+                postpaid
+    BillingCycleSpecificationRef:
+      type: object
+      description: >-
+        BillingCycleSpecification reference. A description of when to initiate a billing cycle and
+        the various sub steps of a billing cycle.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef'
+    BillingCycleSpecificationRefOrValue:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillingCycleSpecificationValue'
+        - $ref: '#/components/schemas/BillingCycleSpecificationRef'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue'
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef'
+    BillingCycleSpecificationRefOrValue_FVO:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillingCycleSpecificationValue_FVO'
+        - $ref: '#/components/schemas/BillingCycleSpecificationRef_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue_FVO'
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef_FVO'
+    BillingCycleSpecificationRefOrValue_MVO:
+      type: object
+      description: An attachment by value or by reference.
+      oneOf:
+        - $ref: '#/components/schemas/BillingCycleSpecificationValue_MVO'
+        - $ref: '#/components/schemas/BillingCycleSpecificationRef_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue_MVO'
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef_MVO'
+    BillingCycleSpecificationRef_FVO:
+      type: object
+      description: >-
+        BillingCycleSpecification reference. A description of when to initiate a billing cycle and
+        the various sub steps of a billing cycle.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef_FVO'
+    BillingCycleSpecificationRef_MVO:
+      type: object
+      description: >-
+        BillingCycleSpecification reference. A description of when to initiate a billing cycle and
+        the various sub steps of a billing cycle.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecificationRef: '#/components/schemas/BillingCycleSpecificationRef_MVO'
+    BillingCycleSpecificationValue:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            A detailed description of when to initiate a billing cycle and the various sub steps of
+            a billing cycle.
+          properties:
+            billingDateShift:
+              type: integer
+              description: >-
+                An offset of a billing/settlement date. The offset is expressed as number of days
+                with regard to the start of the billing/settlement period.
+            billingPeriod:
+              type: string
+              description: >-
+                A billing time period. It can be recurring, for example: week, month, quarter of
+                year, year .
+            chargeDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which charges previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            creditDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which credits previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            description:
+              type: string
+              description: An explanation regarding this billing cycle specification
+            frequency:
+              type: string
+              description: Frequency of the billing cycle (monthly for instance)
+            mailingDateOffset:
+              type: integer
+              description: >-
+                An offset of a customer bill mailing date. The offset is expressed as number of days
+                with regard to the start of the BillingPeriod.
+            paymentDueDateOffset:
+              type: integer
+              description: >-
+                An offset of a payment due date. The offset is expressed as number of days with
+                regard to the start of the BillingPeriod.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            name:
+              type: string
+              description: A short descriptive name
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue'
+    BillingCycleSpecificationValue_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            A detailed description of when to initiate a billing cycle and the various sub steps of
+            a billing cycle.
+          properties:
+            billingDateShift:
+              type: integer
+              description: >-
+                An offset of a billing/settlement date. The offset is expressed as number of days
+                with regard to the start of the billing/settlement period.
+            billingPeriod:
+              type: string
+              description: >-
+                A billing time period. It can be recurring, for example: week, month, quarter of
+                year, year .
+            chargeDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which charges previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            creditDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which credits previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            description:
+              type: string
+              description: An explanation regarding this billing cycle specification
+            frequency:
+              type: string
+              description: Frequency of the billing cycle (monthly for instance)
+            mailingDateOffset:
+              type: integer
+              description: >-
+                An offset of a customer bill mailing date. The offset is expressed as number of days
+                with regard to the start of the BillingPeriod.
+            paymentDueDateOffset:
+              type: integer
+              description: >-
+                An offset of a payment due date. The offset is expressed as number of days with
+                regard to the start of the BillingPeriod.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            name:
+              type: string
+              description: A short descriptive name
+          required:
+            - name
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue_FVO'
+    BillingCycleSpecificationValue_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            A detailed description of when to initiate a billing cycle and the various sub steps of
+            a billing cycle.
+          properties:
+            billingDateShift:
+              type: integer
+              description: >-
+                An offset of a billing/settlement date. The offset is expressed as number of days
+                with regard to the start of the billing/settlement period.
+            billingPeriod:
+              type: string
+              description: >-
+                A billing time period. It can be recurring, for example: week, month, quarter of
+                year, year .
+            chargeDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which charges previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            creditDateOffset:
+              type: integer
+              description: >-
+                An offset of a date through which credits previously received by the billing system
+                will appear on the bill. The offset is expressed as number of days with regard to
+                the start of the BillingPeriod.
+            description:
+              type: string
+              description: An explanation regarding this billing cycle specification
+            frequency:
+              type: string
+              description: Frequency of the billing cycle (monthly for instance)
+            mailingDateOffset:
+              type: integer
+              description: >-
+                An offset of a customer bill mailing date. The offset is expressed as number of days
+                with regard to the start of the BillingPeriod.
+            paymentDueDateOffset:
+              type: integer
+              description: >-
+                An offset of a payment due date. The offset is expressed as number of days with
+                regard to the start of the BillingPeriod.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            name:
+              type: string
+              description: A short descriptive name
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BillingCycleSpecification: '#/components/schemas/BillingCycleSpecificationValue_MVO'
+    Contact:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            An individual or an organization used as a contact point for a given account and
+            accessed via some contact medium.
+          properties:
+            id:
+              type: string
+              description: Identifier of the contact within list of the contacts (for entities with list)
+            contactName:
+              type: string
+              description: A displayable name for that contact
+            contactType:
+              type: string
+              description: 'Type of contact (primary, secondary...)'
+            partyRoleType:
+              type: string
+              description: >-
+                Identifies what kind of party role type is linked to the contact (a account
+                manager...)
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            contactMedium:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContactMedium'
+            relatedParty:
+              $ref: '#/components/schemas/RelatedParty'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Contact: '#/components/schemas/Contact'
+    ContactMedium:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Indicates the contact medium that could be used to contact the party.
+          properties:
+            contactMediumIdentifier:
+              type: string
+              description: Identifier for this contact medium.
+            preferred:
+              type: boolean
+              description: 'If true, indicates that is the preferred contact medium'
+            contactType:
+              type: string
+              description: >-
+                Type of the contact medium to qualifiy it like pro email / personal email. This is
+                not used to define the contact medium used.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ContactMedium: '#/components/schemas/ContactMedium'
+    ContactMedium_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: Indicates the contact medium that could be used to contact the party.
+          properties:
+            contactMediumIdentifier:
+              type: string
+              description: Identifier for this contact medium.
+            preferred:
+              type: boolean
+              description: 'If true, indicates that is the preferred contact medium'
+            contactType:
+              type: string
+              description: >-
+                Type of the contact medium to qualifiy it like pro email / personal email. This is
+                not used to define the contact medium used.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ContactMedium: '#/components/schemas/ContactMedium_FVO'
+    ContactMedium_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Indicates the contact medium that could be used to contact the party.
+          properties:
+            contactMediumIdentifier:
+              type: string
+              description: Identifier for this contact medium.
+            preferred:
+              type: boolean
+              description: 'If true, indicates that is the preferred contact medium'
+            contactType:
+              type: string
+              description: >-
+                Type of the contact medium to qualifiy it like pro email / personal email. This is
+                not used to define the contact medium used.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ContactMedium: '#/components/schemas/ContactMedium_MVO'
+    Contact_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            An individual or an organization used as a contact point for a given account and
+            accessed via some contact medium.
+          properties:
+            id:
+              type: string
+              description: Identifier of the contact within list of the contacts (for entities with list)
+            contactName:
+              type: string
+              description: A displayable name for that contact
+            contactType:
+              type: string
+              description: 'Type of contact (primary, secondary...)'
+            partyRoleType:
+              type: string
+              description: >-
+                Identifies what kind of party role type is linked to the contact (a account
+                manager...)
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            contactMedium:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContactMedium_FVO'
+            relatedParty:
+              $ref: '#/components/schemas/RelatedParty_FVO'
+          required:
+            - contactType
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Contact: '#/components/schemas/Contact_FVO'
+    Contact_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            An individual or an organization used as a contact point for a given account and
+            accessed via some contact medium.
+          properties:
+            id:
+              type: string
+              description: Identifier of the contact within list of the contacts (for entities with list)
+            contactName:
+              type: string
+              description: A displayable name for that contact
+            contactType:
+              type: string
+              description: 'Type of contact (primary, secondary...)'
+            partyRoleType:
+              type: string
+              description: >-
+                Identifies what kind of party role type is linked to the contact (a account
+                manager...)
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            contactMedium:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContactMedium_MVO'
+            relatedParty:
+              $ref: '#/components/schemas/RelatedParty_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Contact: '#/components/schemas/Contact_MVO'
+    Entity:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/Addressable'
+    EntityRef:
+      type: object
+      description: Entity reference schema to be use for all entityRef class.
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+    Entity_FVO:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/Addressable_FVO'
+    Entity_MVO:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+    Extensible:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    Extensible_FVO:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    FinancialAccount:
+      type: object
+      description: >-
+        An account of money owed by a party to another entity in exchange for goods or services that
+        have been delivered or used. A financial (account receivable account/account payable)
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party. It is a specialization of entity Account.
+      allOf:
+        - $ref: '#/components/schemas/Account'
+    FinancialAccountRef:
+      type: object
+      description: >-
+        AccountReceivable reference. An account of money owed by a party to another entity in
+        exchange for goods or services that have been delivered or used. An account receivable
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          FinancialAccountRef: '#/components/schemas/FinancialAccountRef'
+    FinancialAccountRef_FVO:
+      type: object
+      description: >-
+        AccountReceivable reference. An account of money owed by a party to another entity in
+        exchange for goods or services that have been delivered or used. An account receivable
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          FinancialAccountRef: '#/components/schemas/FinancialAccountRef_FVO'
+    FinancialAccountRef_MVO:
+      type: object
+      description: >-
+        AccountReceivable reference. An account of money owed by a party to another entity in
+        exchange for goods or services that have been delivered or used. An account receivable
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          FinancialAccountRef: '#/components/schemas/FinancialAccountRef_MVO'
+    FinancialAccount_FVO:
+      type: object
+      description: >-
+        An account of money owed by a party to another entity in exchange for goods or services that
+        have been delivered or used. A financial (account receivable account/account payable)
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party. It is a specialization of entity Account.
+      allOf:
+        - $ref: '#/components/schemas/Account_FVO'
+      required:
+        - name
+    FinancialAccount_MVO:
+      type: object
+      description: >-
+        An account of money owed by a party to another entity in exchange for goods or services that
+        have been delivered or used. A financial (account receivable account/account payable)
+        aggregates the amounts of one or more party accounts (billing or settlement) owned by a
+        given party. It is a specialization of entity Account.
+      allOf:
+        - $ref: '#/components/schemas/Account_MVO'
+    Money:
+      type: object
+      description: A base / value business entity used to represent money
+      properties:
+        unit:
+          type: string
+          description: Currency (ISO4217 norm uses 3 letters to define the currency)
+        value:
+          type: number
+          format: float
+          description: >-
+            A signed floating point number, the meaning of the sign is according to the context of
+            the API that uses this Data type
+    PartyAccount:
+      allOf:
+        - $ref: '#/components/schemas/Account'
+        - type: object
+          description: >-
+            Account used for billing or for settlement purposes concerning a given party (an
+            organization or an individual). It is a specialization of entity Account.
+          properties:
+            paymentStatus:
+              type: string
+              description: 'The condition of the account, such as due, paid, in arrears.'
+            billStructure:
+              $ref: '#/components/schemas/BillStructure'
+            paymentPlan:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentPlan'
+            financialAccount:
+              $ref: '#/components/schemas/FinancialAccountRef'
+            defaultPaymentMethod:
+              $ref: '#/components/schemas/PaymentMethodRef'
+    PartyAccount_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Account_FVO'
+        - type: object
+          description: >-
+            Account used for billing or for settlement purposes concerning a given party (an
+            organization or an individual). It is a specialization of entity Account.
+          properties:
+            paymentStatus:
+              type: string
+              description: 'The condition of the account, such as due, paid, in arrears.'
+            billStructure:
+              $ref: '#/components/schemas/BillStructure_FVO'
+            paymentPlan:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentPlan_FVO'
+            financialAccount:
+              $ref: '#/components/schemas/FinancialAccountRef_FVO'
+            defaultPaymentMethod:
+              $ref: '#/components/schemas/PaymentMethodRef_FVO'
+          required:
+            - name
+            - relatedParty
+    PartyAccount_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Account_MVO'
+        - type: object
+          description: >-
+            Account used for billing or for settlement purposes concerning a given party (an
+            organization or an individual). It is a specialization of entity Account.
+          properties:
+            paymentStatus:
+              type: string
+              description: 'The condition of the account, such as due, paid, in arrears.'
+            billStructure:
+              $ref: '#/components/schemas/BillStructure_MVO'
+            paymentPlan:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentPlan_MVO'
+            financialAccount:
+              $ref: '#/components/schemas/FinancialAccountRef_MVO'
+            defaultPaymentMethod:
+              $ref: '#/components/schemas/PaymentMethodRef_MVO'
+    PaymentMethodRef:
+      type: object
+      description: >-
+        PaymentMethod reference. A payment method defines a specific mean of payment (e.g direct
+        debit).
+      allOf:
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+    PaymentMethodRef_FVO:
+      type: object
+      description: >-
+        PaymentMethod reference. A payment method defines a specific mean of payment (e.g direct
+        debit).
+      allOf:
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+    PaymentMethodRef_MVO:
+      type: object
+      description: >-
+        PaymentMethod reference. A payment method defines a specific mean of payment (e.g direct
+        debit).
+      allOf:
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+    PaymentPlan:
+      type: object
+      description: Defines a plan for payment (when a party wants to spread his payments)
+      properties:
+        numberOfPayments:
+          type: integer
+          description: Number of payments used to spread the global payment
+        paymentFrequency:
+          type: string
+          description: 'Frequency of the payments, such as monthly and bimonthly'
+        priority:
+          type: integer
+          description: Priority of the payment plan
+        status:
+          type: string
+          description: 'Status of the payment plan (effective, ineffective)'
+        totalAmount:
+          $ref: '#/components/schemas/Money'
+        planType:
+          type: string
+          description: Type of payment plan
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethodRef'
+    PaymentPlan_FVO:
+      type: object
+      description: Defines a plan for payment (when a party wants to spread his payments)
+      properties:
+        numberOfPayments:
+          type: integer
+          description: Number of payments used to spread the global payment
+        paymentFrequency:
+          type: string
+          description: 'Frequency of the payments, such as monthly and bimonthly'
+        priority:
+          type: integer
+          description: Priority of the payment plan
+        status:
+          type: string
+          description: 'Status of the payment plan (effective, ineffective)'
+        totalAmount:
+          $ref: '#/components/schemas/Money'
+        planType:
+          type: string
+          description: Type of payment plan
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethodRef_FVO'
+    PaymentPlan_MVO:
+      type: object
+      description: Defines a plan for payment (when a party wants to spread his payments)
+      properties:
+        numberOfPayments:
+          type: integer
+          description: Number of payments used to spread the global payment
+        paymentFrequency:
+          type: string
+          description: 'Frequency of the payments, such as monthly and bimonthly'
+        priority:
+          type: integer
+          description: Priority of the payment plan
+        status:
+          type: string
+          description: 'Status of the payment plan (effective, ineffective)'
+        totalAmount:
+          $ref: '#/components/schemas/Money'
+        planType:
+          type: string
+          description: Type of payment plan
+        validFor:
+          $ref: '#/components/schemas/TimePeriod'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethodRef_MVO'
+    Quantity:
+      type: object
+      description: An amount in a given unit
+      properties:
+        amount:
+          type: number
+          format: float
+          default: 1
+          description: Numeric value in a given unit
+        units:
+          type: string
+          description: Unit
+    Reference:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_FVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_MVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+    RelatedParty:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty'
+    RelatedParty_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+          required:
+            - '@referredType'
+            - role
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty_FVO'
+    RelatedParty_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty_MVO'
+    SettlementAccount:
+      type: object
+      description: >-
+        A party account used for settlement purposes. It includes a description of the bill
+        structure (frequency, presentation media, format and so on). It is a specialization of
+        entity PartyAccount.
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount'
+    SettlementAccount_FVO:
+      type: object
+      description: >-
+        A party account used for settlement purposes. It includes a description of the bill
+        structure (frequency, presentation media, format and so on). It is a specialization of
+        entity PartyAccount.
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount_FVO'
+      required:
+        - name
+        - relatedParty
+    SettlementAccount_MVO:
+      type: object
+      description: >-
+        A party account used for settlement purposes. It includes a description of the bill
+        structure (frequency, presentation media, format and so on). It is a specialization of
+        entity PartyAccount.
+      allOf:
+        - $ref: '#/components/schemas/PartyAccount_MVO'
+    TaxDefinition:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Reference of a tax definition. A tax is levied by an authorized tax jurisdiction. There
+            are many different types of tax (Federal Tax levied by the US Government, State Tax
+            levied by the State of California,…).
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the tax.
+            name:
+              type: string
+              description: Tax name.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            jurisdictionName:
+              type: string
+              description: Name of the jurisdiction that levies the tax
+              example: USA
+            jurisdictionLevel:
+              type: string
+              description: Level of the jurisdiction that levies the tax
+              example: Country
+            taxType:
+              type: string
+              description: Type of the tax.
+              example: VAT
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxDefinition: '#/components/schemas/TaxDefinition'
+    TaxDefinition_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            Reference of a tax definition. A tax is levied by an authorized tax jurisdiction. There
+            are many different types of tax (Federal Tax levied by the US Government, State Tax
+            levied by the State of California,…).
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the tax.
+            name:
+              type: string
+              description: Tax name.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            jurisdictionName:
+              type: string
+              description: Name of the jurisdiction that levies the tax
+              example: USA
+            jurisdictionLevel:
+              type: string
+              description: Level of the jurisdiction that levies the tax
+              example: Country
+            taxType:
+              type: string
+              description: Type of the tax.
+              example: VAT
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxDefinition: '#/components/schemas/TaxDefinition_FVO'
+    TaxDefinition_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Reference of a tax definition. A tax is levied by an authorized tax jurisdiction. There
+            are many different types of tax (Federal Tax levied by the US Government, State Tax
+            levied by the State of California,…).
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the tax.
+            name:
+              type: string
+              description: Tax name.
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            jurisdictionName:
+              type: string
+              description: Name of the jurisdiction that levies the tax
+              example: USA
+            jurisdictionLevel:
+              type: string
+              description: Level of the jurisdiction that levies the tax
+              example: Country
+            taxType:
+              type: string
+              description: Type of the tax.
+              example: VAT
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxDefinition: '#/components/schemas/TaxDefinition_MVO'
+    TaxExemptionCertificate:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            A tax exemption certificate represents a tax exemption granted to a party (individual or
+            organization) by a tax jurisdiction which may be a city, state, country,... An exemption
+            has a certificate identifier (received from the jurisdiction that levied the tax) and a
+            validity period. An exemption is per tax types and determines for each type of tax what
+            portion of the tax is exempted (partial by percentage or complete) via the tax
+            definition.
+          properties:
+            id:
+              type: string
+              description: Identifier of the tax exemption within list of the exemptions
+            taxDefinition:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxDefinition'
+              description: >-
+                A list of taxes that are covered by the exemption, e.g. City Tax, State Tax. The
+                definition would include the exemption (e.g. for a rate exemption 0% would be a full
+                exemption, 5% could be a partial exemption if the actual rate was 10%).
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            certificateNumber:
+              type: string
+              description: >-
+                Identifier of a document that shows proof of exemption from taxes for the taxing
+                jurisdiction
+            issuingJurisdiction:
+              type: string
+              description: Name of the jurisdiction that issued the exemption
+              example: USA
+            reason:
+              type: string
+              description: Reason for the tax exemption
+            attachment:
+              $ref: '#/components/schemas/AttachmentRefOrValue'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxExemptionCertificate: '#/components/schemas/TaxExemptionCertificate'
+    TaxExemptionCertificate_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: >-
+            A tax exemption certificate represents a tax exemption granted to a party (individual or
+            organization) by a tax jurisdiction which may be a city, state, country,... An exemption
+            has a certificate identifier (received from the jurisdiction that levied the tax) and a
+            validity period. An exemption is per tax types and determines for each type of tax what
+            portion of the tax is exempted (partial by percentage or complete) via the tax
+            definition.
+          properties:
+            id:
+              type: string
+              description: Identifier of the tax exemption within list of the exemptions
+            taxDefinition:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxDefinition_FVO'
+              description: >-
+                A list of taxes that are covered by the exemption, e.g. City Tax, State Tax. The
+                definition would include the exemption (e.g. for a rate exemption 0% would be a full
+                exemption, 5% could be a partial exemption if the actual rate was 10%).
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            certificateNumber:
+              type: string
+              description: >-
+                Identifier of a document that shows proof of exemption from taxes for the taxing
+                jurisdiction
+            issuingJurisdiction:
+              type: string
+              description: Name of the jurisdiction that issued the exemption
+              example: USA
+            reason:
+              type: string
+              description: Reason for the tax exemption
+            attachment:
+              $ref: '#/components/schemas/AttachmentRefOrValue_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxExemptionCertificate: '#/components/schemas/TaxExemptionCertificate_FVO'
+    TaxExemptionCertificate_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            A tax exemption certificate represents a tax exemption granted to a party (individual or
+            organization) by a tax jurisdiction which may be a city, state, country,... An exemption
+            has a certificate identifier (received from the jurisdiction that levied the tax) and a
+            validity period. An exemption is per tax types and determines for each type of tax what
+            portion of the tax is exempted (partial by percentage or complete) via the tax
+            definition.
+          properties:
+            id:
+              type: string
+              description: Identifier of the tax exemption within list of the exemptions
+            taxDefinition:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaxDefinition_MVO'
+              description: >-
+                A list of taxes that are covered by the exemption, e.g. City Tax, State Tax. The
+                definition would include the exemption (e.g. for a rate exemption 0% would be a full
+                exemption, 5% could be a partial exemption if the actual rate was 10%).
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            certificateNumber:
+              type: string
+              description: >-
+                Identifier of a document that shows proof of exemption from taxes for the taxing
+                jurisdiction
+            issuingJurisdiction:
+              type: string
+              description: Name of the jurisdiction that issued the exemption
+              example: USA
+            reason:
+              type: string
+              description: Reason for the tax exemption
+            attachment:
+              $ref: '#/components/schemas/AttachmentRefOrValue_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          TaxExemptionCertificate: '#/components/schemas/TaxExemptionCertificate_MVO'
+    TimePeriod:
+      type: object
+      description: 'A period of time, either as a deadline (endDateTime only) a startDateTime only, or both'
+      properties:
+        startDateTime:
+          description: 'Start of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+        endDateTime:
+          description: 'End of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+    Error:
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Error: '#/components/schemas/Error'
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          required:
+            - code
+            - reason
+          properties:
+            code:
+              type: string
+              description: 'Application relevant detail, defined in the API or a common list.'
+            reason:
+              type: string
+              description: Explanation of the reason for the error which can be shown to a client user.
+            message:
+              type: string
+              description: >-
+                More details and corrective actions related to the error which can be shown to a
+                client user.
+            status:
+              type: string
+              description: HTTP Error code extension
+            referenceError:
+              type: string
+              description: URI of documentation describing the error.
+      description: 'Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)'
+    Hub_FVO:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - callback
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - properties:
+            callback:
+              type: string
+              description: The callback being registered.
+            query:
+              type: string
+              description: additional data to be passed
+    Hub:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - properties:
+            id:
+              type: string
+              description: Id of the listener
+            callback:
+              type: string
+              description: The callback being registered.
+            query:
+              type: string
+              description: additional data to be passed
+          required:
+            - callback
+    JsonPatch:
+      description: A JSONPatch document as defined by RFC 6902
+      required:
+        - op
+        - path
+      properties:
+        op:
+          type: string
+          description: The operation to be performed
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+          description: A JSON-Pointer
+        value:
+          description: The value to be used within the operations.
+        from:
+          type: string
+          description: A string containing a JSON Pointer value.
+    JsonPatchOperations:
+      description: JSONPatch Operations document as defined by RFC 6902
+      type: array
+      items:
+        $ref: '#/components/schemas/JsonPatch'
+  parameters:
+    Id:
+      name: id
+      required: true
+      schema:
+        type: string
+      in: path
+      description: Identifier of the Service
+    Fields:
+      name: fields
+      in: query
+      description: Comma-separated properties to be provided in response
+      schema:
+        type: string
+    Offset:
+      name: offset
+      in: query
+      description: Requested index for start of resources to be provided in response
+      schema:
+        type: integer
+    Limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response
+      schema:
+        type: integer
+  requestBodies:
+    PartyAccount_FVO:
+      description: The PartyAccount to be created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount_FVO'
+      required: true
+    PartyAccount_MVO:
+      description: The PartyAccount to be patched
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount_MVO'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount_MVO'
+        application/json-patch+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+        application/json-patch-query+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+      required: true
+    BillingAccount_FVO:
+      description: The BillingAccount to be created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount_FVO'
+      required: true
+    BillingAccount_MVO:
+      description: The BillingAccount to be patched
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount_MVO'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount_MVO'
+        application/json-patch+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+        application/json-patch-query+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+      required: true
+    SettlementAccount_FVO:
+      description: The SettlementAccount to be created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount_FVO'
+      required: true
+    SettlementAccount_MVO:
+      description: The SettlementAccount to be patched
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount_MVO'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount_MVO'
+        application/json-patch+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+        application/json-patch-query+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+      required: true
+    FinancialAccount_FVO:
+      description: The FinancialAccount to be created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount_FVO'
+      required: true
+    FinancialAccount_MVO:
+      description: The FinancialAccount to be patched
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount_MVO'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount_MVO'
+        application/json-patch+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+        application/json-patch-query+json:
+          schema:
+            $ref: '#/components/schemas/JsonPatchOperations'
+      required: true
+    Hub_FVO:
+      description: Data containing the callback endpoint to deliver the information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Hub_FVO'
+      required: true
+  responses:
+    '200':
+      description: OK
+    '202':
+      description: Accepted
+    '204':
+      description: Deleted
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '405':
+      description: Method Not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '501':
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '503':
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    200PartyAccountArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PartyAccount'
+    200PartyAccount_Get:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount'
+    200PartyAccount_Patch:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount'
+        application/json-patch+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PartyAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/PartyAccount'
+              - type: string
+                nullable: true
+        application/json-patch-query+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PartyAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/PartyAccount'
+              - type: string
+                nullable: true
+    200PartyAccount_Put:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount'
+    201PartyAccount:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyAccount'
+    200BillingAccountArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/BillingAccount'
+    200BillingAccount_Get:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount'
+    200BillingAccount_Patch:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount'
+        application/json-patch+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/BillingAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/BillingAccount'
+              - type: string
+                nullable: true
+        application/json-patch-query+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/BillingAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/BillingAccount'
+              - type: string
+                nullable: true
+    200BillingAccount_Put:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount'
+    201BillingAccount:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BillingAccount'
+    200SettlementAccountArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/SettlementAccount'
+    200SettlementAccount_Get:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount'
+    200SettlementAccount_Patch:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount'
+        application/json-patch+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/SettlementAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/SettlementAccount'
+              - type: string
+                nullable: true
+        application/json-patch-query+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/SettlementAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/SettlementAccount'
+              - type: string
+                nullable: true
+    200SettlementAccount_Put:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount'
+    201SettlementAccount:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementAccount'
+    200FinancialAccountArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/FinancialAccount'
+    200FinancialAccount_Get:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount'
+    200FinancialAccount_Patch:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount'
+        application/json-patch+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/FinancialAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/FinancialAccount'
+              - type: string
+                nullable: true
+        application/json-patch-query+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/FinancialAccount'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/FinancialAccount'
+              - type: string
+                nullable: true
+    200FinancialAccount_Put:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount'
+    201FinancialAccount:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FinancialAccount'
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Hub:
+      description: Notified
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Hub'
+  headers:
+    X-Total-Count:
+      description: Total number of items matching criteria
+      schema:
+        type: integer
+    X-Result-Count:
+      description: Actual number of items returned in the response body
+      schema:
+        type: integer
+  securitySchemes: {}
+  examples: {}

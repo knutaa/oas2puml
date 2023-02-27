@@ -1,0 +1,2178 @@
+openapi: 3.0.1
+info:
+  title: Party Interaction
+  description: >-
+    **TMF API Reference : TMF - 683 Party Interaction**
+
+    The Party Interaction Management API provides a mechanism to manage party interactions.
+    Creation, update and retrieval. Including creation, update, retrieval, deletion and notification
+    of event. 
+
+    A Party Interaction captures information about past interactions in order to re-use it in future
+    ones. 
+
+    his allows agents to serve users better by knowing the steps they went through. 
+
+    It also allows customers to see better the actions they have performed and how they interacted
+    with the service provider.
+  version: 5.0.0
+servers:
+  - url: 'https://serverRoot'
+tags:
+  - name: partyInteraction
+    description: Operations for PartyInteraction Resource
+  - name: notification listener
+    description: Notifications for Resource Lifecycle and event notifications
+  - name: events subscription
+    description: Endpoints to register and terminate an Event Listener
+paths:
+  /partyInteraction:
+    get:
+      tags:
+        - partyInteraction
+      summary: List or find PartyInteraction objects
+      description: >-
+        This operation retrieves a PartyInteraction entity. Attribute selection enabled for all
+        first level attributes.
+      operationId: listPartyInteraction
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyInteractionArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    post:
+      tags:
+        - partyInteraction
+      summary: Creates a PartyInteraction
+      description: This operation creates a PartyInteraction entity.
+      operationId: createPartyInteraction
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteraction_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/201PartyInteraction'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/partyInteraction/{id}':
+    get:
+      tags:
+        - partyInteraction
+      summary: Retrieves a PartyInteraction by ID
+      description: List or find PartyInteraction objects
+      operationId: retrievePartyInteraction
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyInteraction_Get'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    patch:
+      tags:
+        - partyInteraction
+      summary: Updates partially a PartyInteraction
+      description: This operation updates partially a PartyInteraction entity.
+      operationId: patchPartyInteraction
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteraction_MVO'
+      responses:
+        '200':
+          $ref: '#/components/responses/200PartyInteraction_Patch'
+        '202':
+          description: Accepted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    delete:
+      tags:
+        - partyInteraction
+      summary: Deletes a PartyInteraction
+      description: This operation deletes a PartyInteraction entity.
+      operationId: deletePartyInteraction
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  /listener/partyInteractionCreateEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity PartyInteractionCreateEvent
+      description: Example of a client listener for receiving the notification PartyInteractionCreateEvent
+      operationId: partyInteractionCreateEvent
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteractionCreateEvent'
+      responses:
+        '204':
+          description: Notified
+        default:
+          $ref: '#/components/responses/Error'
+  /listener/partyInteractionAttributeValueChangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity PartyInteractionCreateEvent
+      description: >-
+        Example of a client listener for receiving the notification
+        PartyInteractionAttributeValueChangeEvent
+      operationId: partyInteractionAttributeValueChangeEvent
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteractionAttributeValueChangeEvent'
+      responses:
+        '204':
+          description: Notified
+        default:
+          $ref: '#/components/responses/Error'
+  /listener/partyInteractionDeleteEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity PartyInteractionCreateEvent
+      description: Example of a client listener for receiving the notification PartyInteractionDeleteEvent
+      operationId: partyInteractionDeleteEvent
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteractionDeleteEvent'
+      responses:
+        '204':
+          description: Notified
+        default:
+          $ref: '#/components/responses/Error'
+  /listener/partyInteractionStatusChangeEvent:
+    post:
+      tags:
+        - notification listener
+      summary: Client listener for entity PartyInteractionCreateEvent
+      description: >-
+        Example of a client listener for receiving the notification
+        PartyInteractionStatusChangeEvent
+      operationId: partyInteractionStatusChangeEvent
+      requestBody:
+        $ref: '#/components/requestBodies/PartyInteractionStatusChangeEvent'
+      responses:
+        '204':
+          description: Notified
+        default:
+          $ref: '#/components/responses/Error'
+  /hub:
+    post:
+      operationId: createHub
+      summary: Create a subscription (hub) to receive Events
+      description: Sets the communication endpoint to receive Events.
+      tags:
+        - events subscription
+      requestBody:
+        $ref: '#/components/requestBodies/Hub_FVO'
+      responses:
+        '201':
+          $ref: '#/components/responses/Hub'
+        default:
+          $ref: '#/components/responses/Error'
+  '/hub/{id}':
+    delete:
+      operationId: hubDelete
+      summary: Remove a subscription (hub) to receive Events
+      description: ''
+      tags:
+        - events subscription
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Deleted
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  schemas:
+    Addressable:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+      required:
+        - id
+        - href
+    AddressableValue:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+    Addressable_FVO:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        id:
+          type: string
+          description: unique identifier
+    Attachment:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue'
+    AttachmentRef:
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue'
+    AttachmentRefOrValue:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRef'
+        - $ref: '#/components/schemas/Attachment'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef'
+          Attachment: '#/components/schemas/AttachmentValue'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue'
+    AttachmentRefOrValue_FVO:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRef_FVO'
+        - $ref: '#/components/schemas/Attachment_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_FVO'
+          Attachment: '#/components/schemas/AttachmentValue'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_FVO'
+    AttachmentRefOrValue_MVO:
+      type: object
+      description: >-
+        An attachment by value or by reference. An attachment complements the description of an
+        element, for example through a document, a video, a picture.
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRef_MVO'
+        - $ref: '#/components/schemas/Attachment_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_MVO'
+          Attachment: '#/components/schemas/AttachmentValue'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_MVO'
+    AttachmentRef_FVO:
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue_FVO'
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_FVO'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_FVO'
+    AttachmentRef_MVO:
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue_MVO'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+        - type: object
+          description: >-
+            Attachment reference. An attachment complements the description of an element (for
+            instance a product) through video, pictures
+          properties:
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+            url:
+              description: Link to the attachment media/content
+              type: string
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AttachmentRef: '#/components/schemas/AttachmentRef_MVO'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_MVO'
+    AttachmentValue:
+      allOf:
+        - $ref: '#/components/schemas/AttachmentRefOrValue_MVO'
+        - $ref: '#/components/schemas/AttachmentRefOrValue_FVO'
+        - $ref: '#/components/schemas/AttachmentRefOrValue'
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            id:
+              type: string
+              description: unique identifier
+            name:
+              type: string
+              description: The name of the attachment
+            description:
+              type: string
+              description: A narrative text describing the content of the attachment
+              example: Photograph of the Product
+            url:
+              type: string
+              description: 'Uniform Resource Locator, is a web page address (a subset of URI)'
+              example: 'http://host/Content/4aafacbd-11ff-4dc8-b445-305f2215715f'
+            content:
+              type: string
+              format: base64
+              description: 'The actual contents of the attachment object, if embedded, encoded as base64'
+            size:
+              $ref: '#/components/schemas/Quantity'
+            validFor:
+              $ref: '#/components/schemas/TimePeriod'
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/AttachmentValue'
+    Attachment_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_FVO'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+          required:
+            - attachmentType
+            - mimeType
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment_FVO'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_FVO'
+    Attachment_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_MVO'
+        - type: object
+          description: >-
+            Complements the description of an element (for instance a product) through video,
+            pictures...
+          properties:
+            attachmentType:
+              type: string
+              description: 'Attachment type such as video, picture'
+            mimeType:
+              type: string
+              description: 'Attachment mime type such as extension file for video, picture and document'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Attachment: '#/components/schemas/Attachment_MVO'
+          AttachmentRefOrValue: '#/components/schemas/AttachmentRefOrValue_MVO'
+    BaseEvent:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: Base event with common attributes.
+          properties:
+            event:
+              type: object
+            eventId:
+              type: string
+              description: The identifier of the notification.
+            eventTime:
+              type: string
+              format: date-time
+              description: Time of the event occurrence.
+            eventType:
+              type: string
+              description: The type of the notification.
+            correlationId:
+              type: string
+              description: The correlation id for this event.
+            domain:
+              type: string
+              description: The domain of the event.
+            title:
+              type: string
+              description: The title of the event.
+            description:
+              type: string
+              description: An explanatory of the event.
+            priority:
+              type: string
+              description: A priority.
+            timeOcurred:
+              type: string
+              format: date-time
+              description: The time the event occured.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          BaseEvent: '#/components/schemas/BaseEvent'
+    Entity:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/Addressable'
+    EntityRef:
+      type: object
+      description: Entity reference schema to be use for all entityRef class.
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+    EntityValue:
+      allOf:
+        - $ref: '#/components/schemas/RelatedEntityRefOrValue'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/AddressableValue'
+        - type: object
+          description: Base entity value  schema for use in TMForum Open-APIs
+          properties:
+            id:
+              type: string
+              description: Unique identifier of a related entity.
+            href:
+              type: string
+              description: Reference of the related entity.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue'
+    EntityValue_FVO:
+      allOf:
+        - $ref: '#/components/schemas/RelatedEntityRefOrValue_FVO'
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/AddressableValue'
+        - type: object
+          description: Base entity value  schema for use in TMForum Open-APIs
+          properties:
+            id:
+              type: string
+              description: Unique identifier of a related entity.
+            href:
+              type: string
+              description: Reference of the related entity.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue_FVO'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue_FVO'
+    EntityValue_MVO:
+      allOf:
+        - $ref: '#/components/schemas/RelatedEntityRefOrValue_MVO'
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/AddressableValue'
+        - type: object
+          description: Base entity value  schema for use in TMForum Open-APIs
+          properties:
+            id:
+              type: string
+              description: Unique identifier of a related entity.
+            href:
+              type: string
+              description: Reference of the related entity.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue_MVO'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue_MVO'
+    Entity_FVO:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/Addressable_FVO'
+    Entity_MVO:
+      type: object
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+    Extensible:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    Extensible_FVO:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    InteractionItem:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the interaction item
+            itemDate:
+              $ref: '#/components/schemas/TimePeriod'
+            reason:
+              type: string
+              description: Reason why this item is referred
+            resolution:
+              type: string
+              description: Resolution of the interaction item
+            creationDate:
+              type: string
+              format: date-time
+              description: Date when the interaction item is created in the system
+            item:
+              $ref: '#/components/schemas/RelatedEntityRefOrValue'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel'
+              description: 'Where the interaction item took place (e.g.: web, mobile app, store, kiosk, etc.)'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          InteractionItem: '#/components/schemas/InteractionItem'
+    InteractionItem_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the interaction item
+            itemDate:
+              $ref: '#/components/schemas/TimePeriod'
+            reason:
+              type: string
+              description: Reason why this item is referred
+            resolution:
+              type: string
+              description: Resolution of the interaction item
+            creationDate:
+              type: string
+              format: date-time
+              description: Date when the interaction item is created in the system
+            item:
+              $ref: '#/components/schemas/RelatedEntityRefOrValue_FVO'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel_FVO'
+              description: 'Where the interaction item took place (e.g.: web, mobile app, store, kiosk, etc.)'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_FVO'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue_FVO'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          InteractionItem: '#/components/schemas/InteractionItem_FVO'
+    InteractionItem_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the interaction item
+            itemDate:
+              $ref: '#/components/schemas/TimePeriod'
+            reason:
+              type: string
+              description: Reason why this item is referred
+            resolution:
+              type: string
+              description: Resolution of the interaction item
+            creationDate:
+              type: string
+              format: date-time
+              description: Date when the interaction item is created in the system
+            item:
+              $ref: '#/components/schemas/RelatedEntityRefOrValue_MVO'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel_MVO'
+              description: 'Where the interaction item took place (e.g.: web, mobile app, store, kiosk, etc.)'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_MVO'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue_MVO'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          InteractionItem: '#/components/schemas/InteractionItem_MVO'
+    InteractionRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the referenced party interaction
+        href:
+          type: string
+          description: Hyperlink to access the referenced party interaction
+        relationshipType:
+          type: string
+          description: Type of the interaction relationship
+    Note:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Extra information about a given entity
+          properties:
+            id:
+              type: string
+              description: Identifier of the note within its containing entity
+              example:
+                - afa9-3d90aaa8da0f
+            author:
+              type: string
+              description: Author of the note
+              example:
+                - Mr. N. Bene
+            date:
+              type: string
+              format: date-time
+              description: Date of the note
+              example:
+                - '2020-11-20T08:00:00Z'
+            text:
+              type: string
+              description: Text of the note
+              example:
+                - This is important
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Note: '#/components/schemas/Note'
+    Note_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - type: object
+          description: Extra information about a given entity
+          properties:
+            id:
+              type: string
+              description: Identifier of the note within its containing entity
+              example:
+                - afa9-3d90aaa8da0f
+            author:
+              type: string
+              description: Author of the note
+              example:
+                - Mr. N. Bene
+            date:
+              type: string
+              format: date-time
+              description: Date of the note
+              example:
+                - '2020-11-20T08:00:00Z'
+            text:
+              type: string
+              description: Text of the note
+              example:
+                - This is important
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Note: '#/components/schemas/Note_FVO'
+    Note_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          description: Extra information about a given entity
+          properties:
+            id:
+              type: string
+              description: Identifier of the note within its containing entity
+              example:
+                - afa9-3d90aaa8da0f
+            author:
+              type: string
+              description: Author of the note
+              example:
+                - Mr. N. Bene
+            date:
+              type: string
+              format: date-time
+              description: Date of the note
+              example:
+                - '2020-11-20T08:00:00Z'
+            text:
+              type: string
+              description: Text of the note
+              example:
+                - This is important
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Note: '#/components/schemas/Note_MVO'
+    PartyInteraction:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          properties:
+            interactionDate:
+              $ref: '#/components/schemas/TimePeriod'
+            description:
+              type: string
+              description: Description of the interaction
+            status:
+              type: string
+              description: 'Status of the interaction (opened, inProgress, completed)'
+            statusChangeDate:
+              type: string
+              format: date-time
+              description: Last time the status changed
+            creationDate:
+              type: string
+              format: date-time
+              description: Date when the interaction is created in the system
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note'
+            interactionItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionItem'
+            interactionRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionRelationship'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel'
+              description: 'Where the interaction took place (e.g. web, mobile app, store, kiosk, etc.)'
+            direction:
+              type: string
+              description: >-
+                Specifies who started the interaction. It might be the party or the enterprise
+                exposing this API. Possible values are “inbound” and “outbound”
+            reason:
+              type: string
+              description: Reason why the interaction happened
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PartyInteraction: '#/components/schemas/PartyInteraction'
+    PartyInteractionStatusExampleType:
+      enum:
+        - open
+        - inProgress
+        - completed
+      type: string
+      description: 'Possible values for the status of party interaction (for example: open,inProgress,completed)'
+    PartyInteraction_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_FVO'
+        - type: object
+          properties:
+            interactionDate:
+              $ref: '#/components/schemas/TimePeriod'
+            description:
+              type: string
+              description: Description of the interaction
+            status:
+              type: string
+              description: 'Status of the interaction (opened, inProgress, completed)'
+            statusChangeDate:
+              type: string
+              format: date-time
+              description: Last time the status changed
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_FVO'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue_FVO'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note_FVO'
+            interactionItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionItem_FVO'
+            interactionRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionRelationship'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel_FVO'
+              description: 'Where the interaction took place (e.g. web, mobile app, store, kiosk, etc.)'
+            direction:
+              type: string
+              description: >-
+                Specifies who started the interaction. It might be the party or the enterprise
+                exposing this API. Possible values are “inbound” and “outbound”
+            reason:
+              type: string
+              description: Reason why the interaction happened
+          required:
+            - reason
+            - direction
+            - channel
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PartyInteraction: '#/components/schemas/PartyInteraction_FVO'
+    PartyInteraction_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Entity_MVO'
+        - type: object
+          properties:
+            interactionDate:
+              $ref: '#/components/schemas/TimePeriod'
+            description:
+              type: string
+              description: Description of the interaction
+            status:
+              type: string
+              description: 'Status of the interaction (opened, inProgress, completed)'
+            relatedParty:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedParty_MVO'
+            attachment:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttachmentRefOrValue_MVO'
+            note:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note_MVO'
+            interactionItem:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionItem_MVO'
+            interactionRelationship:
+              type: array
+              items:
+                $ref: '#/components/schemas/InteractionRelationship'
+            channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedChannel_MVO'
+              description: 'Where the interaction took place (e.g. web, mobile app, store, kiosk, etc.)'
+            reason:
+              type: string
+              description: Reason why the interaction happened
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PartyInteraction: '#/components/schemas/PartyInteraction_MVO'
+    Quantity:
+      type: object
+      description: An amount in a given unit
+      properties:
+        amount:
+          type: number
+          format: float
+          default: 1
+          description: Numeric value in a given unit
+        units:
+          type: string
+          description: Unit
+    Reference:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_FVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_MVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+    RelatedChannel:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          description: 'Related channel to another entity. May be online web, mobile app, social ,etc.'
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            role:
+              type: string
+              description: Role playing by the channel.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedChannel: '#/components/schemas/RelatedChannel'
+    RelatedChannel_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/Reference_FVO'
+        - type: object
+          description: 'Related channel to another entity. May be online web, mobile app, social ,etc.'
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            role:
+              type: string
+              description: Role playing by the channel.
+          required:
+            - id
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedChannel: '#/components/schemas/RelatedChannel_FVO'
+    RelatedChannel_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/Reference_MVO'
+        - type: object
+          description: 'Related channel to another entity. May be online web, mobile app, social ,etc.'
+          properties:
+            href:
+              type: string
+              description: Hyperlink reference
+            role:
+              type: string
+              description: Role playing by the channel.
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedChannel: '#/components/schemas/RelatedChannel_MVO'
+    RelatedEntityRefOrValue:
+      allOf:
+        - $ref: '#/components/schemas/EntityValue'
+        - $ref: '#/components/schemas/EntityRef'
+        - type: object
+          description: >-
+            A reference to an entity, where the type of the entity is not known in advance. A
+            related entity defines a entity described by reference or by value linked to a specific
+            entity. The polymorphic attributes @type, @schemaLocation & @referredType are related to
+            the Entity and not the RelatedEntityRefOrValue class itself
+          properties:
+            role:
+              type: string
+            '@type':
+              type: string
+              description: 'When sub-classing, this defines the sub-class Extensible name'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue'
+    RelatedEntityRefOrValue_FVO:
+      allOf:
+        - $ref: '#/components/schemas/EntityValue_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - type: object
+          description: >-
+            A reference to an entity, where the type of the entity is not known in advance. A
+            related entity defines a entity described by reference or by value linked to a specific
+            entity. The polymorphic attributes @type, @schemaLocation & @referredType are related to
+            the Entity and not the RelatedEntityRefOrValue class itself
+          properties:
+            role:
+              type: string
+            '@type':
+              type: string
+              description: 'When sub-classing, this defines the sub-class Extensible name'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue_FVO'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue_FVO'
+    RelatedEntityRefOrValue_MVO:
+      allOf:
+        - $ref: '#/components/schemas/EntityValue_MVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - type: object
+          description: >-
+            A reference to an entity, where the type of the entity is not known in advance. A
+            related entity defines a entity described by reference or by value linked to a specific
+            entity. The polymorphic attributes @type, @schemaLocation & @referredType are related to
+            the Entity and not the RelatedEntityRefOrValue class itself
+          properties:
+            role:
+              type: string
+            '@type':
+              type: string
+              description: 'When sub-classing, this defines the sub-class Extensible name'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Entity: '#/components/schemas/EntityValue_MVO'
+          RelatedEntityRefOrValue: '#/components/schemas/RelatedEntityRefOrValue_MVO'
+    RelatedParty:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty'
+    RelatedParty_FVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+          required:
+            - '@referredType'
+            - role
+            - id
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty_FVO'
+    RelatedParty_MVO:
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+        - type: object
+          description: Related Entity reference. A related party defines party linked to a specific entity.
+          properties:
+            role:
+              type: string
+              description: Role played by the related party
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          RelatedParty: '#/components/schemas/RelatedParty_MVO'
+    TimePeriod:
+      type: object
+      description: 'A period of time, either as a deadline (endDateTime only) a startDateTime only, or both'
+      properties:
+        startDateTime:
+          description: 'Start of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+        endDateTime:
+          description: 'End of the time period, using IETC-RFC-3339 format'
+          type: string
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'
+    Error:
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          Error: '#/components/schemas/Error'
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - type: object
+          required:
+            - code
+            - reason
+          properties:
+            code:
+              type: string
+              description: 'Application relevant detail, defined in the API or a common list.'
+            reason:
+              type: string
+              description: Explanation of the reason for the error which can be shown to a client user.
+            message:
+              type: string
+              description: >-
+                More details and corrective actions related to the error which can be shown to a
+                client user.
+            status:
+              type: string
+              description: HTTP Error code extension
+            referenceError:
+              type: string
+              description: URI of documentation describing the error.
+      description: 'Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)'
+    Hub_FVO:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      required:
+        - callback
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - properties:
+            callback:
+              type: string
+              description: The callback being registered.
+            query:
+              type: string
+              description: additional data to be passed
+    Hub:
+      type: object
+      description: >-
+        Sets the communication endpoint address the service instance must use to deliver
+        notification information
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - properties:
+            id:
+              type: string
+              description: Id of the listener
+            callback:
+              type: string
+              description: The callback being registered.
+            query:
+              type: string
+              description: additional data to be passed
+          required:
+            - callback
+    JsonPatch:
+      description: A JSONPatch document as defined by RFC 6902
+      required:
+        - op
+        - path
+      properties:
+        op:
+          type: string
+          description: The operation to be performed
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+          description: A JSON-Pointer
+        value:
+          description: The value to be used within the operations.
+        from:
+          type: string
+          description: A string containing a JSON Pointer value.
+    JsonPatchOperations:
+      description: JSONPatch Operations document as defined by RFC 6902
+      type: array
+      items:
+        $ref: '#/components/schemas/JsonPatch'
+  parameters:
+    Id:
+      name: id
+      required: true
+      schema:
+        type: string
+      in: path
+      description: Identifier of the Service
+    Fields:
+      name: fields
+      in: query
+      description: Comma-separated properties to be provided in response
+      schema:
+        type: string
+    Offset:
+      name: offset
+      in: query
+      description: Requested index for start of resources to be provided in response
+      schema:
+        type: integer
+    Limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response
+      schema:
+        type: integer
+  requestBodies:
+    PartyInteraction_FVO:
+      description: The PartyInteraction to be created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction_FVO'
+          examples:
+            Party_Interaction_create_example:
+              $ref: '#/components/examples/Party_Interaction_create_example_request'
+      required: true
+    PartyInteraction_MVO:
+      description: The PartyInteraction to be patched
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction_MVO'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction_MVO'
+        application/json-patch+json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/JsonPatchOperations'
+        application/json-patch-query+json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/JsonPatchOperations'
+      required: true
+    PartyInteractionCreateEvent:
+      description: PartyInteraction create Event payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteractionCreateEvent'
+          examples:
+            Create:
+              $ref: '#/components/examples/Create_request'
+      required: true
+    PartyInteractionAttributeValueChangeEvent:
+      description: PartyInteraction attributeValueChange Event payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteractionAttributeValueChangeEvent'
+          examples:
+            AttributeValueChange:
+              $ref: '#/components/examples/AttributeValueChange_request'
+      required: true
+    PartyInteractionDeleteEvent:
+      description: PartyInteraction delete Event payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteractionDeleteEvent'
+          examples:
+            Delete:
+              $ref: '#/components/examples/Delete_request'
+      required: true
+    PartyInteractionStatusChangeEvent:
+      description: PartyInteraction statusChange Event payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteractionStatusChange'
+          examples:
+            StatusChange:
+              $ref: '#/components/examples/StatusChange_request'
+      required: true
+    Hub_FVO:
+      description: Data containing the callback endpoint to deliver the information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Hub_FVO'
+      required: true
+  responses:
+    '200':
+      description: OK
+    '202':
+      description: Accepted
+    '204':
+      description: Deleted
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '403':
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '405':
+      description: Method Not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '501':
+      description: Not Implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '503':
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    200PartyInteractionArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PartyInteraction'
+          examples:
+            PartyInteraction_list_example:
+              $ref: '#/components/examples/PartyInteraction_list_example_response'
+    200PartyInteraction_Get:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction'
+          examples:
+            PartyInteraction_retrieve_example:
+              $ref: '#/components/examples/PartyInteraction_retrieve_example_response'
+    200PartyInteraction_Patch:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction'
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction'
+        application/json-patch+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PartyInteraction'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/PartyInteraction'
+              - type: string
+                nullable: true
+        application/json-patch-query+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/PartyInteraction'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/PartyInteraction'
+              - type: string
+                nullable: true
+    200PartyInteraction_Put:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction'
+    201PartyInteraction:
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PartyInteraction'
+          examples:
+            Party_Interaction_create_example:
+              $ref: '#/components/examples/Party_Interaction_create_example_response'
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Hub:
+      description: Notified
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Hub'
+  headers:
+    X-Total-Count:
+      description: Total number of items matching criteria
+      schema:
+        type: integer
+    X-Result-Count:
+      description: Actual number of items returned in the response body
+      schema:
+        type: integer
+  securitySchemes: {}
+  examples:
+    PartyInteraction_list_example_response:
+      value:
+        - id: '123'
+          href: 'https://host:port/partyInteraction/v4/partyInteraction/123'
+          relatedParty:
+            - id: '999'
+              role: user
+              name: John Doe
+              '@referredType': Individual
+            - id: '3434'
+              role: customerr
+              name: Malik Doe
+              '@referredType': Customer
+            - id: '36666'
+              role: agent
+              name: Rian Muray
+              '@referredType': Individual
+        - id: '555'
+          href: 'https://host:port/partyInteraction/v4/partyInteraction/555'
+          relatedParty:
+            - id: '999'
+              role: user
+              name: John Doe
+              '@referredType': Individual
+      description: >-
+        Here's an example of a request for retrieving a list of party interaction(s). The given
+        criteria is the individual (id,@referredType)
+    PartyInteraction_retrieve_example_response:
+      value:
+        id: '123'
+        href: 'https://host:port/partyInteraction/v4/partyInteraction/123'
+        '@type': PartyInteraction
+        interactionDate:
+          startDateTime: '2019-10-02T11:36:18.758Z'
+          endDateTime: '2019-10-02T11:53:21.789Z'
+        description: Visit to store
+        reason: The user wanted to buy TV and internet plan
+        status: ongoing
+        statusChangeDate: '2019-10-02T11:53:21.789Z'
+        direction: inbounds
+        creationDate: '2019-10-02T11:37:08.013Z'
+        relatedParty:
+          - id: '999'
+            href: 'https://host:port/partyManagement/v4/individual/999'
+            '@referredType': Individual
+            role: user
+            name: John Doe
+          - id: '888'
+            href: 'https://host:port/partyManagement/v4/individual/888'
+            '@referredType': Individual
+            role: agent
+            name: Rian Muray
+        interactionItem:
+          - id: '5678'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/5678'
+            reason: The user signed up to new TV bundle and paid the decoder
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            creationDate: '2019-10-02T11:50:01.895Z'
+            item:
+              id: '30001'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/30001'
+              '@referredType': ProductOrder
+              '@type': EntityRef
+              role: interaction
+              name: Product Order illustration sample by reference
+          - id: '1212'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/1212'
+            reason: The user is purchasing unlimited internet plan
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            creationDate: '2019-10-02T11:50:01.895Z'
+            item:
+              id: '88'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/88'
+              '@type': ProductOrder
+              role: interaction
+              '@schemaLocation': 'https://mycsp.com:8080/tmf-api/schema/Resource/ProductOrder.schema.json'
+              productOrderItem:
+                - id: '13219'
+                  action: add
+                  productOffering:
+                    id: '2445'
+                    name: Unlimited Internet Plus
+          - id: '9999'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/9999'
+            reason: The user paid the decoder in the store with credit card
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: TODO
+            creationDate: '2019-10-02T11:50:01.895Z'
+            item:
+              id: '666'
+              href: 'https://host:port/paymentManagement/v4/payment/666'
+              '@referredType': Payment
+              role: interaction
+              name: TV bundle plus decoder payment
+        channel:
+          - id: '555'
+            name: Madrid Gran Vía Store
+            role: interaction creation
+            '@type': store
+        attachment:
+          - id: '111222444'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/attachment/111222444'
+            name: Some cool attachment
+            description: blahblahblah
+            attachmentType: receipt
+            mimeType: application/pdf
+            size:
+              amount: 321321
+              units: KB
+            URL: 'https://whereverthpdfis.com'
+            interactionDate:
+              startDateTime: '2019-10-02T11:36:18.758Z'
+              endDateTime: '2019-10-02T11:53:21.789Z'
+        note:
+          - id: '121'
+            text: loren ipsum dolor sit amet…
+            author: John Doe
+            date: '2019-10-02T11:36:18.758Z'
+        interactionRelationship:
+          - id: '1034'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/1034'
+            relationshipType: parent
+      description: Here's an example of a request for retrieving a specific party interaction.
+    Party_Interaction_create_example_request:
+      value:
+        interactionDate:
+          startDateTime: '2019-10-02T11:36:18.758Z'
+          endDateTime: '2019-10-02T11:53:21.789Z'
+        description: Visit to store
+        reason: The user wanted to buy TV and internet plan
+        status: ongoing
+        direction: inbounds
+        relatedParty:
+          - id: '999'
+            href: 'https://host:port/partyManagement/v4/individual/999'
+            '@referredType': Individual
+            role: user
+            name: John Doe
+          - id: '888'
+            href: 'https://host:port/partyManagement/v4/individual/888'
+            '@referredType': Individual
+            role: agent
+            name: Rian Muray
+        interactionItem:
+          - reason: The user signed up to new TV bundle and paid the decoder
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            item:
+              id: '30001'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/30001'
+              '@referredType': ProductOrder
+              '@type': EntityRef
+              role: interaction
+              name: Product Order illustration sample by reference
+          - reason: The user is purchasing unlimited internet plan
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            item:
+              id: '88'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/88'
+              '@type': ProductOrder
+              '@schemaLocation': 'https://mycsp.com:8080/tmf-api/schema/Resource/ProductOrder.schema.json'
+              productOrderItem:
+                - id: '13219'
+                  action: add
+                  productOffering:
+                    id: '2445'
+                    name: Unlimited Internet Plus
+        channel:
+          - id: '555'
+            name: Madrid Gran Vía Store
+            role: interaction creation
+            '@type': store
+        attachment:
+          - id: '111222444'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/attachment/111222444'
+            name: Some cool attachment
+            description: blahblahblah
+            attachmentType: receipt
+            mimeType: application/pdf
+            size:
+              amount: 321321
+              units: KB
+            URL: 'https://whereverthpdfis.com'
+            interactionDate:
+              startDateTime: '2019-10-02T11:36:18.758Z'
+              endDateTime: '2019-10-02T11:53:21.789Z'
+        note:
+          - id: '121'
+            text: loren ipsum dolor sit amet…
+            author: John Doe
+            date: '2019-10-02T11:36:18.758Z'
+        interactionRelationship:
+          - id: '1034'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/1034'
+            relationshipType: parent
+      description: >-
+        POST PartyInteraction request example - only a subset of party interaction attributes are
+        used in this example
+    Party_Interaction_create_example_response:
+      value:
+        id: '123'
+        href: 'https://host:port/partyInteraction/v4/partyInteraction/123'
+        '@type': PartyInteraction
+        interactionDate:
+          startDateTime: '2019-10-02T11:36:18.758Z'
+          endDateTime: '2019-10-02T11:53:21.789Z'
+        description: Visit to store
+        reason: The user wanted to buy TV and internet plan
+        status: ongoing
+        statusChangeDate: '2019-10-02T11:53:21.789Z'
+        direction: inbounds
+        creationDate: '2019-10-02T11:37:08.013Z'
+        relatedParty:
+          - id: '999'
+            href: 'https://host:port/partyManagement/v4/individual/999'
+            '@referredType': Individual
+            role: user
+            name: John Doe
+          - id: '888'
+            href: 'https://host:port/partyManagement/v4/individual/888'
+            '@referredType': Individual
+            role: agent
+            name: Rian Muray
+        interactionItem:
+          - id: '5678'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/5678'
+            reason: The user signed up to new TV bundle and paid the decoder
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            creationDate: '2019-10-02T11:50:01.895Z'
+            item:
+              id: '30001'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/30001'
+              '@referredType': ProductOrder
+              '@type': EntityRef
+              role: interaction
+              name: Product Order illustration sample by reference
+          - id: '1212'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/1212'
+            reason: The user is purchasing unlimited internet plan
+            itemDate:
+              endDateTime: '2019-10-02T11:56:01.895Z'
+              startDateTime: '2019-10-02T11:50:01.895Z'
+            resolution: Product order is created
+            creationDate: '2019-10-02T11:50:01.895Z'
+            item:
+              id: '88'
+              href: 'https://host:port/productOrderingManagement/v4/productOrder/88'
+              '@type': ProductOrder
+              '@schemaLocation': 'https://mycsp.com:8080/tmf-api/schema/Resource/ProductOrder.schema.json'
+              productOrderItem:
+                - id: '13219'
+                  action: add
+                  productOffering:
+                    id: '2445'
+                    name: Unlimited Internet Plus
+        channel:
+          - id: '555'
+            name: Madrid Gran Vía Store
+            role: interaction creation
+            '@type': store
+        attachment:
+          - id: '111222444'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/123/attachment/111222444'
+            name: Some cool attachment
+            description: blahblahblah
+            attachmentType: receipt
+            mimeType: application/pdf
+            size:
+              amount: 321321
+              units: KB
+            URL: 'https://whereverthpdfis.com'
+            interactionDate:
+              startDateTime: '2019-10-02T11:36:18.758Z'
+              endDateTime: '2019-10-02T11:53:21.789Z'
+        note:
+          - id: '121'
+            text: loren ipsum dolor sit amet…
+            author: John Doe
+            date: '2019-10-02T11:36:18.758Z'
+        interactionRelationship:
+          - id: '1034'
+            href: 'https://host:port/partyInteraction/v4/partyInteraction/1034'
+            relationshipType: parent
+      description: PartyInteraction representation.
+    Create_request:
+      value:
+        correlationId: 20c77f4b-3c76
+        description: PartyInteractionCreateEvent illustration
+        domain: Commercial
+        eventId: 4103-b23b-d57302dead62
+        eventTime: '2022-11-28T13:28:06.780Z'
+        eventType: PartyInteractionCreateEvent
+        priority: '3'
+        timeOcurred: '2022-11-28T13:28:01.547Z'
+        title: PartyInteractionCreateEvent
+        event:
+          partyInteraction:
+            id: '123'
+            href: 'http://servername/partyInteraction/123'
+            '@type': PartyInteraction
+            interactionDate:
+              startDateTime: '2019-10-02T11:36:18.758Z'
+              endDateTime: '2019-10-02T11:53:21.789Z'
+            description: Visit to store
+            reason: The user wanted to buy TV and internet plan
+            status: ongoing
+            statusChangeDate: '2019-10-02T11:53:21.789Z'
+            direction: inbounds
+            creationDate: '2019-10-02T11:37:08.013Z'
+            relatedParty:
+              - id: '999'
+                href: 'https://host:port/partyManagement/v4/individual/999'
+                '@referredType': Individual
+                role: user
+                name: John Doe
+              - id: '888'
+                href: 'https://host:port/partyManagement/v4/individual/888'
+                '@referredType': Individual
+                role: agent
+                name: Rian Muray
+            interactionItem:
+              - id: '5678'
+                href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/5678'
+                reason: The user signed up to new TV bundle and paid the decoder
+                itemDate:
+                  endDateTime: '2019-10-02T11:56:01.895Z'
+                  startDateTime: '2019-10-02T11:50:01.895Z'
+                resolution: Product order is created
+                creationDate: '2019-10-02T11:50:01.895Z'
+                item:
+                  id: '30001'
+                  href: 'https://host:port/productOrderingManagement/v4/productOrder/30001'
+                  '@referredType': ProductOrder
+                  '@type': EntityRef
+                  role: interaction
+                  name: Product Order illustration sample by reference
+              - id: '1212'
+                href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/1212'
+                reason: The user is purchasing unlimited internet plan
+                itemDate:
+                  endDateTime: '2019-10-02T11:59:01.895Z'
+                  startDateTime: '2019-10-02T11:50:01.895Z'
+                resolution: Product order is created
+                creationDate: '2019-10-02T11:50:01.895Z'
+                item:
+                  id: '88'
+                  href: 'https://host:port/productOrderingManagement/v4/productOrder/88'
+                  '@type': ProductOrder
+                  role: interaction
+                  '@schemaLocation': 'https://mycsp.com:8080/tmf-api/schema/Resource/ProductOrder.schema.json'
+                  productOrderItem:
+                    - id: '13219'
+                      action: add
+                      productOffering:
+                        id: '2445'
+                        name: Unlimited Internet Plus
+              - id: '9999'
+                href: 'https://host:port/partyInteraction/v4/partyInteraction/123/interactionItem/9999'
+                reason: The user paid the decoder in the store with credit card
+                itemDate:
+                  endDateTime: '2019-10-02T11:56:01.895Z'
+                  startDateTime: '2019-10-02T11:50:01.895Z'
+                resolution: TODO
+                creationDate: '2019-10-02T11:50:01.895Z'
+                item:
+                  id: '666'
+                  href: 'https://host:port/paymentManagement/v4/payment/666'
+                  '@referredType': Payment
+                  role: interaction
+                  name: TV bundle plus decoder payment
+            channel:
+              - id: '555'
+                name: Madrid Gran Vía Store
+                role: interaction creation
+                '@type': store
+            attachment:
+              - id: '111222444'
+                href: 'https://host:port/partyInteraction/v4/partyInteraction/123/attachment/111222444'
+                name: Some cool attachment
+                description: blahblahblah
+                attachmentType: receipt
+                mimeType: application/pdf
+                size:
+                  amount: 321321
+                  units: KB
+                URL: 'https://whereverthpdfis.com'
+                interactionDate:
+                  startDateTime: '2019-10-02T11:36:18.758Z'
+                  endDateTime: '2019-10-02T11:53:21.789Z'
+            note:
+              - id: '121'
+                text: loren ipsum dolor sit amet…
+                author: John Doe
+                date: '2019-10-02T11:36:18.758Z'
+            interactionRelationship:
+              - id: '1034'
+                href: 'https://host:port/partyInteraction/v4/partyInteraction/1034'
+                relationshipType: parent
+        reportingSystem:
+          id: '661'
+          name: APP-835
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        source:
+          id: '616'
+          name: APP-817
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        '@baseType': Event
+        '@type': PartyInteractionCreateEvent
+      description: Message example for PartyInteractionCreateEvent event
+    AttributeValueChange_request:
+      value:
+        correlationId: 8b161265-fc15
+        description: PartyInteractionAttributeValueChangeEvent illustration
+        domain: Commercial
+        eventId: 4dff-81c5-b308c95373fa
+        eventTime: '2022-11-28T13:28:06.795Z'
+        eventType: PartyInteractionAttributeValueChangeEvent
+        priority: '4'
+        timeOcurred: '2022-11-28T13:27:57.646Z'
+        title: PartyInteractionAttributeValueChangeEvent
+        event:
+          partyInteraction:
+            href: 'http://servername/partyInteraction/123'
+            id: '123'
+            '@type': PartyInteraction
+            interactionDate:
+              startDateTime: '2019-10-02T11:36:18.758Z'
+              endDateTime: '2019-10-02T11:53:21.789Z'
+        reportingSystem:
+          id: '661'
+          name: APP-835
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        source:
+          id: '616'
+          name: APP-817
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        '@baseType': Event
+        '@type': PartyInteractionAttributeValueChangeEvent
+      description: Message example for PartyInteractionAttributeValueChangeEvent event
+    Delete_request:
+      value:
+        correlationId: 0be43a9f-6b43
+        description: PartyInteractionDeleteEvent illustration
+        domain: Commercial
+        eventId: 4aa5-a8ce-d1162247afaf
+        eventTime: '2022-11-28T13:28:06.805Z'
+        eventType: PartyInteractionDeleteEvent
+        priority: '3'
+        timeOcurred: '2022-11-28T13:28:01.622Z'
+        title: PartyInteractionDeleteEvent
+        event:
+          partyInteraction:
+            id: '123'
+            href: 'http://servername/partyInteraction/123'
+            '@type': PartyInteraction
+        reportingSystem:
+          id: '661'
+          name: APP-835
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        source:
+          id: '616'
+          name: APP-817
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        '@baseType': Event
+        '@type': PartyInteractionDeleteEvent
+      description: Message example for PartyInteractionDeleteEvent event
+    StatusChange_request:
+      value:
+        correlationId: 35f7891f-e893
+        description: PartyInteractionStatusChangeEvent illustration
+        domain: Commercial
+        eventId: 4975-80c8-6a2143c1038d
+        eventTime: '2022-11-28T13:28:06.819Z'
+        eventType: PartyInteractionStatusChangeEvent
+        priority: '3'
+        timeOcurred: '2022-11-28T13:28:00.198Z'
+        title: PartyInteractionStatusChangeEvent
+        event:
+          partyInteraction:
+            id: '123'
+            href: 'http://servername/partyInteraction/123'
+            '@type': PartyInteraction
+            status: ongoing
+            statusChangeDate: '2019-10-02T11:53:21.789Z'
+        reportingSystem:
+          id: '661'
+          name: APP-835
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        source:
+          id: '616'
+          name: APP-817
+          '@type': ReportingResource
+          '@referredType': LogicalResource
+        '@baseType': Event
+        '@type': PartyInteractionStatusChangeEvent
+      description: Message example for PartyInteractionStatusChangeEvent event
