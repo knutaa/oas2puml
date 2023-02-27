@@ -40,7 +40,7 @@ public class GenerateCommon {
 		this.common = common;
 		
 		if(!common.whitelisting.isEmpty()) {	
-			Out.debug("setTrustManager");
+			LOG.debug("setTrustManager");
 			setTrustManager();
 		}
 		
@@ -82,31 +82,31 @@ public class GenerateCommon {
 				new X509TrustManager() {
 					
 					public X509Certificate[] getAcceptedIssuers1() {
-						Out.debug("X509Certificate #1");
+						LOG.debug("X509Certificate #1");
 						return null;
 					}
 					
 					public void checkClientTrusted1(X509Certificate[] certs, String authType) {
-						Out.debug("X509Certificate #2");
+						LOG.debug("X509Certificate #2");
 					}
 					
 					public void checkServerTrusted1(X509Certificate[] certs, String authType) {
-						Out.debug("X509Certificate #3");
+						LOG.debug("X509Certificate #3");
 					}
 					
 					@Override
 					public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-						Out.debug("X509Certificate #4 chain");
+						LOG.debug("X509Certificate #4 chain");
 					}
 					
 					@Override
 					public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-						Out.debug("X509Certificate #5 chain");
+						LOG.debug("X509Certificate #5 chain");
 					}
 					
 					@Override
 					public X509Certificate[] getAcceptedIssuers() {
-						Out.debug("X509Certificate #6");
+						LOG.debug("X509Certificate #6");
 						return null;
 					}
 				}
