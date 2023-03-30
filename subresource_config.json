@@ -1,0 +1,9 @@
+{
+    "subResourceConfig": {
+        "FinancialAccountXX": [ "Account" ],
+        "BillingAccountXX": [ "Account" ]
+    },
+    
+    "keepInheritanceDecoractions": false
+    
+}
