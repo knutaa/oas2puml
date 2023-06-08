@@ -164,6 +164,8 @@ public class DiagramGenerator
 
 		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
 		
+		List<String> allResources = APIModel.getResources();
+
 		for(String resource : this.resources) {
 			
 			LOG.debug("### generateDiagramGraph: resource={}", resource);
@@ -174,7 +176,9 @@ public class DiagramGenerator
 				graphs.generateSubGraphsForResource(this.resources, resource);
 			}
 			
-			List<String> subGraphs = graphs.getSubGraphLabels(resource);
+			List<String> subGraphs = graphs.getSubGraphLabels(resource).stream()
+					                   .filter(r -> r.contentEquals(resource) || !allResources.contains(r))
+					                   .collect(Collectors.toList());
 								
 			LOG.debug("## generateDiagramGraph: ## resource={} subGraphs={}", resource, subGraphs);
 			
@@ -213,7 +217,12 @@ public class DiagramGenerator
 					label = resource;
 				} else {
 					apiGraph = new APISubGraph(this.resources, resource, coreGraph, currentGraph, resource, pivot, args.keepTechnicalEdges);
+
 					label = resource + "_" + pivot;
+					
+					LOG.debug("allResources: {}", allResources);
+					LOG.debug("resource: {} pivot: {} label: {}", resource, pivot, label);
+					
 				} 
 				
 				LOG.debug("generateDiagramGraph:: graph pivot={} edges={}", pivot, apiGraph.getGraph().edgeSet().stream().filter(Edge::isDiscriminator).collect(Collectors.toSet()));
@@ -297,7 +306,10 @@ public class DiagramGenerator
 				res = res && graph.incomingEdgesOf(pivotNode).stream().allMatch(Edge::isDiscriminator);
 				
 				LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} edges={}", pivot, graph.incomingEdgesOf(pivotNode));
+		
+				int edges = graph.outgoingEdgesOf(pivotNode).size() + graph.incomingEdgesOf(pivotNode).size();
 				
+				res = res && (edges<4);
 			}
 		}
 		
@@ -403,6 +415,7 @@ public class DiagramGenerator
 	    	    LOG.debug("generateDiagramForGraph:: resource={} node={}", resource, node);
 
 	    		layout.generateUMLClasses(diagram, node, resource, subGraphs);
+	    		
 	    	}
 	    }
 	    
@@ -413,9 +426,8 @@ public class DiagramGenerator
 
 	    for(Node node: apiGraph.getGraphNodeList().stream().filter(Node::isDiscriminatorNode).collect(toSet()) ) {	    		
 	    	LOG.debug("generateDiagramForGraph:: resource={} isDiscriminatorNode={}", resource, node);
-
 	    }
-	            
+	    
 	    LOG.debug("generateDiagramForGraph: resource={} processed classes",  resource);
 
 	    layout.processEdgesForCoreGraph(diagram, subGraphs);

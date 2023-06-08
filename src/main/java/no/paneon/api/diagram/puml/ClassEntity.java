@@ -28,6 +28,8 @@ public class ClassEntity extends Entity {
 
 	static final String SUBRESOURCEREFERENCE = "SubResourceReference";
 
+	static final String SKIP_DISCRIMINATORS = "skipDiscriminators";
+	
 	List<ClassProperty> classProperties;
 	List<EnumEntity> enumEntities;
 	List<EdgeEntity> edges;
@@ -304,6 +306,11 @@ public class ClassEntity extends Entity {
 	private Set<String> getDiscriminatorsToShow() {
 	   	Set<String> discriminators = new HashSet<>();
 
+	   	List<String> skipDiscriminators = Config.get(SKIP_DISCRIMINATORS);
+	   	if(skipDiscriminators.contains(this.name)) {
+	   		return discriminators;
+	   	}
+	   	
     	if(this.discriminatorMapping.size()>1 || this.inheritedDiscriminatorMapping.size()>1) {
     		
     	    if(!this.discriminatorMapping.isEmpty()) 

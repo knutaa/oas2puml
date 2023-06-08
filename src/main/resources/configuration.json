@@ -151,6 +151,7 @@
 		"   backgroundColor<<Resource>> #FCF2E3",
 		"   backgroundColor<<SubResource>> #FFFFFFF",
 		"   backgroundColor<<SubResourceReference>> #FADADD",
+        "   backgroundColor<<DiscriminatorNode>> #F2F3F5",
 		"}",
 		"",
 		"skinparam legend {",
@@ -167,7 +168,8 @@
 		"<<Ref>>", 
 		"<<Pivot>>", 
 		"<<SubResource>>", 
-		"<<SubResourceReference>>"
+		"<<SubResourceReference>>",
+        "<<DiscriminatorNode>>"
 	],
 	
 	"includeDiagramLegend": true,
@@ -203,10 +205,12 @@
 		"<<Resource>>" : 				{ "color": "#FCF2E3",  "text": "Sub-resource" },
 		"<<Ref>>" : 					{ "color": "#FFFFE0",  "text": "Sub-resource (reference entity)" },
 		"<<SubResource>>" : 			{ "color": "#FFFFFFF", "text": "Sub-resource (sub-graph in current diagram)" },
-		"<<SubResourceReference>>" : 	{ "color": "#FADADD",  "text": "Sub-resource with details in separate diagram" }
+		"<<SubResourceReference>>" : 	{ "color": "#FADADD",  "text": "Sub-resource with details in separate diagram" },
+        "<<DiscriminatorNode>>" :       { "color": "#F2F3F5",  "text": "Subclass of resource" },
+
 	},
 	
-	"legendSequence": [ "<<Pivot>>", "<<SubResource>>", "<<Resource>>", "<<Ref>>", "<<SubResourceReference>>", "<<Enumeration>>" ],
+	"legendSequence": [ "<<Pivot>>", "<<SubResource>>", "<<Resource>>", "<<Ref>>", "<<SubResourceReference>>", "<<Enumeration>>", "<<DiscriminatorNode>>" ],
 
 	"coreInheritanceTypes": [
 		"Entity",
@@ -270,7 +274,12 @@
     
     "getExpandException": [ "RefOrValue" ],
     
-    "specialProperties": [ "value" ]
+    "specialProperties": [ "value" ],
     
+    "checkForResourceExamples": true,
+    
+    "includeResourcesFromRules": true,
+    
+    "skipDiscriminators": [ "EntityRef" ]
 	
 }
