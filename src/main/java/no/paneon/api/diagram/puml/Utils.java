@@ -72,4 +72,13 @@ public class Utils {
 		return text;
 	
 	}
+
+	public static String quote(String name) {
+		if(!Config.getBoolean("noPumlQuoting")) {
+			String res = "\"" + name + "\"";
+			return res;
+		} else {
+			return name;
+		}
+	}
 }

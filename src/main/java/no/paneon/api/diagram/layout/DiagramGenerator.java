@@ -19,6 +19,7 @@ import no.paneon.api.graph.OneOf;
 import no.paneon.api.graph.Property;
 import no.paneon.api.graph.complexity.Complexity;
 import no.paneon.api.graph.complexity.ComplexityAdjustedAPIGraph;
+import no.paneon.api.graph.complexity.GraphComplexity;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
@@ -144,19 +145,7 @@ public class DiagramGenerator
 		Map<String,String> diagramConfig = new LinkedHashMap<>();
 		
 		LOG.debug("generateDiagramGraph: coreGraph={}", coreGraph.getCompleteGraph().edgeSet());
-
-//	    coreGraph.getCompleteGraph().vertexSet().stream()
-//	       	.filter(n -> n.getName().contentEquals("PermissionSpecificationRefOrValue"))
-//	       	.forEach(n -> Out.debug("init: node={} discriminators={}", n.getName(), n.getAllDiscriminatorMapping()));
-//
-//	    coreGraph.getCompleteGraph().vertexSet().stream()
-//       	.filter(n -> n.getName().contentEquals("PermissionSpecificationRefOrValue"))
-//       	.map(n -> coreGraph.getCompleteGraph().outgoingEdgesOf(n))
-//       	.forEach(e -> Out.debug("init: edge={}", e));
-
 	    		
-		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
-		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
 		LOG.debug("generateDiagramGraph: coreGraph edges={}", coreGraph.getCompleteGraph().edgeSet() );
 
@@ -165,6 +154,10 @@ public class DiagramGenerator
 		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
 		
 		List<String> allResources = APIModel.getResources();
+
+		LOG.debug("generateDiagramGraph: resources={} allResources={}", resources, allResources);
+		
+		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
 
 		for(String resource : this.resources) {
 			
@@ -179,8 +172,8 @@ public class DiagramGenerator
 			List<String> subGraphs = graphs.getSubGraphLabels(resource).stream()
 					                   .filter(r -> r.contentEquals(resource) || !allResources.contains(r))
 					                   .collect(Collectors.toList());
-								
-			LOG.debug("## generateDiagramGraph: ## resource={} subGraphs={}", resource, subGraphs);
+							
+			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, subGraphs);
 			
 			for(String pivot : subGraphs ) {
 				
@@ -192,13 +185,15 @@ public class DiagramGenerator
 				
 				LOG.debug("#00 generateDiagramGraph: resource={} pivot={} edges={}", resource, pivot, coreGraph.getCompleteGraph().outgoingEdgesOf(n));
 
-				Optional<Graph<Node,Edge>> pivotGraph = graphs.getSubGraph(resource, pivot);
+				Graph<Node,Edge> pivotGraph = graphs.getSubGraphV2(resource, pivot);
 			
 				LOG.debug("generateDiagramGraph: pivot={} pivotGraph={}", pivot, pivotGraph);
 
-				if(!pivotGraph.isPresent()) continue;
+				if(pivotGraph==null) continue;
 								
-				Graph<Node,Edge> currentGraph = pivotGraph.get();
+				Graph<Node,Edge> currentGraph = pivotGraph;
+				
+				if(GraphComplexity.tooSmallGraph(pivot,currentGraph)) continue;
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph=\n{}", pivot, currentGraph.edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
@@ -208,6 +203,12 @@ public class DiagramGenerator
 				LOG.debug("generateDiagramGraph: pivot={} onlyDiscriminatorEdges={}", pivot, onlyDiscriminatorEdges);
 
 				if(onlyDiscriminatorEdges) continue;
+
+				removeIndirectDiscriminators(pivot, currentGraph);
+
+				removeOutbounds(pivot, currentGraph, subGraphs, this.resources);
+				
+				removeDisjointSubgraphs(pivot, currentGraph);
 
 				String label; 
 				APIGraph apiGraph;
@@ -237,7 +238,7 @@ public class DiagramGenerator
 				
 				// Out.printAlways("... generated diagram for " + pivot + " label=" + label);
 				if(pivot.contentEquals(resource)) {
-					Out.printAlways("... generated diagrams for " + pivot);
+					Out.printAlways("... generated diagrams of " + pivot);
 				} else {
 					Out.printAlways("... generated diagrams of " + pivot + " for " + resource);
 				}
@@ -253,6 +254,100 @@ public class DiagramGenerator
 
 	}
 	        	
+
+	private void removeDisjointSubgraphs(String node, Graph<Node, Edge> graph) {
+		
+		LOG.debug("removeDisjointSubgraphs:: node={} graph={}", node, graph.vertexSet());
+		LOG.debug("removeDisjointSubgraphs:: node={} edges=\n{}", node, graph.edgeSet().stream().map(Edge::toString).collect(Collectors.joining("\n")));
+
+		Set<Node> reachable = CoreAPIGraph.getReachable(graph, node);
+		Set<Node> unreachable = new HashSet<>(graph.vertexSet());
+		unreachable.removeAll(reachable);
+		
+		if(!unreachable.isEmpty()) LOG.debug("removeDisjointSubgraphs:: node={} unreachable={} reachable={}", node, unreachable, reachable);
+
+		
+	}
+
+
+	private void removeOutbounds(String node, Graph<Node, Edge> graph, List<String> subGraphs, List<String> allResources) {
+		
+		Predicate<Node> inOtherSubGraphs = n -> (subGraphs.contains(n.getName()) || allResources.contains(n.getName()) )
+													&& !n.getName().contentEquals(node);
+		
+		Set<Node> otherNodes = graph.vertexSet().stream()
+								.filter(inOtherSubGraphs)
+								.collect(toSet());
+		
+		for(Node n : otherNodes) {
+			Set<Edge> outboundEdges = graph.outgoingEdgesOf(n).stream()
+										.filter(e -> !e.getRelated().getName().contentEquals(node))
+										.collect(toSet());
+						
+			// 634: 2023-06-20
+			if(!Config.getBoolean("keepOutboundEdges")) {
+				graph.removeAllEdges(outboundEdges);		
+			}
+
+		}
+		
+		LOG.debug("removeOutbounds:: node={} otherNodes={} subGraphs={} allResources={}", node, otherNodes, subGraphs, allResources);		
+	
+		
+	}
+
+
+	private void removeIndirectDiscriminators(String pivot, Graph<Node,Edge> graph) {
+		
+		Optional<Node> optnode = APIGraph.getNodeByName(graph, pivot);
+		
+		if(optnode.isEmpty()) return;
+		
+		Node node = optnode.get();
+		
+		Set<Node> discriminators = graph.outgoingEdgesOf(node)
+				                .stream()
+								.filter(Edge::isDiscriminator)
+								.map(Edge::getRelated)
+								.collect(toSet());
+		
+		Predicate<Edge> notFromPivot = e -> !e.getNode().equals(node);
+		
+		Set<Edge> indirectEdges = discriminators.stream()
+									.map(graph::incomingEdgesOf)
+									.flatMap(Set::stream)
+									.filter(Edge::isDiscriminator)
+									.filter(notFromPivot)
+									.collect(toSet());
+		
+		Set<Node> relatedNodes = indirectEdges.stream().map(Edge::getNode).collect(toSet());
+		
+		Predicate<Edge> notToPivot = e -> !e.getRelated().equals(node);
+
+		Set<Edge> additionalDiscriminators = relatedNodes.stream()
+												.map(graph::outgoingEdgesOf)
+												.flatMap(Set::stream)
+												.filter(Edge::isDiscriminator)
+												.filter(notToPivot)
+												.filter(e -> !indirectEdges.contains(e))
+												.collect(toSet());
+		
+		LOG.debug("removeIndirectDiscriminators:: resource={} discriminators={}", pivot, discriminators);		
+		LOG.debug("removeIndirectDiscriminators:: resource={} indirectEdges={}", pivot, indirectEdges);		
+		LOG.debug("removeIndirectDiscriminators:: resource={} relatedNodes={}", pivot, relatedNodes);		
+		LOG.debug("removeIndirectDiscriminators:: resource={} additionalDiscriminators={}", pivot, additionalDiscriminators);		
+
+		// 634: 2023-06-19
+		if(!Config.getBoolean("keepDiscriminators")) {
+			graph.removeAllEdges(indirectEdges);
+			graph.removeAllEdges(additionalDiscriminators);
+			
+		}
+			
+		
+		
+	}
+
 
 	private void addExplicitSubResource(String resource, APIGraph apiGraph) {
 		JSONObject includeSubResources = Config.getConfig("includeSubResources");
@@ -300,20 +395,18 @@ public class DiagramGenerator
 			if(optPivotNode.isPresent()) {
 				Node pivotNode = optPivotNode.get();
 	
-				if(!graph.outgoingEdgesOf(pivotNode).isEmpty()) {
-					res = graph.outgoingEdgesOf(pivotNode).stream().allMatch(Edge::isInheritance);
-				}
-				res = res && graph.incomingEdgesOf(pivotNode).stream().allMatch(Edge::isDiscriminator);
+				res = !graph.outgoingEdgesOf(pivotNode).isEmpty() && graph.outgoingEdgesOf(pivotNode).stream().allMatch(Edge::isInheritance);
 				
-				LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} edges={}", pivot, graph.incomingEdgesOf(pivotNode));
-		
+				res = res && !graph.incomingEdgesOf(pivotNode).isEmpty() && graph.incomingEdgesOf(pivotNode).stream().allMatch(Edge::isDiscriminator);
+						
 				int edges = graph.outgoingEdgesOf(pivotNode).size() + graph.incomingEdgesOf(pivotNode).size();
 				
 				res = res && (edges<4);
+				
 			}
 		}
 		
-		LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} res={}", pivot, res);
+		LOG.debug("onlyDiscriminatorEdgesToPivot: pivot={} res={} graph={}", pivot, res, graph.vertexSet());
 
 		return res;
 	}

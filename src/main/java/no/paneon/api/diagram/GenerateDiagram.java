@@ -16,6 +16,7 @@ import no.paneon.api.diagram.layout.DiagramGenerator;
 import no.paneon.api.generator.GenerateCommon;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 import no.paneon.api.logging.LogMethod;
+import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Utils;
@@ -65,7 +66,7 @@ public class GenerateDiagram extends GenerateCommon {
 	    	System.exit(0);
 	    }
 	  
-		LOG.debug("execute ...");
+		LOG.debug("execute ... resources={}", APIModel.getResources());
 
 	    generator.applyVendorExtensions();
 	    

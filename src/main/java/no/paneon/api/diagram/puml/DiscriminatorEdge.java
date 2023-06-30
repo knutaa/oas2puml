@@ -54,7 +54,7 @@ public class DiscriminatorEdge extends HiddenEdge {
 		
 		String label = edge!=null ? edge.relation : ""; // "{xor}"; 
 			
-		String strLabel = label;
+		String strLabel = Utils.quote(label);
 		if(required && !label.isEmpty()) {
 			String format = Config.getRequiredFormatting();
 			strLabel = String.format(format,strLabel);
@@ -63,9 +63,12 @@ public class DiscriminatorEdge extends HiddenEdge {
 		// TBD strLabel = "";
 		
 		if(!strLabel.isEmpty()) {
-			strLabel = " : " + strLabel;
+			strLabel = " : " + Utils.quote(strLabel);
 		}
 		
+		String from = Utils.quote(this.from.getName());
+		String to = Utils.quote(this.to.getName());
+
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:

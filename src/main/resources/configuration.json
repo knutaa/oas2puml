@@ -15,13 +15,13 @@
 		
     "showSubResourceProperties": true,
 	
-	"includeAsRequiredIfNotInPost": true,
+	"includeAsRequiredIfNotInPost": false,
 	
-	"includeDefaultMandatoryProperties": [ "href", "id", "@type" ],
+	"NOT_USED_includeDefaultMandatoryProperties": [ "href", "id", "@type" ],
 	
 	"keepTypeForDefaultValue": false,
 	
-	"keepDefaultValueForAtType": false,
+	"keepDefaultValueForAtType": true,
 	
 	"includeMetaProperties": false,
 	
@@ -48,7 +48,7 @@
 	
 	"onlyMandatoryForPost": true,
 	
-	"onlyMandatoryAsPatchable": true,
+	"onlyMandatoryAsPatchable": false,
 	
 	"formatToType": {
 		"date-time": "DateTime",
@@ -94,8 +94,10 @@
 	
 	"requiredHighlighting_not_used_underline": "<u>%s</u>",
 	
-	"requiredHighlighting": "%s",
+	"requiredHighlighting_no_quote": "%s",
 	
+    "requiredHighlighting": "%s",
+
 	"inheritedFormatting": "<color:MediumBlue>%s</color>",
 	
 	"useRequiredHighlighting": true,
@@ -280,6 +282,10 @@
     
     "includeResourcesFromRules": true,
     
-    "skipDiscriminators": [ "EntityRef" ]
-	
+    "xx_skipDiscriminators": [ "EntityRef" ],
+    
+    "mergeAllOfs": false,
+    
+    "minimumGraphSize": 3
+
 }

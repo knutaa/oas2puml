@@ -20,7 +20,8 @@ public class OAS2Test  {
     public TemporaryFolder folder = new TemporaryFolder();
         
     @BeforeClass
-    public static void runOnceBeforeClass() {        
+    public static void runOnceBeforeClass() {  
+    	APIModel.clean();
         APIModel.setSwaggerSource(file);
         APIModel.loadAPI(file);
 
