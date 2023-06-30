@@ -1,0 +1,794 @@
+rulesVersion: 1.0.0
+api:
+  name: Product Catalog Management
+  shortName: Product Catalog Management
+  description: >-
+    Product Catalog API is one of Catalog Management API Family. Product Catalog API goal is to provide a catalog of
+    products. 
+
+    ### Operations
+
+    Product Catalog API performs the following operations on the resources :
+
+    - Retrieve an entity or a collection of entities depending on filter criteria
+
+    - Partial update of an entity (including updating rules)
+
+    - Create an entity (including default values and creation rules)
+
+    - Delete an entity
+
+    - Manage notification of events
+  tmfId: TMF620
+  hostUrl: 'https://serverRoot/productCatalogManagement/v5/'
+  basePath: /tmf-api/productCatalogManagement/v5/
+  version: 5.0.0
+  resources:
+    - name: ProductCatalog
+      schema: schemas/Tmf/Product/ProductCatalog.schema.json#/definitions/ProductCatalog
+      examples:
+        - file: ./documentation/resource-samples/ProductCatalog.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ProductCatalog list example
+              description: Here is an example of a request for retrieving multiple catalogs.
+              queryParameters:
+                - name: filtering
+                  value: catalogType=ProductCatalog
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ProductCatalog_list_1_response.sample.json
+                description: Here is an example of a response for retrieving multiple catalogs.
+            - name: ProductCatalog retrieve example
+              description: Here is an example of a request for retrieving a specific catalog.
+              pathParameters:
+                - name: objectId
+                  value: '3830'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ProductCatalog_retrieve_1_response.sample.json
+                description: Here is an example of a response for retrieving a specific catalog.
+        POST:
+          required: true
+          examples:
+            - name: ProductCatalog Create example
+              description: Here is an example of a request for creating a specific catalog. In this example the request only passes mandatory attributes.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductCatalog_create_1_request.sample.json
+                description: Here is an example of a request for creating a catalog.
+              response:
+                file: ./documentation/operation-samples/ProductCatalog_create_1_response.sample.json
+                description: Here is an example of a response for creating a catalog.
+          requiredParameters:
+            - name
+            - '@type'
+        PATCH:
+          required: true
+          examples:
+            - name: ProductCatalog Update example
+              description: Here is an example of a request for patching a catalog. In this example, a new version is set, together with validity period.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductCatalog_partialupdate_1_request.sample.json
+                description: Here is an example of a request for creating a catalog.
+              response:
+                file: ./documentation/operation-samples/ProductCatalog_partialupdate_1_response.sample.json
+                description: Here is an example of a response for creating a catalog.
+          parameterRestrictions:
+            excludedParameters:
+              - id
+              - href
+              - lastUpdate
+              - '@type'
+              - '@baseType'
+              - '@schemaLocation'
+        DELETE:
+          required: true
+          examples:
+            - name: ProductCatalog Delete
+              description: Here is an example of a request for deleting a catalog.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3830'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting a catalog.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Product/Event/ProductCatalogCreateEvent.schema.json#/definitions/ProductCatalogCreateEvent
+          examples:
+            - name: CreateCatalogEvent
+              content-type: application/json
+              description: Message example for CatalogCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ProductCatalog_Create.example_request.json
+                description: Message example for CatalogCreateEvent event
+        - name: attributeValueChange
+          schema: schemas/Tmf/Product/Event/ProductCatalogAttributeValueChangeEvent.schema.json#/definitions/ProductCatalogAttributeValueChangeEvent
+          examples:
+           - name: CatalogAttributeValueChangeEvent
+             content-type: application/json
+             description: Message example for CatalogAttributeValueChangeEvent event
+             request:
+              file: ./documentation/notification-samples/ProductCatalog_AttributeValueChange.example_request.json
+              description: Message example for CatalogAttributeValueChangeEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Product/Event/ProductCatalogStateChangeEvent.schema.json#/definitions/ProductCatalogStateChangeEvent
+          examples:
+            - name: CatalogStateChangeEvent
+              content-type: application/json
+              description: Message example for CatalogStateChangeEvent event with ?fields=state property only
+              request:
+                file: ./documentation/notification-samples/ProductCatalog_StateChange.example_request.json
+                description: Message example for CatalogStateChangeEvent event with ?fields=state property only
+        - name: delete
+          schema: schemas/Tmf/Product/Event/ProductCatalogDeleteEvent.schema.json#/definitions/ProductCatalogDeleteEvent
+          examples:
+            - name: CatalogDeleteEvent
+              content-type: application/json
+              description: Message example for CatalogDeleteEvent event
+              request:
+                file: ./documentation/notification-samples/ProductCatalog_Delete.example_request.json
+                description: Message example for CatalogDeleteEvent event
+    - name: Category
+      schema: schemas/Tmf/Product/Category.schema.json#/definitions/Category
+      examples:
+        - file: ./documentation/resource-samples/Category.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: Category list example
+              description: Here is an example of a request for retrieving multiple categories.
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/Category_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple categories.
+            - name: Category retrieve example
+              description: Here is an example of a request for retrieving a specific category.
+              pathParameters:
+                - name: objectId
+                  value: '1708'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/Category_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific category.
+        POST:
+          required: true
+          examples:
+            - name: Category Create example
+              description: Here is an example of a request for creating a specific category. In this example the request only passes mandatory attributes.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/Category_create_1_request.sample.json
+                description: Here is an example of a request for creating a category.
+              response:
+                file: ./documentation/operation-samples/Category_create_1_response.sample.json
+                description: Here is an example of a response for creating a category.
+          requiredParameters:
+            - name
+            - '@type'
+        PATCH:
+          required: true
+          examples:
+            - name: Category Update example
+              description: Here is an example of a request for patching a category. In this example, a new version is set, together with validity period.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/Category_partialupdate_1_request.sample.json
+                description: Here is an example of a request for updating a category.
+              response:
+                file: ./documentation/operation-samples/Category_partialupdate_1_response.sample.json
+                description: Here is an example of a request for updating a category.
+          parameterRestrictions:
+            excludedParameters:
+              - id
+              - href
+              - lastUpdate
+              - '@type'
+              - '@baseType'
+              - '@schemaLocation'
+        DELETE:
+          required: true
+          examples:
+            - name: Category Delete
+              description: Here is an example of a request for deleting a category.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting a category.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Product/Event/CategoryCreateEvent.schema.json#/definitions/CategoryCreateEvent
+          examples:
+            - name: CategoryCreateEvent
+              content-type: application/json
+              description: Message example for CategoryCreateEvent event
+              request:
+                file: ./documentation/notification-samples/Category_Create.example_request.json
+                description: Message example for CategoryCreateEvent event
+        - name: attributeValueChange
+          schema: schemas/Tmf/Product/Event/CategoryAttributeValueChangeEvent.schema.json#/definitions/CategoryAttributeValueChangeEvent
+          examples:
+            - name: CategoryAttributeValueChangeEvent
+              content-type: application/json
+              description: Message example for CategoryAttributeValueChangeEvent event
+              request:
+                file: ./documentation/notification-samples/Category_AttributeValueChange.example_request.json
+                description: Message example for CategoryAttributeValueChangeEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Product/Event/CategoryStateChangeEvent.schema.json#/definitions/CategoryStateChangeEvent
+          examples:
+            - name: CategoryStateChangeEvent
+              content-type: application/json
+              description: Message example for CategoryStateChangeEvent event with ?fields=state property only
+              request:
+                file: ./documentation/notification-samples/Category_StateChange.example_request.json
+                description: Message example for CategoryStateChangeEvent event with ?fields=state property only
+        - name: delete
+          schema: schemas/Tmf/Product/Event/CategoryDeleteEvent.schema.json#/definitions/CategoryDeleteEvent
+          examples:
+            - name: CategoryDeleteEvent
+              content-type: application/json
+              description: Message example for CategoryDeleteEvent event
+              request:
+                file: ./documentation/notification-samples/Category_Delete.example_request.json
+                description: Message example for CategoryDeleteEvent event
+    - name: ProductOffering
+      schema: schemas/Tmf/Product/ProductOffering.schema.json#/definitions/ProductOffering
+      examples:
+        - file: ./documentation/resource-samples/ProductOffering.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ProductOffering list example
+              description: Here is an example of a request for retrieving multiple offerings.
+              queryParameters:
+                - name: filtering
+                  value: isSellable=true
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ProductOffering_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple offerings.
+            - name: ProductOffering retrieve example
+              description: Here is an example of a request for retrieving a specific offering.
+              pathParameters:
+                - name: objectId
+                  value: '7655'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ProductOffering_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific offering.
+        POST:
+          required: true
+          examples:
+            - name: Product Offering Create example
+              description: Here is an example of a request for creating a specific offering. The request includes the product specification and the category.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductOffering_create_1_request.sample.json
+                description: Here is an example of a request for creating a product offering.
+              response:
+                file: ./documentation/operation-samples/ProductOffering_create_1_response.sample.json
+                description: Here is an example of a response for creating a product offering.
+          requiredParameters:
+            - name
+            - '@type'
+        PATCH:
+          required: true
+          examples:
+            - name: Product Offering Update Patch Merge
+              description: Here is an example of a request for patching an offering. In this example, a new version is set, together with validity period.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductOffering_partialupdate_1_request.sample.json
+                description: Here is an example of a request for updating a product offering.
+              response:
+                file: ./documentation/operation-samples/ProductOffering_partialupdate_1_response.sample.json
+                description: Here is an example of a response for updating a product offering by adding a geographic area.
+            - name: "Product Offering Update JSON Patch"
+              content-type: "application/json-patch+json"
+              description: "Update a Product Offering using json-patch"
+              request:
+                file: ./documentation/operation-samples/ProductOffering_partialupdate_2_request.sample.json
+                description: Here is an example of a request for updating a product offering by adding a geographic area.
+              response:
+                file: ./documentation/operation-samples/ProductOffering_partialupdate_2_response.sample.json
+                description: The updated product offering with geographic area
+          parameterRestrictions:
+            excludedParameters:
+              - id
+              - href
+              - lastUpdate
+              - '@type'
+              - '@baseType'
+              - '@schemaLocation'
+        DELETE:
+          required: true
+          examples:
+            - name: ProductOffering Delete
+              description: Here is an example of a request for deleting a Product Offering.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting a Product Offering.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Product/Event/ProductOfferingCreateEvent.schema.json#/definitions/ProductOfferingCreateEvent
+          examples:
+            - name: ProductOfferingCreateEvent
+              content-type: application/json
+              description: Message example for ProductOfferingCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOffering_Create.example_request.json
+                description: Message example for ProductOfferingCreateEvent event
+        - name: attributeValueChange
+          schema: schemas/Tmf/Product/Event/ProductOfferingAttributeValueChangeEvent.schema.json#/definitions/ProductOfferingAttributeValueChangeEvent
+          examples:
+            - name: ProductOfferingAttributeValueChangeEvent
+              content-type: application/json
+              description: Message example for ProductOfferingAttributeValueChangeEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOffering_AttributeValueChange.example_request.json
+                description: Message example for ProductOfferingAttributeValueChangeEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Product/Event/ProductOfferingStateChangeEvent.schema.json#/definitions/ProductOfferingStateChangeEvent
+          examples:
+            - name: ProductOfferingStateChangeEvent
+              content-type: application/json
+              description: Message example for ProductOfferingStateChangeEvent event with ?fields=state property only
+              request:
+                file: ./documentation/notification-samples/ProductOffering_StateChange.example_request.json
+                description: Message example for ProductOfferingStateChangeEvent event with ?fields=state property only
+        - name: delete
+          schema: schemas/Tmf/Product/Event/ProductOfferingDeleteEvent.schema.json#/definitions/ProductOfferingDeleteEvent
+          examples:
+            - name: ProductOfferingDeleteEvent
+              content-type: application/json
+              description: Message example for ProductOfferingDeleteEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOffering_Delete.example_request.json
+                description: Message example for ProductOfferingDeleteEvent event
+    - name: ProductOfferingPrice
+      schema: schemas/Tmf/Product/ProductOfferingPrice.schema.json#/definitions/ProductOfferingPrice
+      examples:
+        - file: ./documentation/resource-samples/ProductOfferingPrice.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ProductOfferingPrice list example
+              description: Here is an example of a request for retrieving multiple prices.
+              queryParameters:
+                - name: filtering
+                  value: isBundle=false
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ProductOfferingPrice_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple prices.
+            - name: ProductOfferingPrice retrieve example
+              description: Here is an example of a request for retrieving a specific price.
+              pathParameters:
+                - name: objectId
+                  value: '1747'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ProductOfferingPrice_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific price.
+        POST:
+          required: true
+          examples:
+            - name: Product Offering Price Create example
+              description: Here is an example of a request for creating a specific price.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductOfferingPrice_create_1_request.sample.json
+                description: Here is an example of a request for creating a product offering price.
+              response:
+                file: ./documentation/operation-samples/ProductOfferingPrice_create_1_response.sample.json
+                description: Here is an example of a response for creating a product offering price.
+          requiredParameters:
+            - name
+            - '@type'
+        PATCH:
+          required: true
+          examples:
+            - name: Product Offering Price Update example
+              description: Here is an example of a request for patching a price. In this example, a new version is set, together with validity period.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductOfferingPrice_partialupdate_1_request.sample.json
+                description: Here is an example of a request for updating a product offering price.
+              response:
+                file: ./documentation/operation-samples/ProductOfferingPrice_partialupdate_1_response.sample.json
+                description: Here is an example of a response for updating a product offering price using JSON Patch.
+            - name: "Product Offering Price Update JSON Patch"
+              content-type: "application/json-patch+json"
+              description: "Update a Product Offering Price using json-patch"
+              request:
+                file: ./documentation/operation-samples/ProductOfferingPrice_partialupdate_2_request.sample.json
+                description: Here is an example of a request for updating a product offering price by adding a geographic area.
+              response:
+                file: ./documentation/operation-samples/ProductOfferingPrice_partialupdate_2_response.sample.json
+                description: The updated product offering price with geographic area
+          parameterRestrictions:
+            excludedParameters:
+              - id
+              - href
+              - lastUpdate
+              - '@type'
+              - '@baseType'
+              - '@schemaLocation'
+        DELETE:
+          required: true
+          examples:
+            - name: ProductOfferingPrice Delete
+              description: Here is an example of a request for deleting a Product Offering Price.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting a Product Offering Price.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Product/Event/ProductOfferingPriceCreateEvent.schema.json#/definitions/ProductOfferingPriceCreateEvent
+          examples:
+            - name: ProductOfferingPriceCreateEvent
+              content-type: application/json
+              description: Message example for ProductOfferingPriceCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOfferingPrice_Create.example_request.json
+                description: Message example for ProductOfferingPriceCreateEvent event
+        - name: attributeValueChange
+          schema: schemas/Tmf/Product/Event/ProductOfferingPriceAttributeValueChangeEvent.schema.json#/definitions/ProductOfferingPriceAttributeValueChangeEvent
+          examples:
+            - name: ProductOfferingPriceAttributeValueChangeEvent
+              content-type: application/json
+              description: Message example for ProductOfferingPriceAttributeValueChangeEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOfferingPrice_AttributeValueChange.example_request.json
+                description: Message example for ProductOfferingPriceAttributeValueChangeEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Product/Event/ProductOfferingPriceStateChangeEvent.schema.json#/definitions/ProductOfferingPriceStateChangeEvent
+          examples:
+            - name: ProductOfferingPriceStateChangeEvent
+              content-type: application/json
+              description: Message example for ProductOfferingPriceStateChangeEvent event with ?fields=state property only
+              request:
+                file: ./documentation/notification-samples/ProductOfferingPrice_StateChange.example_request.json
+                description: Message example for ProductOfferingPriceStateChangeEvent event with ?fields=state property only
+        - name: delete
+          schema: schemas/Tmf/Product/Event/ProductOfferingPriceDeleteEvent.schema.json#/definitions/ProductOfferingPriceDeleteEvent
+          examples:
+            - name: ProductOfferingPriceDeleteEvent
+              content-type: application/json
+              description: Message example for ProductOfferingPriceDeleteEvent event
+              request:
+                file: ./documentation/notification-samples/ProductOfferingPrice_Delete.example_request.json
+                description: Message example for ProductOfferingPriceDeleteEvent event
+    - name: ProductSpecification
+      schema: schemas/Tmf/Product/ProductSpecification.schema.json#/definitions/ProductSpecification
+      examples:
+        - file: ./documentation/resource-samples/ProductSpecification.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ProductSpecification list example
+              description: Here is an example of a request for retrieving multiple product specifications.
+              queryParameters:
+                - name: filtering
+                  value: relatedParty.id=1234
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple product specifications.
+            - name: ProductSpecification retrieve example
+              description: Here is an example of a request for retrieving a specific specification.
+              pathParameters:
+                - name: objectId
+                  value: '9881'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific specification.
+        POST:
+          required: true
+          examples:
+            - name: Product Specification Create example
+              description: Here is an example of a request for creating a specification.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductSpecification_create_1_request.sample.json
+                description: Here is an example of a request for creating a product specification.
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_create_1_response.sample.json
+                description: Here is an example of a response for creating a product specification.
+            - name: Product Specification Create example with intent
+              description: Here is an example of a request for creating a specification with intent
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductSpecification_IntentSpec_create_1_request.sample.json
+                description: Here is an example of a request for creating a product specification with intent specifications.
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_IntentSpec_create_1_response.sample.json
+                description: Here is an example of a response for creating a product specification specification with intent specifications.  
+          requiredParameters:
+            - name
+            - '@type'
+        PATCH:
+          required: true
+          examples:
+            - name: Product Specification Update example
+              description: Here is an example of a request for patching a specification. In this example, a new version is set, together with validity period.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ProductSpecification_partialupdate_1_request.sample.json
+                description: Here is an example of a request for updating a product specification.
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_partialupdate_1_response.sample.json
+                description: Here is an example of a response for updating a product specification using JSON Patch.
+            - name: "Product Specification Update JSON Patch"
+              content-type: "application/json-patch+json"
+              description: "Update a Product Specification using json-patch"
+              request:
+                file: ./documentation/operation-samples/ProductSpecification_partialupdate_2_request.sample.json
+                description: Here is an example of a request for updating a product specification by adding a related party.
+              response:
+                file: ./documentation/operation-samples/ProductSpecification_partialupdate_2_response.sample.json
+                description: The updated product specification with geographic area
+          parameterRestrictions:
+            excludedParameters:
+              - id
+              - href
+              - lastUpdate
+              - '@type'
+              - '@baseType'
+              - '@schemaLocation'
+        DELETE:
+          required: true
+          examples:
+            - name: Product Specification Delete
+              description: Here is an example of a request for deleting a Product Specification.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting a Product Specification.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Product/Event/ProductSpecificationCreateEvent.schema.json#/definitions/ProductSpecificationCreateEvent
+          examples:
+            - name: ProductSpecificationCreateEvent
+              content-type: application/json
+              description: Message example for ProductSpecificationCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ProductSpecification_Create.example_request.json
+                description: Message example for ProductSpecificationCreateEvent event
+        - name: attributeValueChange
+          schema: schemas/Tmf/Product/Event/ProductSpecificationAttributeValueChangeEvent.schema.json#/definitions/ProductSpecificationAttributeValueChangeEvent
+          examples:
+            - name: ProductSpecificationAttributeValueChangeEvent
+              content-type: application/json
+              description: Message example for ProductSpecificationAttributeValueChangeEvent event
+              request:
+                file: ./documentation/notification-samples/ProductSpecification_AttributeValueChange.example_request.json
+                description: Message example for ProductSpecificationAttributeValueChangeEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Product/Event/ProductSpecificationStateChangeEvent.schema.json#/definitions/ProductSpecificationStateChangeEvent
+          examples:
+            - name: ProductSpecificationStateChangeEvent
+              content-type: application/json
+              description: Message example for ProductSpecificationStateChangeEvent event with ?fields=state property only
+              request:
+                file: ./documentation/notification-samples/ProductSpecification_StateChange.example_request.json
+                description: Message example for ProductSpecificationStateChangeEvent event with ?fields=state property only
+        - name: delete
+          schema: schemas/Tmf/Product/Event/ProductSpecificationDeleteEvent.schema.json#/definitions/ProductSpecificationDeleteEvent
+          examples:
+            - name: ProductSpecificationDeleteEvent
+              content-type: application/json
+              description: Message example for ProductSpecificationDeleteEvent event
+              request:
+                file: ./documentation/notification-samples/ProductSpecification_Delete.example_request.json
+                description: Message example for ProductSpecificationDeleteEvent event
+    - name: ImportJob
+      schema: schemas/Tmf/Common/ImportJob.schema.json#/definitions/ImportJob
+      examples:
+        - file: ./documentation/resource-samples/ImportJob.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ImportJob list example
+              description: Here is an example of a request for retrieving multiple import jobs.
+              queryParameters:
+                - name: filtering
+                  value: creationDate=2020-08-25Z
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ImportJob_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple import jobs.
+            - name: ImportJob retrieve example
+              description: Here is an example of a request for retrieving a specific import job.
+              pathParameters:
+                - name: objectId
+                  value: '2341'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ImportJob_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific import job.
+        POST:
+          required: true
+          examples:
+            - name: Import Job Create example
+              description: Here is an example of a request for creating an import job.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ImportJob_create_1_request.sample.json
+                description: Here is an example of a request for creating an import job.
+              response:
+                file: ./documentation/operation-samples/ImportJob_create_1_response.sample.json
+                description: Here is an example of a response for creating an import job.
+          requiredParameters:
+            - url
+        DELETE:
+          required: true
+          examples:
+            - name: ImportJob Delete
+              description: Here is an example of a request for deleting an Import Job.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting an Import Job.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Common/Event/ImportJobCreateEvent.schema.json#/definitions/ImportJobCreateEvent
+          examples:
+            - name: ImportJobCreateEvent
+              content-type: application/json
+              description: Message example for ImportJobCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ImportJob_Create.example_request.json
+                description: Message example for ImportJobCreateEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Common/Event/ImportJobStateChangeEvent.schema.json#/definitions/ImportJobStateChangeEvent
+          examples:
+            - name: ImportJobStateChangeEvent
+              content-type: application/json
+              description: Message example for ImportJobStateChangeEvent event
+              request:
+                file: ./documentation/notification-samples/ImportJob_StateChange.example_request.json
+                description: Message example for ImportJobStateChangeEvent event
+    - name: ExportJob
+      schema: schemas/Tmf/Common/ExportJob.schema.json#/definitions/ExportJob
+      examples:
+        - file: ./documentation/resource-samples/ExportJob.example.json
+      supportedHttpMethods:
+        GET:
+          required: true
+          examples:
+            - name: ExportJob list example
+              description: Here is an example of a request for retrieving multiple export jobs.
+              queryParameters:
+                - name: filtering
+                  value: creationDate=2020-09-23Z
+              content-type: application/json
+              isCollection: true
+              response:
+                file: ./documentation/operation-samples/ExportJob_list_1_response.sample.json
+                description: Here is an example of a request for retrieving multiple export jobs.
+            - name: ExportJob retrieve example
+              description: Here is an example of a request for retrieving a specific export job.
+              pathParameters:
+                - name: objectId
+                  value: '5435'
+              content-type: application/json
+              isCollection: false
+              response:
+                file: ./documentation/operation-samples/ExportJob_retrieve_1_response.sample.json
+                description: Here is an example of a request for retrieving a specific export job.
+        POST:
+          required: true
+          examples:
+            - name: Export Job Create example
+              description: Here is an example of a request for creating an export job.
+              content-type: application/json
+              request:
+                file: ./documentation/operation-samples/ExportJob_create_1_request.sample.json
+                description: Here is an example of a request for creating an export job.
+              response:
+                file: ./documentation/operation-samples/ExportJob_create_1_response.sample.json
+                description: Here is an example of a response for creating an export job.
+          requiredParameters:
+            - url
+            - '@type'
+        DELETE:
+          required: true
+          examples:
+            - name: ExportJob Delete
+              description: Here is an example of a request for deleting an Export Job.
+              content-type: application/json
+              request:
+                pathParameters:
+                  - name: objectId
+                    value: '3838'
+                file: ./documentation/operation-samples/GeneralEmpty_delete_1_request.sample.json
+                description: Here is an example of a request for deleting an Export Job.
+      notifications:
+        - name: create
+          schema: schemas/Tmf/Common/Event/ExportJobCreateEvent.schema.json#/definitions/ExportJobCreateEvent
+          examples:
+            - name: ExportJobCreateEvent
+              content-type: application/json
+              description: Message example for ExportJobCreateEvent event
+              request:
+                file: ./documentation/notification-samples/ExportJob_Create.example_request.json
+                description: Message example for ExportJobCreateEvent event
+        - name: stateChange
+          schema: schemas/Tmf/Common/Event/ExportJobStateChangeEvent.schema.json#/definitions/ExportJobStateChangeEvent
+          examples:
+            - name: ExportJobStateChangeEvent
+              content-type: application/json
+              description: Message example for ExportJobStateChangeEvent event
+              request:
+                file: ./documentation/notification-samples/ExportJob_StateChange.example_request.json
+                description: Message example for ExportJobStateChangeEvent event
+    - name: BooleanArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/BooleanArrayCharacteristicValueSpecification.schema.json#/definitions/BooleanArrayCharacteristicValueSpecification
+    - name: BooleanCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/BooleanCharacteristicValueSpecification.schema.json#/definitions/BooleanCharacteristicValueSpecification
+    - name: FloatArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/FloatArrayCharacteristicValueSpecification.schema.json#/definitions/FloatArrayCharacteristicValueSpecification
+    - name: FloatCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/FloatCharacteristicValueSpecification.schema.json#/definitions/FloatCharacteristicValueSpecification
+    - name: IntegerArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/IntegerArrayCharacteristicValueSpecification.schema.json#/definitions/IntegerArrayCharacteristicValueSpecification
+    - name: IntegerCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/IntegerCharacteristicValueSpecification.schema.json#/definitions/IntegerCharacteristicValueSpecification
+    - name: MapArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/MapArrayCharacteristicValueSpecification.schema.json#/definitions/MapArrayCharacteristicValueSpecification
+    - name: MapCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/MapCharacteristicValueSpecification.schema.json#/definitions/MapCharacteristicValueSpecification
+    - name: NumberArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/NumberArrayCharacteristicValueSpecification.schema.json#/definitions/NumberArrayCharacteristicValueSpecification
+    - name: NumberCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/NumberCharacteristicValueSpecification.schema.json#/definitions/NumberCharacteristicValueSpecification
+    - name: ObjectArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/ObjectArrayCharacteristicValueSpecification.schema.json#/definitions/ObjectArrayCharacteristicValueSpecification
+    - name: ObjectCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/ObjectCharacteristicValueSpecification.schema.json#/definitions/ObjectCharacteristicValueSpecification
+    - name: StringArrayCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/StringArrayCharacteristicValueSpecification.schema.json#/definitions/StringArrayCharacteristicValueSpecification
+    - name: StringCharacteristicValueSpecification
+      schema: schemas/Tmf/Common/StringCharacteristicValueSpecification.schema.json#/definitions/StringCharacteristicValueSpecification

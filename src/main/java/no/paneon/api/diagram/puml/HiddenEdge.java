@@ -44,6 +44,9 @@ public class HiddenEdge extends EdgeEntity {
 	public String toString() {
 		String res="";
 				
+		String from = Utils.quote(this.from.getName());
+		String to = Utils.quote(this.to.getName());
+
 		switch(place) {
 		case LEFT: 
 		    // res = to + " <-left[hidden]- " + from + NEWLINE;

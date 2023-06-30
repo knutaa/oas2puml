@@ -1,4 +1,4 @@
-package no.paneon.api.diagram.puml;
+						package no.paneon.api.diagram.puml;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

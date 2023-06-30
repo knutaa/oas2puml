@@ -1,0 +1,57 @@
+{
+    "components": {
+        "schemas": {
+            "ProductOrderExt": {
+                "$ref": "TMF622-ProductOrdering-v1.swagger/ProductOrderExt.json"
+            }
+        }
+    },
+    "info": {
+        "description": "## TMF API Reference : TMF622 - Product Ordering\n\n### Release : 19.0.0\n\nThis is Swagger UI environment generated for the TMF Product Ordering Management specification.\nThe Product Ordering API provides a standardized mechanism for placing a product order with all of the necessary order parameters.\n\n\nLink to [Api Examples](./api/site/om/index.html)",
+        "title": "Product Ordering Management",
+        "version": "1"
+    },
+    "openapi": "3.0.1",
+    "paths": {
+        "/tmf-api/productOrdering/v1/cancelProductOrder/{id}": {
+            "get": {
+                "operationId": "retrieveCancelProductOrder",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductOrderExt"
+                                }
+                            }
+                        },
+                        "description": "Successful Operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Entity not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "summary": "Get Product Order",
+                "tags": [
+                    "productOrder"
+                ]
+            }
+        }
+    }
+}

@@ -98,11 +98,13 @@ public class EdgeEntity extends Entity {
 			return res;
 		}
 		
-		String strLabel = label;
+		String strLabel = label; // Utils.quote(label);
 		if(required) {
 			String format = Config.getRequiredFormatting();
 			strLabel = String.format(format,strLabel);
-		} 
+		} else {
+			strLabel = Utils.quote(strLabel);
+		}
 		
 		String edgeVendorExtension="";
 		
@@ -117,6 +119,9 @@ public class EdgeEntity extends Entity {
 			
 		}
 		
+		String from = Utils.quote(this.from.getName());
+		String to = Utils.quote(this.to.getName());
+
 		switch(place) {
 		case LEFT: 
 		case FORCELEFT:

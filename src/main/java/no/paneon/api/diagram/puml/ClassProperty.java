@@ -150,7 +150,7 @@ public class ClassProperty extends Entity {
 			LOG.debug("property: name={} required={} useRequiredHighlighting={} requiredFormatting={}", 
 					this.name, this.required, useRequiredFormatting, format);
 			
-			res = (required && useRequiredFormatting) ? String.format(format,name) : name;
+			res = (this.required && useRequiredFormatting) ? String.format(format,name) : name;
 			
 			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
 				

@@ -59,6 +59,8 @@ public class Layout {
 	LayoutGraph layoutGraph;
 	Node resourceNode;
 
+	static final String SUB_RESOURCE_REFERENCE = "<<SubResourceReference>>";
+	
 	public Layout(APIGraph apiGraph, JSONObject layoutConfig) {
 		
 		this.apiGraph = apiGraph;
@@ -91,7 +93,17 @@ public class Layout {
 		
 		cls.addProperties(properties);
 		cls.setStereoType(stereoType);
+		
 
+		LOG.debug("generateUMLClasses: node={} stereoType='{}' properties={}",  node, stereoType, properties);
+		LOG.debug("generateUMLClasses: node={} stereoType='{}' ",  node, stereoType );
+
+		if(stereoType.contains(SUB_RESOURCE_REFERENCE)) {
+			Collection<ClassProperty> inherited = getInheritedPropertiesForClass(apiGraph, node, incomplete);
+			LOG.debug("generateUMLClasses: node={} inherited={}",  node, inherited);
+			cls.addPropertiesInherited(inherited);
+		}
+		
 		if(!node.getInline().isEmpty()) {
 			cls.setInline(node.getInline());
 		}
@@ -119,6 +131,8 @@ public class Layout {
 		
 		Collection<Node> referencedNodes = apiGraph.getOutboundNeighbours(node);
 		
+		LOG.debug("getPropertiesForClass:: node={} referencedNodes={} ", node, referencedNodes);								
+
 		Collection<String> referenced = APIGraph.getNodeNames( referencedNodes.stream().filter(n -> !(n instanceof EnumNode)).collect(toSet()) );
 		
 		Collection<String> allOfsProperties = apiGraph.getOutboundEdges(node).stream()
@@ -131,9 +145,10 @@ public class Layout {
 		
 		LOG.debug("node={} allOfs={} ", node, allOfsProperties);								
 								
-		allOfsProperties.remove("@type");
+		allOfsProperties.remove("@type"); // 2023-06-22 ????
 		
 		LOG.debug("node={} allOfs={} ", node, allOfsProperties);								
+		LOG.debug("node={} getProperties={} ", node, node.getProperties());								
 
 		node.getProperties().stream()
 			.filter(p -> !referenced.contains(p.getType()))
@@ -159,6 +174,29 @@ public class Layout {
 			properties.add( new ClassProperty(prop, visibility));
 		
 		});	 
+		
+		return properties;
+
+	}
+	
+	
+	private List<ClassProperty> getInheritedPropertiesForClass(APIGraph apiGraph, Node node, Collection<String> incomplete) {
+		
+		List<ClassProperty> properties = new LinkedList<>();
+		
+		node.getInheritedProperties().stream()
+			.forEach(p -> {
+					
+				ClassProperty.Visibility visibility = getClassPropertyVisibility(p);
+				
+				LOG.debug("node={} p={} #1 visibility={}", node, p, visibility);
+				
+				properties.add( new ClassProperty(p,visibility));
+
+				if(!APIModel.isSimpleType(p.getType()) || APIModel.isEnumType(p.getType())) incomplete.add(node.getName());
+				
+			});	  
+		
 		
 		return properties;
 

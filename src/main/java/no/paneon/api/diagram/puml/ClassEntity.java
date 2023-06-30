@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toSet;
 
@@ -20,6 +20,7 @@ import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
 import no.paneon.api.logging.LogMethod;
 import no.paneon.api.graph.Node;
+import no.paneon.api.graph.Property;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 public class ClassEntity extends Entity {
@@ -49,6 +50,8 @@ public class ClassEntity extends Entity {
 	Set<String> discriminatorMapping;
 	Set<String> inheritedDiscriminatorMapping;
 
+	Set<String> allDiscriminatorMapping;
+
 	List<String> discriminatorExtension;
 	List<String> inheritanceExtension;
 
@@ -70,7 +73,8 @@ public class ClassEntity extends Entity {
 
 		this.discriminatorMapping = new HashSet<>();
 		this.inheritedDiscriminatorMapping = new HashSet<>();
-		
+		this.allDiscriminatorMapping = new HashSet<>();
+
 		this.vendorExtension=false;
 		this.discriminatorExtension = new LinkedList<>();
 		this.inheritanceExtension = new LinkedList<>();
@@ -79,18 +83,18 @@ public class ClassEntity extends Entity {
         
 	}
 	private ClassEntity(String name, String stereotype) {
-		super();
-		this.name = name;
+		this(name);
+//		this.name = name;
 		this.stereotype = stereotype;
-		this.classProperties = new LinkedList<>();
-		this.enumEntities = new LinkedList<>();
-		this.edges = new LinkedList<>();
-		
-		this.inheritance = new HashSet<>();
-		this.actualInheritance = new HashSet<>();
-
-		this.discriminatorMapping = new HashSet<>();
-		this.discriminatorExtension = new LinkedList<>();
+//		this.classProperties = new LinkedList<>();
+//		this.enumEntities = new LinkedList<>();
+//		this.edges = new LinkedList<>();
+//		
+//		this.inheritance = new HashSet<>();
+//		this.actualInheritance = new HashSet<>();
+//
+//		this.discriminatorMapping = new HashSet<>();
+//		this.discriminatorExtension = new LinkedList<>();
 
         LOG.debug("ClassEntity: name: {} seq: {}" , name, seq);
         
@@ -113,27 +117,39 @@ public class ClassEntity extends Entity {
 		this.vendorExtension=node.getVendorExtension();
 		this.discriminatorExtension=node.getDiscriminatorExtension();
 		this.inheritanceExtension=node.getInheritanceExtension();
+		
+		this.allDiscriminatorMapping.addAll(node.getAllDiscriminatorMapping());
+
 
 	}
 	
-	public ClassEntity(String name, List<ClassProperty> properties, String stereotype, String description, Set<String> inheritance, Set<String> mapping) {
-		this(name,stereotype);
-		this.classProperties.addAll( properties );
-		this.description=description;
-		this.inheritance.addAll(inheritance);
-		this.discriminatorMapping.addAll(mapping);
-	}
+//	public ClassEntity(String name, List<ClassProperty> properties, String stereotype, String description, Set<String> inheritance, Set<String> mapping) {
+//		this(name,stereotype);
+//		this.classProperties.addAll( properties );
+//		this.description=description;
+//		this.inheritance.addAll(inheritance);
+//		this.discriminatorMapping.addAll(mapping);
+//		
+//		Out.debug("ClassEntity: #1 node={} classProperties={}", this.name, this.classProperties);
+//		
+//	}
 	
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public void addProperty(ClassProperty c) {
 		// Out.debug("ClassEntity::addProperty entity={} property={}",  this.name, c);
 		if(c!=null) classProperties.add(c);
+		
+		LOG.debug("ClassEntity: #2 node={} classProperties={}", this.name, this.classProperties);
+
 	}
 	
 	public void addProperties(List<ClassProperty> properties) {
 		// if(this.name.contentEquals("ProductOfferingRelationship")) Out.debug("ClassEntity::addProperties entity={} properties={}",  this.name, properties);
 		classProperties.addAll(properties);
+		
+		LOG.debug("ClassEntity: #3 node={} classProperties={}", this.name, this.classProperties);
+
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -184,7 +200,7 @@ public class ClassEntity extends Entity {
         }
         
         String className = APIModel.getMappedResource(this.name);
-	    res.append( "class " + className + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
+	    res.append( "class " + Utils.quote(className) + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
 	    	    
 	    String desc = description;
 	    if(Config.includeDescription()) {
@@ -198,13 +214,13 @@ public class ClassEntity extends Entity {
 	    
 	    LOG.debug("ClassEntity: node={} classProperties={}",  this.name, this.classProperties);
 	    	    
-	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
-	    
-	    if(!discriminatorsToShow.isEmpty() && !Config.getBoolean("keepDefaultValueForAtType")) {
-	    	classProperties.stream()
-				.filter(ClassProperty::isAtTypeProperty)
-				.forEach(ClassProperty::resetDefaultValue);
-	    }
+//	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
+//	    
+//	    if(!discriminatorsToShow.isEmpty() && !Config.getBoolean("keepDefaultValueForAtType")) {
+//	    	classProperties.stream()
+//				.filter(ClassProperty::isAtTypeProperty)
+//				.forEach(ClassProperty::resetDefaultValue);
+//	    }
 	    
 	    
 	    int maxLineLength = classProperties.stream()
@@ -231,7 +247,7 @@ public class ClassEntity extends Entity {
 	    		.filter(APIModel::isCustomSimple)
 	    		.collect(Collectors.toSet());
 		    
-    	if(!customSimple.isEmpty()) Out.debug("customSimple:: node={} customSimple={}", name, customSimple);
+    	if(!customSimple.isEmpty()) LOG.debug("customSimple:: node={} customSimple={}", name, customSimple);
 
 	    if(!customSimple.isEmpty()) {
 	    		    	
@@ -250,8 +266,17 @@ public class ClassEntity extends Entity {
 		    res.append( BLANK_LINE );
 
 	    }
+	    	
+	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
 	    
-	    	    
+    	LOG.debug("ClassEntity:: node={} discriminatorsToShow={}", name, discriminatorsToShow);
+
+	    if(!discriminatorsToShow.isEmpty() && !Config.getBoolean("keepDefaultValueForAtType")) {
+	    	classProperties.stream()
+				.filter(ClassProperty::isAtTypeProperty)
+				.forEach(ClassProperty::resetDefaultValue);
+	    }
+	    
 	    if(!discriminatorsToShow.isEmpty()) {
 	    	res.append( INDENT + "--" + NEWLINE);
 	    	res.append( INDENT + "discriminator:" + NEWLINE);
@@ -261,7 +286,7 @@ public class ClassEntity extends Entity {
 			String vendorExtensionFormat = "<color:" + color + ">%s";
 				
 	    	discriminatorsToShow.forEach(mapping -> {
-	    			    		
+	    			    
 	    		if(this.discriminatorExtension.contains(mapping)) {
 	    			
 		    		LOG.debug("discriminatorsToShow: discriminatorExtension={} mapping={}", this.discriminatorExtension, mapping);
@@ -271,6 +296,7 @@ public class ClassEntity extends Entity {
 		    		LOG.debug("discriminatorsToShow: coloredMapping={}", coloredMapping);
 
 	    			res.append(INDENT + coloredMapping + NEWLINE);
+	    			
 	    		} else {
 	    			res.append(INDENT + mapping + NEWLINE);
 	    		}
@@ -303,6 +329,7 @@ public class ClassEntity extends Entity {
 	    
 	}
 
+
 	private Set<String> getDiscriminatorsToShow() {
 	   	Set<String> discriminators = new HashSet<>();
 
@@ -311,14 +338,21 @@ public class ClassEntity extends Entity {
 	   		return discriminators;
 	   	}
 	   	
-    	if(this.discriminatorMapping.size()>1 || this.inheritedDiscriminatorMapping.size()>1) {
+	    LOG.debug("ClassEntity: getDiscriminatorsToShow node={} all={}", this.name, this.allDiscriminatorMapping);
+
+    	if(this.allDiscriminatorMapping.size()>1) {
     		
+    	    LOG.debug("ClassEntity: node={} discriminatorMapping={} inherit={} all={}", this.name, discriminatorMapping.size(), inheritedDiscriminatorMapping.size(), allDiscriminatorMapping.size());
+
     	    if(!this.discriminatorMapping.isEmpty()) 
     	    	discriminators.addAll(this.discriminatorMapping);
-    	    else
+    	    else if(!this.allDiscriminatorMapping.isEmpty())
+    	    	discriminators.addAll(this.allDiscriminatorMapping);
+    	    else if(!this.inheritedDiscriminatorMapping.isEmpty())
     	    	discriminators.addAll(this.inheritedDiscriminatorMapping);
 
-    	    LOG.debug("ClassEntity: getDiscriminatorsToShow={}", this.name, discriminators);
+    	    
+    	    LOG.debug("ClassEntity: node={} getDiscriminatorsToShow={}", this.name, discriminators);
 
     	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
     	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
@@ -425,6 +459,14 @@ public class ClassEntity extends Entity {
 	
 	public boolean getVendorExtension() {
 		return this.vendorExtension || this.getProperties().stream().anyMatch(ClassProperty::getVendorExtension);
+	}
+	public void addPropertiesInherited(Collection<ClassProperty> inherited) {
+		Set<String> propertyNames = this.getProperties().stream().map(ClassProperty::getName).collect(toSet());
+		
+		Predicate<ClassProperty> notAlready = p -> !propertyNames.contains(p.getName());
+	
+		inherited.stream().filter(notAlready).forEach(this::addProperty);
+		
 	}
 }
 	
