@@ -137,10 +137,12 @@ public class ClassProperty extends Entity {
 				extensionFormat = "<color:" + color + ">%s";			
 			}
 			
-			LOG.debug("ClassProperty::property: name={} type extensionFormat={}",  this.name, extensionFormat);
+			LOG.debug("ClassProperty::property: name={} stype={} extensionFormat={}",  this.name, type, extensionFormat);
 
 			res=String.format(extensionFormat,stype.toString());
 			
+			LOG.debug("ClassProperty::property: name={} res={}",  this.name, res);
+
 		} else {
 			String enumLabel = this.enumStatus && !this.values.isEmpty() ? "ENUM " : "";
 

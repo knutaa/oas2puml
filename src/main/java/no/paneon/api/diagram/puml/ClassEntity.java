@@ -137,7 +137,7 @@ public class ClassEntity extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public void addProperty(ClassProperty c) {
-		// Out.debug("ClassEntity::addProperty entity={} property={}",  this.name, c);
+		
 		if(c!=null) classProperties.add(c);
 		
 		LOG.debug("ClassEntity: #2 node={} classProperties={}", this.name, this.classProperties);
