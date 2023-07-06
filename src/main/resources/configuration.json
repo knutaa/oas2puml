@@ -120,7 +120,11 @@
 		"Any",
 		"object",
 		"Number",
-		"Date"
+		"Date",
+        
+        "xx_EntityRefOrValue",
+        "xx_Characteristic"
+        
 	],
 	
 	"simpleEndings": [
@@ -218,7 +222,7 @@
 		"Entity",
         "Entity_FVO",
         "Entity_MVO",
-
+                
 		"EntityRef",
         "EntityRef_FVO",
         "EntityRef_MVO",
