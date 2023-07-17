@@ -120,10 +120,7 @@
 		"Any",
 		"object",
 		"Number",
-		"Date",
-        
-        "xx_EntityRefOrValue",
-        "xx_Characteristic"
+		"Date"
         
 	],
 	

@@ -32,6 +32,7 @@ public class Extensions  {
 	public static final String EXTENSION_CARDINALITY = "cardinality";
 	public static final String EXTENSION_REQUIRED = "required";
 	public static final String EXTENSION_TYPE = "type";
+	public static final String EXTENSION_MOVED = "moved";
 
 	public static final String INHERITANCE_EXTENSION = "inheritance";
 

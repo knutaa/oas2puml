@@ -66,23 +66,30 @@ public class ExtractExtensions extends GenerateCommon {
 		JSONArray resourceDiscriminatorExtension = new JSONArray();
 		JSONArray resourceInheritanceExtension = new JSONArray();
 
+		Out.printAlways("... extractExtensions");
+
 		actualAPI.getNodesByNames(allNodes).forEach(node -> {
 			
 			List<String> inherited = node.getInheritedProperties(actualAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());			
 			List<Property> actualProperties = node.getProperties();
-
+			
 			Node baseNode = baseAPI.getNode(APIModel.getReverseResourceMapping(node.getName()));
 			List<String> baseInherited = baseNode.getInheritedProperties(baseAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());
+			
+			List<Property> baseInheritedProperties = baseNode.getInheritedProperties(baseAPI.getCompleteGraph());
+
 			List<Property> baseProperties = baseNode.getProperties().stream().filter(p->!baseInherited.contains(p.getName())).collect(toList());
 			List<String>   basePropertiesName = baseProperties.stream().map(Property::getName).collect(toList());
 
-			LOG.debug("node: {} actual inherited: {}", node.getName(), inherited);
+			LOG.debug("ExtractExtension:: node={} actual properties={}", node.getName(), actualProperties);
+			LOG.debug("ExtractExtension:: node={} actual inherited: {}", node.getName(), inherited);
+
+			LOG.debug("node: {} base properties: {}", node.getName(), baseProperties);
 			LOG.debug("node: {} base inherited: {}", node.getName(), baseInherited);
 
-			LOG.debug("node: {} actual properties: {}", node.getName(), actualProperties);
-			LOG.debug("node: {} base properties: {}", node.getName(), baseProperties);
 			LOG.debug("node: {} base properties name: {}", node.getName(), basePropertiesName);
 
+			
 			actualProperties = actualProperties.stream()
 				.filter(prop -> {
 					// boolean diff =!basePropertiesName.contains(prop.getName());
@@ -103,9 +110,8 @@ public class ExtractExtensions extends GenerateCommon {
 
 					}
 					
-					
 					LOG.debug("filter: name={} prop={} diff={}", node.getName(), prop.getName(), diff);
-					if(diff) LOG.debug("filter: name={} prop={} optProp={}", node.getName(), prop, optProp);
+					if(diff) LOG.debug("... filter: name={} prop={} optProp={}", node.getName(), prop, optProp);
 
 					return diff;
 				})
@@ -143,6 +149,15 @@ public class ExtractExtensions extends GenerateCommon {
 						ext.put(Extensions.EXTENSION_TYPE, true);
 					}
 					
+				} else {
+					optProp = baseInheritedProperties.stream().filter(p -> p.getName().contentEquals(property.getName())).findFirst();
+					if(optProp.isPresent()) {
+						
+						Out.debug("node: {} MOVED property={}", node.getName(), property.getName());
+
+						ext.put(Extensions.EXTENSION_MOVED, true);
+					}
+
 				}
 				
 				attributesExtension.put(ext);

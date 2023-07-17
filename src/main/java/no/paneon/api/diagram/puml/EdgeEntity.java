@@ -113,6 +113,8 @@ public class EdgeEntity extends Entity {
 
 			String vendorExtensionFormat = "<color:" + color + ">%s";
 			
+			strLabel = Utils.unQuote(strLabel);
+			
 			strLabel = String.format(vendorExtensionFormat, strLabel);
 			
 			edgeVendorExtension = "[#" + color + "]";
