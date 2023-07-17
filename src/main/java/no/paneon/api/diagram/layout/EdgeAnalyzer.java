@@ -323,6 +323,10 @@ public class EdgeAnalyzer {
 				
 				// EdgeAnalyzer::notIfBelowAndFewOutbounds,
 				
+				// EdgeAnalyzer::notIfMultipleEdges, // TEST
+				
+				EdgeAnalyzer::notIfMultipleRegularEdges, // TEST
+
 				EdgeAnalyzer::ifMultipleToInheritance,
 				
 				EdgeAnalyzer::notIfPivotSpecialCase,
@@ -840,6 +844,15 @@ public class EdgeAnalyzer {
 
 	}
 
+	@LogMethod(level=LogLevel.DEBUG)
+	private static Status notIfMultipleRegularEdges(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
+		int edges = apiGraph.getEdges(to, from).stream().filter(Edge::isRegularEdgeCore).collect(toSet()).size();
+		
+		LOG.debug("notIfMultipleRegularEdges:: to={} from={} edges={}", to, from, edges);
+
+		return rejectIfTrue( edges>0 );
+	}
+	
 	@LogMethod(level=LogLevel.DEBUG)
 	private static Status notIfMultipleEdges(Node to, Node from, APIGraph apiGraph, LayoutGraph layoutGraph) {
 		int edges = apiGraph.getEdges(to, from).size() + apiGraph.getEdges(from, to).size();

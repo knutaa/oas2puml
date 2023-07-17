@@ -144,7 +144,7 @@ public class DiagramGenerator
 		
 		Map<String,String> diagramConfig = new LinkedHashMap<>();
 		
-		LOG.debug("generateDiagramGraph: coreGraph={}", coreGraph.getCompleteGraph().edgeSet());
+		LOG.debug("generateDiagramGraph: coreGraph=\n...{}", coreGraph.getCompleteGraph().edgeSet().stream().map(Edge::toString).collect(Collectors.joining("\n... ")));
 	    		
 		LOG.debug("generateDiagramGraph: coreGraph nodes={}", coreGraph.getNodes() );
 		LOG.debug("generateDiagramGraph: coreGraph edges={}", coreGraph.getCompleteGraph().edgeSet() );
@@ -158,7 +158,7 @@ public class DiagramGenerator
 		LOG.debug("generateDiagramGraph: resources={} allResources={}", resources, allResources);
 		
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
-
+  
 		for(String resource : this.resources) {
 			
 			LOG.debug("### generateDiagramGraph: resource={}", resource);
@@ -169,10 +169,12 @@ public class DiagramGenerator
 				graphs.generateSubGraphsForResource(this.resources, resource);
 			}
 			
+			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, graphs.getSubGraphLabels(resource));
+
 			List<String> subGraphs = graphs.getSubGraphLabels(resource).stream()
 					                   .filter(r -> r.contentEquals(resource) || !allResources.contains(r))
-					                   .collect(Collectors.toList());
-							
+					                   .collect(toList());
+			
 			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, subGraphs);
 			
 			for(String pivot : subGraphs ) {
@@ -226,6 +228,13 @@ public class DiagramGenerator
 					
 				} 
 				
+				removeDisjointSubgraphs(pivot, apiGraph);
+
+				removeMVOFVONodes(pivot, apiGraph);
+				
+				LOG.debug("generateDiagramGraph:: graph pivot={} nodes={}", pivot, apiGraph.getGraph().vertexSet());
+				LOG.debug("generateDiagramGraph:: graph pivot={} edges={}", pivot, apiGraph.getGraph().edgeSet());
+
 				LOG.debug("generateDiagramGraph:: graph pivot={} edges={}", pivot, apiGraph.getGraph().edgeSet().stream().filter(Edge::isDiscriminator).collect(Collectors.toSet()));
 
 				addExplicitSubResource(pivot, apiGraph);
@@ -255,6 +264,20 @@ public class DiagramGenerator
 	}
 	        	
 
+	private void removeMVOFVONodes(String pivot, APIGraph graph) {
+		if(!Config.getBoolean("keepMVOFVOResources")) {
+			Predicate<Node> MVO_or_FVO = s -> s.getName().endsWith("_FVO") || s.getName().endsWith("_MVO");
+			
+			Set<Node> toRemove = graph.getGraphNodes().stream().filter(MVO_or_FVO).collect(toSet());
+			
+			if(!toRemove.isEmpty()) Out.debug("... removing from {} {}", pivot, toRemove);
+			
+			graph.getGraph().removeAllVertices(toRemove);
+			
+		}
+	}
+
+
 	private void removeDisjointSubgraphs(String node, Graph<Node, Edge> graph) {
 		
 		LOG.debug("removeDisjointSubgraphs:: node={} graph={}", node, graph.vertexSet());
@@ -264,8 +287,21 @@ public class DiagramGenerator
 		Set<Node> unreachable = new HashSet<>(graph.vertexSet());
 		unreachable.removeAll(reachable);
 		
+		LOG.debug("removeDisjointSubgraphs:: node={} reachable={}", node, reachable);
+
 		if(!unreachable.isEmpty()) LOG.debug("removeDisjointSubgraphs:: node={} unreachable={} reachable={}", node, unreachable, reachable);
 
+		
+	}
+
+	private void removeDisjointSubgraphs(String node, APIGraph graph) {	
+		LOG.debug("removeDisjointSubgraphs:: node={} graph={}", node, graph);
+		Set<Node> reachable = CoreAPIGraph.getReachableNew(graph.getGraph(), node);
+		Set<Node> unreachable = new HashSet<>(graph.getGraph().vertexSet());
+		unreachable.removeAll(reachable);
+		LOG.debug("removeDisjointSubgraphs:: node={} unreachable={}", node, unreachable);
+		
+		graph.getGraph().removeAllVertices(unreachable);
 		
 	}
 

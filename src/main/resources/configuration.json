@@ -120,9 +120,7 @@
 		"Any",
 		"object",
 		"Number",
-		"Date",
-        
-        "EntityRefOrValue"
+		"Date"
         
 	],
 	
@@ -221,7 +219,7 @@
 		"Entity",
         "Entity_FVO",
         "Entity_MVO",
-
+                
 		"EntityRef",
         "EntityRef_FVO",
         "EntityRef_MVO",
