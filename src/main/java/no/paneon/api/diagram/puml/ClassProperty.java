@@ -43,6 +43,7 @@ public class ClassProperty extends Entity {
 	boolean vendorExtension = false;
 	boolean requiredExtension = false;
 	boolean typeExtension = false;
+	boolean cardinalityExtension = false;
 
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
@@ -65,6 +66,7 @@ public class ClassProperty extends Entity {
 		this.vendorExtension = property.getVendorExtension();
 		this.requiredExtension = property.getRequiredExtension();
 		this.typeExtension = property.getTypeExtension();
+		this.cardinalityExtension = property.getCardinalityExtension();
 
 		if(this.vendorExtension) LOG.debug("vendor extension: property {}", this.name);
 		
@@ -253,7 +255,7 @@ public class ClassProperty extends Entity {
 	}
 	
 	private boolean hasPartialExtension() {
-		return this.requiredExtension || this.typeExtension;
+		return this.requiredExtension || this.typeExtension || this.cardinalityExtension;
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)

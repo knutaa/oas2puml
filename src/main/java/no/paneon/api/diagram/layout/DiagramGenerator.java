@@ -940,8 +940,9 @@ public class DiagramGenerator
 							            	String propName = attr.optString(Extensions.EXTENSION_NAME);
 							            	boolean required = attr.optBoolean(Extensions.EXTENSION_REQUIRED);
 							            	boolean type = attr.optBoolean(Extensions.EXTENSION_TYPE);
+							            	boolean card = attr.optBoolean(Extensions.EXTENSION_CARDINALITY);
 
-							            	node.setVendorAttributeExtension(propName,required,type);
+							            	node.setVendorAttributeExtension(propName,required,type,card);
 							            });
 								
 //							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))

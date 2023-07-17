@@ -1,0 +1,411 @@
+openapi: 3.0.1
+info:
+  title: some title
+  description: some description
+  version: 5.0.0
+servers:
+  - url: 'https://serverRoot'
+tags:
+  - name: productOrder
+    description: Operations for ProductOrder Resource
+  - name: cancelProductOrder
+    description: Operations for CancelProductOrder Resource
+  - name: submitProductOrder
+    description: Operations for SubmitProductOrder Resource
+  - name: notification listener
+    description: Notifications for Resource Lifecycle and event notifications
+  - name: events subscription
+    description: Endpoints to register and terminate an Event Listener
+paths:
+  /productOrder:
+    get:
+      tags:
+        - productOrder
+      summary: List or find ProductOrder objects
+      description: >-
+        This operation retrieves a ProductOrder entity. Attribute selection enabled for all first
+        level attributes.
+      operationId: listProductOrder
+      parameters:
+        - $ref: '#/components/parameters/Fields'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          $ref: '#/components/responses/200ProductOrderArray'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '500':
+          $ref: '#/components/responses/500'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+ 
+components:
+  schemas:
+  
+
+    Reference:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_FVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+      required:
+        - id
+    Reference_MVO:
+      type: object
+      description: Reference schema .
+      properties:
+        id:
+          type: string
+          description: Identifier of the referred entity.
+        name:
+          type: string
+          description: Name of the referred entity.
+        '@referredType':
+          type: string
+          description: The actual type of the target instance when needed for disambiguation.
+
+
+    PaymentRef:
+      type: object
+      description: >-
+        If an immediate payment has been done at the product order submission, the payment
+        information are captured and stored (as a reference) in the order.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          PaymentRef: '#/components/schemas/PaymentRef'
+          
+    Addressable:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+      required:
+        - id
+        - href
+    Addressable_FVO:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+        id:
+          type: string
+          description: unique identifier
+    Addressable_MVO:
+      type: object
+      description: Base schema for adressable entities
+      properties:
+        href:
+          type: string
+          description: Hyperlink reference
+
+    Extensible:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    Extensible_FVO:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+      required:
+        - '@type'
+    Extensible_MVO:
+      type: object
+      description: >-
+        Base Extensible schema for use in TMForum Open-APIs - When used for in a schema it means
+        that the Entity described by the schema  MUST be extended with the @type
+      properties:
+        '@type':
+          type: string
+          description: 'When sub-classing, this defines the sub-class Extensible name'
+        '@baseType':
+          type: string
+          description: 'When sub-classing, this defines the super-class'
+        '@schemaLocation':
+          type: string
+          description: A URI to a JSON-Schema file that defines additional attributes and relationships
+
+
+
+    AgreementRef:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef'
+    AgreementRef_FVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_FVO_FVO_FVO'
+    AgreementRef_FVO_FVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_FVO_FVO_FVO'
+    AgreementRef_FVO_FVO_FVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_FVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_FVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_FVO_FVO_FVO'
+    AgreementRef_MVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_MVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_MVO'
+    AgreementRef_MVO_FVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_MVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_MVO_FVO_FVO'
+    AgreementRef_MVO_FVO_FVO:
+      type: object
+      description: >-
+        Agreement reference. An agreement represents a contract or arrangement, either written or
+        verbal and sometimes enforceable by law, such as a service level agreement or a customer
+        price agreement. An agreement involves a number of other business entities, such as
+        products, services, and resources and/or their specifications.
+      allOf:
+        - $ref: '#/components/schemas/Extensible_MVO'
+        - $ref: '#/components/schemas/EntityRef'
+        - $ref: '#/components/schemas/Reference_MVO'
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          AgreementRef: '#/components/schemas/AgreementRef_MVO_FVO_FVO'
+
+    Entity:
+      type: object 
+      description: Base entity schema for use in TMForum Open-APIs. Property.
+      allOf:
+        - $ref: '#/components/schemas/Extensible'
+        - $ref: '#/components/schemas/Addressable'
+
+    ProductOrder:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - type: object
+          description: >-
+            A Product Order is a type of order which  can  be used to place an order between a
+            customer and a service provider or between a service provider and a partner and vice
+            versa,
+          properties:
+            agreement:
+              type: array
+              description: A reference to an agreement defined in the context of the product order
+              items:
+                $ref: '#/components/schemas/AgreementRef'
+       
+            state:
+              type: string
+              description: >-
+                Tracks the lifecycle status of the product order, such as Acknowledged, Rejected,
+                InProgress, Pending and so on.
+            requestedInitialState:
+              $ref: '#/components/schemas/InitialProductOrderStateType'
+              default: acknowledged
+            newCancellationDate:
+              type: string
+              format: date-time
+              description: 'Date when the order is cancelled. This is used when order is cancelled. '
+            cancellationReason:
+              type: string
+              description: 'Reason why the order is cancelled. This is used when order is cancelled. '
+            category:
+              type: string
+              description: >-
+                Used to categorize the order from a business perspective that can be useful for the
+                OM system (e.g. "enterprise", "residential", ...)
+            
+            description:
+              type: string
+              description: Description of the product order
+            expectedCompletionDate:
+              type: string
+              format: date-time
+              description: Expected delivery date amended by the provider
+            priority:
+              type: string
+              description: >-
+                A way that can be used by consumers to prioritize orders in OM system (from 0 to 4 :
+                0 is the highest priority, and 4 the lowest)
+
+            newRequestedCompletionDate:
+              type: string
+              format: date-time
+              description: Requested delivery date from the requestor perspective
+            requestedStartDate:
+              type: string
+              format: date-time
+              description: >-
+                Order fulfillment start date wished by the requestor. This is used when, for any
+                reason, requestor cannot allow seller to begin to operationally begin the
+                fulfillment before a date.
+            creationDate:
+              type: string
+              format: date-time
+              description: Date and time when the ProductOrder was created
+            completionDate:
+              type: string
+              format: date-time
+              description: Date when the ProductOrder was completed
+              
+            payment:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentRef'
+              
+      discriminator:
+        propertyName: '@type'
+        mapping:
+          ProductOrder: '#/components/schemas/ProductOrder'
+
+  responses:
+  
+    200ProductOrderArray:
+      description: Success
+      headers:
+        X-Total-Count:
+          $ref: '#/components/headers/X-Total-Count'
+        X-Result-Count:
+          $ref: '#/components/headers/X-Result-Count'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ProductOrder'
+          examples:
+            retrieveProductOrderByList:
+              $ref: '#/components/examples/retrieveProductOrderByList_response'
+            retrieveProductOrderByListwith_FieldsSelection:
+              $ref: '#/components/examples/retrieveProductOrderByListwith_FieldsSelection_response'
+ 
