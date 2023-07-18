@@ -82,19 +82,38 @@ public class GenerateDiagram extends GenerateCommon {
 
 	   
     public static void generateImage(String targetDirectory, List<String> baseFileNames) {
-        for(String base : baseFileNames) {
-	    	Out.debug("... generating image for {}", base);
-	    	try {
-	        	File source = new File(targetDirectory + "/" + base);
-		    	SourceFileReader reader = new SourceFileReader(source);
-		    	List<GeneratedImage> list = reader.getGeneratedImages();
-		    	// Generated files
-		    	File png = list.get(0).getPngFile();
-		    	// Out.debug("... {} png={}", base, png.getName());
-	    	} catch(Exception ex) {
-	    		Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
-	    	}
-        };		
+    	
+    	String PLANTUML_LIMIT_SIZE = "PLANTUML_LIMIT_SIZE";
+    	String HEADLESS = "java.awt.headless";
+    	
+    	try {
+    		
+    		String sizeLimit = Config.getString(PLANTUML_LIMIT_SIZE);
+    		if(sizeLimit.isEmpty()) sizeLimit = "8192";
+    		
+    		System.setProperty(HEADLESS, "true");
+    		System.setProperty(PLANTUML_LIMIT_SIZE, sizeLimit);
+
+	 	
+	        for(String base : baseFileNames) {
+		    	Out.debug("... generating image for {}", base);
+		    	try {
+		        	File source = new File(targetDirectory + "/" + base);
+			    	SourceFileReader reader = new SourceFileReader(source);
+			    	reader.getGeneratedImages();
+			    	// List<GeneratedImage> list = reader.getGeneratedImages();
+			    	// Generated files
+			    	// File png = list.get(0).getPngFile();
+			    	// Out.debug("... {} png={}", base, png.getName());
+		    	} catch(Exception ex) {
+		    		Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
+		    	}
+	        };	
+			        
+	    	
+	    } catch(Exception e) {
+    		Out.debug("... unable to generate images: exception: {}", e.getLocalizedMessage());
+    	}
 	}
     
 	private void saveDiagramConfig(Map<String, String> diagramConfig, String target) {
