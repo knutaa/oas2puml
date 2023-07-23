@@ -175,7 +175,7 @@ public class DiagramGenerator
 					                   .filter(r -> r.contentEquals(resource) || !allResources.contains(r))
 					                   .collect(toList());
 			
-			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, subGraphs);
+			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, Utils.joining(subGraphs,"\n"));
 			
 			for(String pivot : subGraphs ) {
 				
@@ -195,7 +195,7 @@ public class DiagramGenerator
 								
 				Graph<Node,Edge> currentGraph = pivotGraph;
 				
-				if(GraphComplexity.tooSmallGraph(pivot,currentGraph)) continue;
+				if(GraphComplexity.tooSmallGraph(n,currentGraph)) continue;
 				
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph={}", pivot, currentGraph.vertexSet());
 				LOG.debug("generateDiagramGraph: pivot={} currentGraph=\n{}", pivot, currentGraph.edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
@@ -239,6 +239,8 @@ public class DiagramGenerator
 
 				addExplicitSubResource(pivot, apiGraph);
 				
+				removeDiscriminatorsWhenInheritance(apiGraph);
+				
 				LOG.debug("generateDiagramGraph:: graph edges={}", apiGraph.getGraph().edgeSet().stream().map(Object::toString).collect(Collectors.joining("\n")));
 				
 				Diagram diagram = generateDiagramForGraph(pivot, apiGraph, subGraphs);
@@ -263,6 +265,31 @@ public class DiagramGenerator
 
 	}
 	        	
+
+	private void removeDiscriminatorsWhenInheritance(APIGraph apiGraph) {
+		if(Config.getBoolean("DiscriminatorsWhenInheritance")) 
+			return;
+		
+		Set<String> nodes = apiGraph.getAllNodes();
+		for(String node : nodes) {
+			Node n = apiGraph.getNode(node);
+			Set<Edge> inheritsFrom = apiGraph.getOutboundEdges(n).stream().filter(Edge::isAllOf).collect(toSet());	
+			
+			if(!inheritsFrom.isEmpty()) {
+				Set<Node> neighbours = inheritsFrom.stream().map(Edge::getRelated).collect(toSet());
+				
+				for(Node neighbour : neighbours) {
+					Set<Edge> discriminators = apiGraph.getEdges(neighbour, n).stream().filter(Edge::isDiscriminator).collect(toSet());
+
+					LOG.debug("removeDiscriminatorsWhenInheritance: nodee={} inheritsFrom={} discriminators={}", node, neighbours, discriminators);
+					
+					apiGraph.getGraph().removeAllEdges(discriminators);
+				}
+			}
+			
+		}
+	}
+
 
 	private void removeMVOFVONodes(String pivot, APIGraph graph) {
 		if(!Config.getBoolean("keepMVOFVOResources")) {

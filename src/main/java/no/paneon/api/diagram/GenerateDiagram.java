@@ -36,11 +36,36 @@ public class GenerateDiagram extends GenerateCommon {
 	public GenerateDiagram(Args.Diagram args) {
 		super(args);
 		this.args = args;
-		
+				
+	}
+	
+	@LogMethod(level=LogLevel.DEBUG)
+	private void processArgs(Args.Diagram args) {
+				
+	   	if(args.debug!=null) {
+    		setLogLevel( Utils.getLevelmap().get(args.debug));
+    	} else {
+    		setLogLevel( Level.OFF );
+    	}
+              
+        Config.setDefaults(args.defaults);
+        Config.setIncludeDebug(args.pumlComments);
+        Config.setShowAllCardinality(args.showAllCardinality);
+        Config.setRequiredHighlighting(args.highlightRequired);
+        Config.setIncludeDescription(args.includeDescription);
+        Config.setFloatingEnums(args.floatingEnums);
+        Config.setOrphanEnums(args.orphanEnumConfig);
+        Config.setLayout(args.layout);
+        
+        args.configs.forEach(Config::setConfig);
+        
+        Config.setPrefixToRemove(args.prefixToRemove);
+        Config.setPrefixToReplace(args.prefixToReplace);
+
 		Config.setBoolean("keepInheritanceDecoractions",this.args.keepInheritanceDecoractions);
 		Config.setBoolean("includeDefaultResources",this.args.includeDefaultResources);
 		Config.setBoolean("includeDiagramLegend",!this.args.removeLegend);
-		
+
 	}
 	
 	@Override
@@ -93,7 +118,6 @@ public class GenerateDiagram extends GenerateCommon {
     		
     		System.setProperty(HEADLESS, "true");
     		System.setProperty(PLANTUML_LIMIT_SIZE, sizeLimit);
-
 	 	
 	        for(String base : baseFileNames) {
 		    	Out.debug("... generating image for {}", base);
@@ -135,30 +159,6 @@ public class GenerateDiagram extends GenerateCommon {
 	    
 	}
 
-	@LogMethod(level=LogLevel.DEBUG)
-	private void processArgs(Args.Diagram args) {
-				
-	   	if(args.debug!=null) {
-    		setLogLevel( Utils.getLevelmap().get(args.debug));
-    	} else {
-    		setLogLevel( Level.OFF );
-    	}
-              
-        Config.setDefaults(args.defaults);
-        Config.setIncludeDebug(args.pumlComments);
-        Config.setShowAllCardinality(args.showAllCardinality);
-        Config.setRequiredHighlighting(args.highlightRequired);
-        Config.setIncludeDescription(args.includeDescription);
-        Config.setFloatingEnums(args.floatingEnums);
-        Config.setOrphanEnums(args.orphanEnumConfig);
-        Config.setLayout(args.layout);
-        
-        args.configs.forEach(Config::setConfig);
-        
-        Config.setPrefixToRemove(args.prefixToRemove);
-        Config.setPrefixToReplace(args.prefixToReplace);
-
-	}
 
 	@LogMethod(level=LogLevel.DEBUG)
 	private String getAPISource(Args.Diagram args) {
