@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>no.paneon.api.diagram</groupId>
 	<artifactId>apidiagram</artifactId>
-	<version>6.6.6-SNAPSHOT</version>
+	<version>6.6.8-SNAPSHOT</version>
 	<name>API diagram generator</name>
     <packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>no.paneon.api</groupId>
 			<artifactId>apicore</artifactId>
-			<version>6.6.6-SNAPSHOT</version>
+			<version>6.6.8-SNAPSHOT</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.plantuml/plantuml -->

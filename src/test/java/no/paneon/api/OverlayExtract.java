@@ -85,9 +85,9 @@ public class OverlayExtract extends TestCase {
 			
 			JSONObject diff = Utils.readJSONOrYaml(new java.io.FileInputStream(file)); // FileUtils.readFileToString(file, Charset.defaultCharset());
 			
-			Object obj = diff.query("/extensions/resourceAttributeExtension");
+			Object obj = diff.optQuery("/extensions/resourceAttributeExtension");
 			
-			if(obj instanceof JSONArray) {
+			if(obj!=null && obj instanceof JSONArray) {
 				JSONArray arr = (JSONArray)obj;
 				
 				boolean check = arr.toList().stream()
