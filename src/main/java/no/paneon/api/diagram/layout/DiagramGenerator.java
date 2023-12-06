@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 
-import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.Common;
 import no.paneon.api.diagram.puml.Comment;
 import no.paneon.api.diagram.puml.Diagram;
 import no.paneon.api.diagram.puml.Extensions;
@@ -62,7 +62,7 @@ public class DiagramGenerator
 		
     static final Logger LOG = LogManager.getLogger(DiagramGenerator.class);
 
-    Args.Diagram args;
+    no.paneon.api.diagram.app.args.Diagram args;
     
 	JSONObject layoutConfig;
 	Layout layout; 
@@ -76,32 +76,31 @@ public class DiagramGenerator
 
 	static String REMOVE_INHERITED = "removeInherited";
 		
-	public DiagramGenerator(Args.Diagram args, String file, String target) {
+	public DiagramGenerator(no.paneon.api.diagram.app.args.Diagram args, String file, String target) {
 		this.args = args;	
 		this.layoutConfig = Config.getLayout();
 		
 		this.file = file;    
 		this.target = target;
-		
+								
 		this.resources = new LinkedList<>();		
-				
-		if(args.resource==null || args.resource.isEmpty()) {
-			this.resources.addAll(getResources(args));
-		} else {
-			this.resources.add(args.resource);
-		}
 		
-		this.coreGraph = new CoreAPIGraph(this.resources);
-		
-		if(args.resource!=null) {
+		if(args.resource!=null && !args.resource.isEmpty()) {
+			
+			if(args.includeDefaultResources) {
+				this.resources.addAll(getResources(args));
+			}
+			
 			String[] parts = args.resource.split(",");
 			ArrayList<String> list = new ArrayList<String>(Arrays.asList(parts));
-			if(args.includeDefaultResources)
-				this.resources.addAll(list);
-			else
-				this.resources = list;
+			this.resources.addAll(list);
+			
+		} else {
+			this.resources.addAll(getResources(args));
 		}
 	
+		this.coreGraph = new CoreAPIGraph(this.resources);
+
 		Set<String> allDefinitions = APIModel.getAllDefinitions().stream().collect(toSet());
 		List<String> invalidArguments = this.resources.stream().filter(r -> !allDefinitions.contains(r)).collect(toList());
 		
@@ -176,6 +175,8 @@ public class DiagramGenerator
 					                   .collect(toList());
 			
 			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, Utils.joining(subGraphs,"\n"));
+			
+			subGraphs = APIModel.filterMVOFVO(subGraphs);
 			
 			for(String pivot : subGraphs ) {
 				
@@ -297,7 +298,11 @@ public class DiagramGenerator
 			
 			Set<Node> toRemove = graph.getGraphNodes().stream().filter(MVO_or_FVO).collect(toSet());
 			
-			if(!toRemove.isEmpty()) Out.debug("... removing from {} {}", pivot, toRemove);
+			if(!toRemove.isEmpty()) {
+				Predicate<String>  notMVOFVO = s -> !s.endsWith("_FVO") && !s.endsWith("_MVO");
+				boolean notAll_MVO_FVO = toRemove.stream().map(Node::getName).anyMatch(notMVOFVO);
+				if(notAll_MVO_FVO) Out.debug("... removing from {} {}", pivot, toRemove);
+			}
 			
 			graph.getGraph().removeAllVertices(toRemove);
 			
@@ -906,7 +911,7 @@ public class DiagramGenerator
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
-	private List<String> getResources(Args.Common args) {
+	private List<String> getResources(Common args) {
        	List<String> resourcesFromAPI = APIModel.getResources();
  	       
     	LOG.debug("getResources:: {}", resourcesFromAPI);

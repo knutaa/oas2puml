@@ -1,7 +1,5 @@
 package no.paneon.api.generator;
 
-import no.paneon.api.diagram.app.Args;
-import no.paneon.api.diagram.app.Args.Common;
 import no.paneon.api.model.APIModel;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
@@ -9,6 +7,7 @@ import no.paneon.api.utils.Timestamp;
 import no.paneon.api.utils.Utils;
 import no.paneon.api.utils.WhitelistVerifier;
 import no.paneon.api.logging.LogMethod;
+import no.paneon.api.diagram.app.args.Common;
 import no.paneon.api.logging.AspectLogger;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
@@ -32,11 +31,11 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class GenerateCommon {
 	
-	protected Args.Common common;
+	protected Common common;
 	
     static final Logger LOG = LogManager.getLogger(GenerateCommon.class);
 
-	public GenerateCommon(Args.Common common)  {
+	public GenerateCommon(Common common)  {
 		this.common = common;
 		
 		if(!common.whitelisting.isEmpty()) {	
@@ -79,37 +78,37 @@ public class GenerateCommon {
 	private void setTrustManager() {
 		
 		TrustManager[] trustAllCerts = new TrustManager[] {
-				new X509TrustManager() {
-					
-					public X509Certificate[] getAcceptedIssuers1() {
-						LOG.debug("X509Certificate #1");
-						return null;
-					}
-					
-					public void checkClientTrusted1(X509Certificate[] certs, String authType) {
-						LOG.debug("X509Certificate #2");
-					}
-					
-					public void checkServerTrusted1(X509Certificate[] certs, String authType) {
-						LOG.debug("X509Certificate #3");
-					}
-					
-					@Override
-					public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-						LOG.debug("X509Certificate #4 chain");
-					}
-					
-					@Override
-					public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-						LOG.debug("X509Certificate #5 chain");
-					}
-					
-					@Override
-					public X509Certificate[] getAcceptedIssuers() {
-						LOG.debug("X509Certificate #6");
-						return null;
-					}
+			new X509TrustManager() {
+
+				public X509Certificate[] getAcceptedIssuers1() {
+					LOG.debug("X509Certificate #1");
+					return null;
 				}
+
+				public void checkClientTrusted1(X509Certificate[] certs, String authType) {
+					LOG.debug("X509Certificate #2");
+				}
+
+				public void checkServerTrusted1(X509Certificate[] certs, String authType) {
+					LOG.debug("X509Certificate #3");
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					LOG.debug("X509Certificate #4 chain");
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					LOG.debug("X509Certificate #5 chain");
+				}
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					LOG.debug("X509Certificate #6");
+					return null;
+				}
+			}
 		};
 
 	    try {

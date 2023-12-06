@@ -17,6 +17,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.ExtractExtension;
 import no.paneon.api.extensions.ExtractExtensions;
 import no.paneon.api.utils.Utils;
 
@@ -144,9 +145,8 @@ public class OverlayExtract extends TestCase {
     	
       	try {
 
-	    	Args args = new Args();
 			
-	    	Args.ExtractExtensions argsExtension = args.new ExtractExtensions();
+	    	ExtractExtension argsExtension = new ExtractExtension();
 	    	
 	    	argsExtension.baseSpecification = prev;
 	    	argsExtension.openAPIFile = current;

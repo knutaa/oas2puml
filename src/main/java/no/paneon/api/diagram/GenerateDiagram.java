@@ -1,6 +1,7 @@
 package no.paneon.api.diagram;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import org.json.JSONObject;
 
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
-import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.Diagram;
 import no.paneon.api.diagram.layout.DiagramGenerator;
 import no.paneon.api.generator.GenerateCommon;
 import no.paneon.api.logging.AspectLogger.LogLevel;
@@ -31,23 +32,27 @@ public class GenerateDiagram extends GenerateCommon {
 
 	static final Logger LOG = LogManager.getLogger(GenerateDiagram.class);
 
-	Args.Diagram args;
+	Diagram args;
 	
-	public GenerateDiagram(Args.Diagram args) {
-		super(args);
-		this.args = args;
+	public GenerateDiagram(Diagram argsDiagram) {
+		super(argsDiagram);
+		this.args = argsDiagram;
 				
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
-	private void processArgs(Args.Diagram args) {
+	private void processArgs(Diagram args) {
 				
 	   	if(args.debug!=null) {
     		setLogLevel( Utils.getLevelmap().get(args.debug));
     	} else {
     		setLogLevel( Level.OFF );
     	}
-              
+        
+        args.configs.forEach(Config::setConfig);
+
+	   	getCommandLineArgumentsFromConfig(args);
+	   	
         Config.setDefaults(args.defaults);
         Config.setIncludeDebug(args.pumlComments);
         Config.setShowAllCardinality(args.showAllCardinality);
@@ -56,9 +61,7 @@ public class GenerateDiagram extends GenerateCommon {
         Config.setFloatingEnums(args.floatingEnums);
         Config.setOrphanEnums(args.orphanEnumConfig);
         Config.setLayout(args.layout);
-        
-        args.configs.forEach(Config::setConfig);
-        
+                
         Config.setPrefixToRemove(args.prefixToRemove);
         Config.setPrefixToReplace(args.prefixToReplace);
 
@@ -68,6 +71,30 @@ public class GenerateDiagram extends GenerateCommon {
 
 	}
 	
+	private void getCommandLineArgumentsFromConfig(Diagram args) {
+		JSONObject cmdArgs = Config.getConfig("commandLineArguments");
+		
+		if(cmdArgs==null) return;
+		
+		for(String key : cmdArgs.keySet()) {
+		    try {
+
+		    	Class cls = Class.forName(args.getClass().getCanonicalName() );  // ("no.paneon.api.diagram.app.args.Diagram");
+
+		        Field fld = cls.getField(key);
+		        
+				Object value = cmdArgs.get(key);
+		        fld.set(args, value);
+		        
+				Out.debug("... using argument from configuration: {}={}", key, cmdArgs.get(key));
+
+		    }
+		    catch (Exception ex) {
+				Out.debug("... unable to use argument '{}' from the configuration file, error={}", key, ex);
+		    }
+		}
+	}
+
 	@Override
 	@LogMethod(level=LogLevel.DEBUG)
 	public void execute() {
@@ -76,6 +103,8 @@ public class GenerateDiagram extends GenerateCommon {
 			
 	    processArgs(args);
         
+		LOG.debug("execute ... resources={}", APIModel.getResources());
+
 		String file = getAPISource(args);
 		String target = args.targetDirectory;
 		
@@ -161,7 +190,7 @@ public class GenerateDiagram extends GenerateCommon {
 
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private String getAPISource(Args.Diagram args) {
+	private String getAPISource(Diagram args) {
     	return args.files.isEmpty() ? args.openAPIFile : args.files.get(0) ; 
 	}
 

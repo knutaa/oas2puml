@@ -8,6 +8,12 @@ import org.apache.logging.log4j.Logger;
 import com.beust.jcommander.JCommander;
 
 import no.paneon.api.diagram.GenerateDiagram;
+
+import no.paneon.api.diagram.app.args.Diagram;
+import no.paneon.api.diagram.app.args.ExtractExtension;
+import no.paneon.api.diagram.app.args.GQLGraph;
+import no.paneon.api.diagram.app.args.Usage;
+
 import no.paneon.api.extensions.ExtractExtensions;
 import no.paneon.api.gql.GenerateGQLGraph;
 import no.paneon.api.utils.Out;
@@ -20,29 +26,24 @@ public class App {
 		
 	JCommander commandLine;
 
-	Args args;
-	
-	Args.Diagram            argsDiagram;
-	Args.GQLGraph  	        argsGQLGraph;
-	Args.Usage  	        argsUsage;
-	Args.ExtractExtensions  argsExtractExtensions;
+	Diagram            	argsDiagram;
+	GQLGraph  	        argsGQLGraph;
+	Usage  	        	argsUsage;
+	ExtractExtension  	argsExtractExtensions;
 	
 	App(String ... argv) {
-		     		
-		args = new Args();
-				
-		argsDiagram        = args.new Diagram();
-		argsGQLGraph       = args.new GQLGraph();
-		argsUsage          = args.new Usage();
-
-		argsExtractExtensions = args.new ExtractExtensions();
+		     						
+		argsDiagram           = new Diagram();
+		argsGQLGraph          = new GQLGraph();
+		argsUsage          	  = new Usage();
+		argsExtractExtensions = new ExtractExtension();
 		
 		commandLine = JCommander.newBuilder()
-		    .addCommand("diagrams",            argsDiagram)
-		    .addCommand("gqlgraph",            argsGQLGraph)
-		    .addCommand("extract-extensions",  argsExtractExtensions)
-		    .addCommand("--help",              argsUsage)
-		    .addCommand("help",                argsUsage)
+		    .addCommand("diagrams",            argsDiagram )
+		    .addCommand("gqlgraph",            argsGQLGraph )
+		    .addCommand("extract-extensions",  argsExtractExtensions )
+		    .addCommand("--help",              argsUsage )
+		    .addCommand("help",                argsUsage )
 		    .build();
 
 		try {

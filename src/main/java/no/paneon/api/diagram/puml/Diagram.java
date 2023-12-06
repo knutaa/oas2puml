@@ -41,7 +41,7 @@ public class Diagram extends Entity {
 
 	Map<String,ClassEntity> classes; 
 	List<EdgeEntity> edgeEntities;
-	Args.Diagram args;
+	no.paneon.api.diagram.app.args.Diagram args;
 	String file;
 	Map<String,String> variables;
 	String resource;
@@ -60,7 +60,7 @@ public class Diagram extends Entity {
 
 	static final String INCLUDE_COMMENTS = "includeCommentsInRules";
 	
-	public Diagram(Args.Diagram args, String file, String resource) {
+	public Diagram(no.paneon.api.diagram.app.args.Diagram args, String file, String resource) {
 		this.args = args;
 		this.file = file;
 		this.resource = resource;

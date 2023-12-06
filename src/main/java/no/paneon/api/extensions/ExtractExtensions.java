@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.ExtractExtension;
 import no.paneon.api.diagram.puml.Extensions;
 import no.paneon.api.generator.GenerateCommon;
 import no.paneon.api.graph.CoreAPIGraph;
@@ -27,9 +28,9 @@ public class ExtractExtensions extends GenerateCommon {
 
     static final Logger LOG = LogManager.getLogger(ExtractExtensions.class);
 
-	private Args.ExtractExtensions args;
+	private ExtractExtension args;
 	
-	public ExtractExtensions(Args.ExtractExtensions args) {
+	public ExtractExtensions(ExtractExtension args) {
 		super(args);
 		this.args = args;
 		

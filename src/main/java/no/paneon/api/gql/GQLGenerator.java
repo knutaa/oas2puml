@@ -3,6 +3,7 @@ package no.paneon.api.gql;
 import org.json.JSONObject;
 
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.GQLGraph;
 import no.paneon.api.graph.CoreAPIGraph;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.Node;
@@ -29,7 +30,7 @@ public class GQLGenerator
 
     static final String NEWLINE = "\n";
     
-    Args.GQLGraph args;
+    GQLGraph args;
     
 	JSONObject layoutConfig;
 	
@@ -40,7 +41,7 @@ public class GQLGenerator
 		
 	Set<String> processed = new HashSet<>();
 
-	public GQLGenerator(Args.GQLGraph args, String file, String target) {
+	public GQLGenerator(GQLGraph args, String file, String target) {
 		this.args = args;	
 		this.layoutConfig = Config.getLayout();
 		

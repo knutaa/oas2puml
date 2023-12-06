@@ -7,6 +7,7 @@ import org.junit.rules.TemporaryFolder;
 
 import no.paneon.api.diagram.GenerateDiagram;
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.Diagram;
 import no.paneon.api.model.APIModel;
 
 public class OAS2Test  {
@@ -50,8 +51,7 @@ public class OAS2Test  {
 
     @Test
     public void generateDiagrams() {
-    	Args         args        = new Args();
-		Args.Diagram argsDiagram = args.new Diagram();
+		Diagram argsDiagram = new Diagram();
     	
 		argsDiagram.openAPIFile = file;
 		argsDiagram.targetDirectory = folder.toString();

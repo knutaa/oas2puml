@@ -3,6 +3,7 @@ package no.paneon.api.gql;
 import java.io.File;
 
 import no.paneon.api.diagram.app.Args;
+import no.paneon.api.diagram.app.args.GQLGraph;
 import no.paneon.api.generator.GenerateCommon;
 import no.paneon.api.utils.Config;
 import no.paneon.api.utils.Out;
@@ -19,9 +20,9 @@ public class GenerateGQLGraph extends GenerateCommon {
 
 	static final Logger LOG = LogManager.getLogger(GenerateGQLGraph.class);
 
-	Args.GQLGraph args;
+	GQLGraph args;
 	
-	public GenerateGQLGraph(Args.GQLGraph args) {
+	public GenerateGQLGraph(GQLGraph args) {
 		super(args);
 		this.args = args;
 		
@@ -62,7 +63,7 @@ public class GenerateGQLGraph extends GenerateCommon {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private void processArgs(Args.GQLGraph args) {
+	private void processArgs(GQLGraph args) {
 				
 	   	if(args.debug!=null) {
     		setLogLevel( Utils.getLevelmap().get(args.debug));
@@ -75,7 +76,7 @@ public class GenerateGQLGraph extends GenerateCommon {
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
-	private String getAPISource(Args.GQLGraph args) {
+	private String getAPISource(GQLGraph args) {
     	return args.files.isEmpty() ? args.openAPIFile : args.files.get(0) ; 
 	}
 
