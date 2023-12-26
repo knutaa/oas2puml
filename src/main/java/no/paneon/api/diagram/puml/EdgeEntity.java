@@ -121,8 +121,8 @@ public class EdgeEntity extends Entity {
 			
 		}
 		
-		String from = Utils.quote(this.from.getName());
-		String to = Utils.quote(this.to.getName());
+		String from = Utils.quote(this.from.getDisplayName());
+		String to = Utils.quote(this.to.getDisplayName());
 
 		switch(place) {
 		case LEFT: 

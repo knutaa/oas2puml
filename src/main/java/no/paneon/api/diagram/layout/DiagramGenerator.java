@@ -158,8 +158,31 @@ public class DiagramGenerator
 		
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
   
-		for(String resource : this.resources) {
+		List<String> resourcesToGenerate = new LinkedList<>(this.resources);
+		
+		if(APIModel.isAsyncAPI()) {
+			List<String> messages = APIModel.getAsyncMessageTypes();
 			
+			LOG.debug("generateDiagramGraph: messages={}", Utils.joining(messages, "\n"));
+
+			// messages = messages.stream().map(APIModel::getTypeByReference).collect(toList());
+			
+			Predicate<String>  isRequestOr2xxReply = s -> !s.startsWith("204") && !s.startsWith("30") && !s.startsWith("40") && !s.startsWith("50");
+			
+			messages = messages.stream().filter(isRequestOr2xxReply).collect(toList());
+
+			LOG.debug("generateDiagramGraph: messages={}", messages);
+
+			resourcesToGenerate.addAll(messages);
+
+			LOG.debug("generateDiagramGraph: resourcesToGenerate={}", resourcesToGenerate);
+										
+		}
+		
+		this.resources = resourcesToGenerate;
+		
+		for(String resource : resourcesToGenerate) {
+					
 			LOG.debug("### generateDiagramGraph: resource={}", resource);
 
 			if(subResourceConfig!=null && subResourceConfig.has(resource)) {
@@ -250,9 +273,9 @@ public class DiagramGenerator
 				
 				// Out.printAlways("... generated diagram for " + pivot + " label=" + label);
 				if(pivot.contentEquals(resource)) {
-					Out.printAlways("... generated diagrams of " + pivot);
+					Out.debug("... generated diagrams of " + pivot);
 				} else {
-					Out.printAlways("... generated diagrams of " + pivot + " for " + resource);
+					Out.debug("... generated diagrams of " + pivot + " for " + resource);
 				}
 				
 				diagramConfig.putAll( writeDiagram(diagram, label, target) );

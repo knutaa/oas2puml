@@ -60,8 +60,8 @@ public class AllOfEdge extends HiddenEdge {
 			strLabel = " : " + strLabel;
 		}
 		
-		String fromS = Utils.quote(this.from.getName());
-		String toS = Utils.quote(this.to.getName());
+		String fromS = Utils.quote(this.from.getDisplayName());
+		String toS = Utils.quote(this.to.getDisplayName());
 
 		switch(place) {
 		case LEFT: 
@@ -76,7 +76,7 @@ public class AllOfEdge extends HiddenEdge {
 			
 		case ABOVE:
 		case FORCEABOVE:
-		    res = toS + " <|-- " + from + strLabel + '\n';
+		    res = toS + " <|-- " + fromS + strLabel + '\n';
 			break;
 			
 		case BELOW:
@@ -89,7 +89,7 @@ public class AllOfEdge extends HiddenEdge {
 			break;
 
 		case ABOVE_LONG:
-		    res = to + " <|--- " + from + strLabel + '\n';
+		    res = toS + " <|--- " + fromS + strLabel + '\n';
 			break;
 
 		default:

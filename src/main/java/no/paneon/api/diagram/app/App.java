@@ -85,7 +85,9 @@ public class App {
 			
 			String command = commandLine.getParsedCommand()!=null ? commandLine.getParsedCommand() : "";
 			
-			Out.printAlways("{} {} {}", artifactId, version, command);
+			String javaVersion = System.getProperty("java.version");
+			
+			Out.printAlways("{} {} {} (java version {})", artifactId, version, command, javaVersion);
 			
 		} catch(Exception e) {
 			Out.printAlways("... version information not available: {}", e.getLocalizedMessage());
@@ -97,7 +99,7 @@ public class App {
             return;
         }
 		
-		Timestamp.timeStamp("arguments available");
+		// Timestamp.timeStamp("arguments available");
 
     	switch(commandLine.getParsedCommand()) {
     

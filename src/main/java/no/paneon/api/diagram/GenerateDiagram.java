@@ -51,7 +51,7 @@ public class GenerateDiagram extends GenerateCommon {
         
         args.configs.forEach(Config::setConfig);
 
-	   	getCommandLineArgumentsFromConfig(args);
+	   	Config.getCommandLineArgumentsFromConfig(args);
 	   	
         Config.setDefaults(args.defaults);
         Config.setIncludeDebug(args.pumlComments);
@@ -71,30 +71,6 @@ public class GenerateDiagram extends GenerateCommon {
 
 	}
 	
-	private void getCommandLineArgumentsFromConfig(Diagram args) {
-		JSONObject cmdArgs = Config.getConfig("commandLineArguments");
-		
-		if(cmdArgs==null) return;
-		
-		for(String key : cmdArgs.keySet()) {
-		    try {
-
-		    	Class cls = Class.forName(args.getClass().getCanonicalName() );  // ("no.paneon.api.diagram.app.args.Diagram");
-
-		        Field fld = cls.getField(key);
-		        
-				Object value = cmdArgs.get(key);
-		        fld.set(args, value);
-		        
-				Out.debug("... using argument from configuration: {}={}", key, cmdArgs.get(key));
-
-		    }
-		    catch (Exception ex) {
-				Out.debug("... unable to use argument '{}' from the configuration file, error={}", key, ex);
-		    }
-		}
-	}
-
 	@Override
 	@LogMethod(level=LogLevel.DEBUG)
 	public void execute() {
@@ -113,6 +89,10 @@ public class GenerateDiagram extends GenerateCommon {
 			System.exit(1);
 		}
 		
+		if(APIModel.isAsyncAPI()) {
+			Config.setBoolean("keepMVOFVOResources", true);
+		}
+		
 	    DiagramGenerator generator = new DiagramGenerator(args, file, target);
 	    
 	    if(!generator.hasExplicitResources()) {
@@ -128,6 +108,8 @@ public class GenerateDiagram extends GenerateCommon {
 	            	    	    
 	    saveDiagramConfig(diagramConfig, args.targetDirectory);
 	    
+    	LOG.debug("... generating image: ", args.generateImages);
+
 	    if(args.generateImages) {
         	generateImage(args.targetDirectory, Utils.getFiles(".puml", args.targetDirectory));
 	    }

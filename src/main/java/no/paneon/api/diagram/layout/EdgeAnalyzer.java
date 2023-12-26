@@ -1151,6 +1151,17 @@ public class EdgeAnalyzer {
 	public Set<Node> getEdgesForPosition(Place direction) {
 		Set<Node> res = new HashSet<>();
 		
+		if(direction==Place.ABOVE && this.node.isDynamic()) {
+			return res;
+		}
+		
+		boolean onlyInheritance = !this.apiGraph.getOutboundEdges(this.node).stream().anyMatch(e -> !e.isInheritance());
+		boolean smallEnough     = this.apiGraph.getOutboundEdges(this.node).size() <= 3;
+
+		if(direction!=Place.BELOW && this.node.getProperties().isEmpty() && onlyInheritance && smallEnough) {
+			return res;
+		}
+		
 		computeLayout();
 						
 		Predicate<Node> isPlaced = layoutGraph::isPlaced;

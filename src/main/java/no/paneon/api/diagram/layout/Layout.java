@@ -1910,7 +1910,7 @@ public class Layout {
 								.collect(toSet());
 					
 						LOG.debug("layoutAbove: check for above: node={} - candidates={}", node, candidates);
-	
+							
 						if(!candidates.isEmpty()) {
 							String rule = "General above rule - direction: " + direction;
 							Place func = Place.ABOVE;

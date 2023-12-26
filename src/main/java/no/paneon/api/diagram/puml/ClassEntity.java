@@ -61,6 +61,8 @@ public class ClassEntity extends Entity {
 	
 	private boolean vendorExtension;
 	
+	private boolean isDynamic=false;
+
 	private ClassEntity(String name) {
 		super();
 		this.name = name;
@@ -103,6 +105,8 @@ public class ClassEntity extends Entity {
 	public ClassEntity(Node node) {
 		this(node.getName());
 
+		this.isDynamic = node.isDynamic();
+		
 		this.description = node.getDescription();
 		this.inheritance.addAll(node.getInheritance());
 		this.actualInheritance.addAll(node.getActualInheritance());
@@ -199,7 +203,8 @@ public class ClassEntity extends Entity {
         	vendorExtensionStereoType=" <<Extension>>";
         }
         
-        String className = APIModel.getMappedResource(this.name);
+        String className = getDisplayName();
+        
 	    res.append( "class " + Utils.quote(className) + generateInheritanceDecoration() + " " + this.stereotype + vendorExtensionStereoType + " {" + NEWLINE );
 	    	    
 	    String desc = description;
@@ -330,6 +335,22 @@ public class ClassEntity extends Entity {
 	}
 
 
+	private String getDisplayName() {
+        String label = APIModel.getMappedResource(this.name);
+        
+        label = rewriteIfDynamic(label);
+        
+        return label;
+	}
+	
+	private String rewriteIfDynamic(String label) {
+		String res=label;
+		if(this.isDynamic) {
+			res=res.replaceAll("_[0-9]+", "");
+		}
+		return res;
+	}
+	
 	private Set<String> getDiscriminatorsToShow() {
 	   	Set<String> discriminators = new HashSet<>();
 
