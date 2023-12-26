@@ -29,7 +29,7 @@
     <Logger name="no.paneon.api.utils.Out" level="INFO">
       <AppenderRef ref="Progress" level="INFO" />
     </Logger>
-          
+             
   </Loggers>
 </Configuration>
 
