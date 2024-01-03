@@ -230,7 +230,8 @@ public class LayoutGraph extends Positions {
         		List<Edge> edges = apiGraph.getEdges(from, to).stream()
         			.filter(edge -> !isEdgePlaced(edge))
         			.filter(edge -> !edge.isEnumEdge())
-        			.collect(toList());
+        			.toList()
+        			;
         		
         		for(Edge edge : edges) {
         			boolean d = placeEdgeHelper(cls, direction, from, edge, rule);
@@ -253,7 +254,8 @@ public class LayoutGraph extends Positions {
     		List<Edge> edges = apiGraph.getEdges(to, from).stream()
     			.filter(edge -> !isEdgePlaced(edge))
     			.filter(edge -> !edge.isEnumEdge())
-    			.collect(toList());
+    			.toList()
+    			;
     		
     		for(Edge edge : edges) {
     			boolean d = placeEdgeHelper(cls, direction, to, edge, rule);
@@ -378,14 +380,16 @@ public class LayoutGraph extends Positions {
 						.filter(edge -> edge.isSameDirection(direction))
 						.map(layoutGraph::getEdgeTarget)
 						.filter(n -> !n.equals(node))
-						.collect(toList()) );
+						.toList()
+						 );
 		
 		res.addAll( layoutGraph.incomingEdgesOf(node).stream()
 						.filter(edge -> edge.isSameDirection(Place.getReverse(direction)))
 						.map(layoutGraph::getEdgeSource)
 						.filter(n -> !n.equals(node))
 						.filter(n -> !res.contains(n))
-						.collect(toList()) );
+						.toList()
+						 );
 					
 		res.remove(node);
 				
@@ -460,11 +464,13 @@ public class LayoutGraph extends Positions {
             
             List<Node> atRight = getAllRightLeftOf(node, Place.RIGHT).stream()
 								.sorted(this::compareXPosition)
-								.collect(toList());
+								.toList()
+								;
 
             List<Node> atLeft = getAllRightLeftOf(node, Place.LEFT).stream()
             					.sorted(this::compareXPosition)
-            					.collect(toList());
+            					.toList()
+            					;
 
             if(atRight.size() >= atLeft.size()) {
             	current = atLeft.get(0);
@@ -531,7 +537,8 @@ public class LayoutGraph extends Positions {
 	            List<Node> atRight=getRightmostOf(node).stream()
 	            		.sorted(Comparator.comparing(n -> -this.getPosition(n).getX()))
 	            		.filter(n -> !isFloatingNode(n, node))
-	            		.collect(toList());
+	            		.toList()
+	            		;
 	            
 	            if(!atRight.isEmpty()) {
 	            	Node rightMost=atRight.get(0);
@@ -1705,7 +1712,8 @@ public class LayoutGraph extends Positions {
 		List<Place> res = getAggregatedDirectionOfSteps( placed.stream()
 								.map(this::getAggregatedDirectionOfSteps)
 							    .flatMap(List::stream)
-								.collect(toList()) );
+							    .toList()
+								 );
 			
 		return res;
 	}
@@ -1816,7 +1824,7 @@ public class LayoutGraph extends Positions {
 		// LOG.debug("addHiddenIfGroup:: toNode={} leftOf={}",  toNode, leftOf);
 		List<Node> connected = leftOf.stream()
 									.filter(n -> nonEmptyIntersection(apiGraph.getNeighbours(n),leftOf))
-									.collect(Collectors.toList());
+									.toList();
 		
 		LOG.debug("addHiddenIfGroup:: toNode={} leftOf={} connected={}",  toNode, leftOf, connected);
 
@@ -1867,13 +1875,14 @@ public class LayoutGraph extends Positions {
 	}
 
 	private List<Node> getRightmostOfSegments(List<List<Node>> segments) {
-		return segments.stream().map(this::getRightmostInSegment).collect(toList());
+		return segments.stream().map(this::getRightmostInSegment).toList();
 	}
 
 	private Node getRightmostInSegment(List<Node> segment) {
 		List<Node> sorted = segment.stream()
 				.sorted(Comparator.comparing(n -> this.getPosition(n).getX()))
-				.collect(toList());
+				.toList()
+				;
 		
 		return sorted.get(sorted.size()-1);
 
@@ -1917,7 +1926,8 @@ public class LayoutGraph extends Positions {
     		path = common.stream()
     							.map(node -> layoutGraph.getAllEdges(from, node))
     							.flatMap(Set::stream)
-    							.map(LayoutEdge::getDirection).collect(toList());
+    							.map(LayoutEdge::getDirection)
+    							.toList();
        		 		
     		LOG.debug("getPlacePaths: from={} targets={} res={}", from, targets, path);
 

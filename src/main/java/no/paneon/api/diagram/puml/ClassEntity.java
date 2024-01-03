@@ -312,7 +312,7 @@ public class ClassEntity extends Entity {
 	    List<String> nullableProperties = classProperties.stream()
 		    	.filter(ClassProperty::isNullable)
 				.map(ClassProperty::getName)
-		    	.collect(Collectors.toList());
+		    	.toList();
 	    
 	    LOG.debug("ClassEntity: node={} nullableProperties='{}'", this.name, nullableProperties);
 

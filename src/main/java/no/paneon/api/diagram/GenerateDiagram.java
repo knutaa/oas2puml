@@ -100,12 +100,10 @@ public class GenerateDiagram extends GenerateCommon {
 	    	System.exit(0);
 	    }
 	  
-		LOG.debug("execute ... resources={}", APIModel.getResources());
-
 	    generator.applyVendorExtensions();
-	    
+	   
 	    Map<String,String> diagramConfig = generator.generateDiagramGraph();
-	            	    	    
+	            	 
 	    saveDiagramConfig(diagramConfig, args.targetDirectory);
 	    
     	LOG.debug("... generating image: ", args.generateImages);

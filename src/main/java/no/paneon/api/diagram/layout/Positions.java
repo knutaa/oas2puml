@@ -192,7 +192,8 @@ public class Positions {
 			Position pos = getPosition(node);
 			List<Node> nodes = position.keySet().stream()
 									.filter(n -> getPosition(n).getY()==pos.getY()+offset)
-									.distinct().collect(toList());
+									.distinct()
+									.collect(toList());
 			
             LOG.debug("currentlyPlacedAtLevel: node={} offset={} nodes={}", node, offset, nodes);
             
@@ -208,7 +209,7 @@ public class Positions {
 			Position pos = getPosition(node);
 			res = position.keySet().stream()
 						.filter(n -> getPosition(n).getY()==pos.getY())
-						.collect(toList());
+						.toList();
 		}
 		
         LOG.debug("placedAtLevel: node={} res={}", node, res);
@@ -285,7 +286,7 @@ public class Positions {
 					if(posA.getX()<posB.getX()) return posA.getX()<p.getX() && p.getX()<posB.getX();
 					if(posB.getX()<posA.getX()) return posB.getX()<p.getX() && p.getX()<posA.getX();
 					return false;
-				}).collect(toList());
+				}).toList();
 		return res;
 	}
 
@@ -294,7 +295,7 @@ public class Positions {
 		return placedAtLevel(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(n -> isPlaced(n,node,direction)) 
-				.collect(toList());
+				.toList();
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
@@ -332,7 +333,7 @@ public class Positions {
 		return placedAtLevel(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(n -> { Position p = getPosition(n); return p.getX()>=pos.getX();}) 
-				.collect(toList());
+				.toList();
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
@@ -341,7 +342,7 @@ public class Positions {
 		return placedAtLevel(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(n -> { Position p = getPosition(n); return p.getX()<=pos.getX();}) 
-				.collect(toList());
+				.toList();
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
@@ -350,7 +351,7 @@ public class Positions {
 		return placedAtLevel(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(n -> { Position p = getPosition(n); return p.getY()<=pos.getY();}) 
-				.collect(toList());
+				.toList();
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
@@ -359,7 +360,7 @@ public class Positions {
 		return placedAtLevel(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(n -> { Position p = getPosition(n); return p.getY()>=pos.getY();}) 
-				.collect(toList());
+				.toList();
 	}
 	
 	@LogMethod(level=LogLevel.DEBUG)
