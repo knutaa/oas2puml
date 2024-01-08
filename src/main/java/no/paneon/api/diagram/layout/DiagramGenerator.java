@@ -937,7 +937,7 @@ public class DiagramGenerator
 	private List<String> getResources(Common args) {
        	List<String> resourcesFromAPI = APIModel.getResources();
  	       
-    	LOG.debug("getResources:: {}", resourcesFromAPI);
+    	Out.debug("getResources:: {}", resourcesFromAPI);
 
     	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
     	
@@ -946,10 +946,11 @@ public class DiagramGenerator
   
     	resourcesFromAPI = resourcesFromAPI.stream().distinct()
     						.map(APIModel::removePrefix)
-    						.filter(x -> (args.resource==null)||(x.equals(args.resource)))
+    						// .filter(x -> (args.resource==null)||(x.equals(args.resource)))
+    						.filter(x -> (args.resource==null)||args.resource.contains(x))
     						.toList();
   	
-    	LOG.debug("getResources:: {}", resourcesFromAPI);
+    	Out.debug("getResources:: {}", resourcesFromAPI);
     	
     	return resourcesFromAPI;
     	
@@ -998,9 +999,10 @@ public class DiagramGenerator
 			
 		JSONArray resourceAttributeExtension = extensions.optJSONArray(Extensions.RESOURCE_ATTRIBUTE_EXTENSION);
 		
-		LOG.debug("resourceAttributeExtension: {}", resourceAttributeExtension.toString());
+		if(resourceAttributeExtension!=null) {		
+			
+			LOG.debug("resourceAttributeExtension: {}", resourceAttributeExtension.toString());
 
-		if(resourceAttributeExtension!=null) {			
 			StreamSupport.stream(resourceAttributeExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
 		            .forEach(val -> {

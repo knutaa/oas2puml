@@ -49,8 +49,8 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		JSONObject extensions = new JSONObject();
 		
-		List<String> allNodes = actualAPI.getNodes().stream().map(APIModel::getMappedResource).toList();
-		List<String> baseAPINodes = baseAPI.getNodes().stream().map(APIModel::getMappedResource).toList();
+		List<String> allNodes = actualAPI.getNodes().stream().map(APIModel::getMappedResource).collect(toList());
+		List<String> baseAPINodes = baseAPI.getNodes().stream().map(APIModel::getMappedResource).collect(toList());
 	
 		allNodes.removeAll(baseAPINodes);
 		
@@ -71,16 +71,16 @@ public class ExtractExtensions extends GenerateCommon {
 
 		actualAPI.getNodesByNames(allNodes).forEach(node -> {
 			
-			List<String> inherited = node.getInheritedProperties(actualAPI.getCompleteGraph()).stream().map(Property::getName).toList();			
+			List<String> inherited = node.getInheritedProperties(actualAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());			
 			List<Property> actualProperties = node.getProperties();
 			
 			Node baseNode = baseAPI.getNode(APIModel.getReverseResourceMapping(node.getName()));
-			List<String> baseInherited = baseNode.getInheritedProperties(baseAPI.getCompleteGraph()).stream().map(Property::getName).toList();
+			List<String> baseInherited = baseNode.getInheritedProperties(baseAPI.getCompleteGraph()).stream().map(Property::getName).collect(toList());
 			
 			List<Property> baseInheritedProperties = baseNode.getInheritedProperties(baseAPI.getCompleteGraph());
 
-			List<Property> baseProperties = baseNode.getProperties().stream().filter(p->!baseInherited.contains(p.getName())).toList();
-			List<String>   basePropertiesName = baseProperties.stream().map(Property::getName).toList();
+			List<Property> baseProperties = baseNode.getProperties().stream().filter(p->!baseInherited.contains(p.getName())).collect(toList());
+			List<String>   basePropertiesName = baseProperties.stream().map(Property::getName).collect(toList());
 
 			LOG.debug("ExtractExtension:: node={} actual properties={}", node.getName(), actualProperties);
 			LOG.debug("ExtractExtension:: node={} actual inherited: {}", node.getName(), inherited);
@@ -116,7 +116,7 @@ public class ExtractExtensions extends GenerateCommon {
 
 					return diff;
 				})
-				.toList();
+				.collect(toList());
 			
 			LOG.debug("node: {} extension properties: {}", node.getName(), actualProperties);
 
@@ -154,7 +154,7 @@ public class ExtractExtensions extends GenerateCommon {
 					optProp = baseInheritedProperties.stream().filter(p -> p.getName().contentEquals(property.getName())).findFirst();
 					if(optProp.isPresent()) {
 						
-						Out.debug("node: {} MOVED property={}", node.getName(), property.getName());
+						LOG.debug("node: {} MOVED property={}", node.getName(), property.getName());
 
 						ext.put(Extensions.EXTENSION_MOVED, true);
 					}
