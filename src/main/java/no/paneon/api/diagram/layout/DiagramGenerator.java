@@ -935,23 +935,31 @@ public class DiagramGenerator
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private List<String> getResources(Common args) {
-       	List<String> resourcesFromAPI = APIModel.getResources();
- 	       
-    	LOG.debug("getResources:: {}", resourcesFromAPI);
+		
+		List<String> excluded = new LinkedList<>();		
+		
+		List<String> resourcesFromAPI = APIModel.getResources();
 
-    	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
+		if(args.resource!=null) {
+			List<String> resourcesFromArgs = List.of(args.resource.split(","));
+					 	       
+			resourcesFromAPI.removeAll(resourcesFromArgs);
+			excluded.addAll(resourcesFromAPI);
+		}
+		    	
+    	LOG.debug("getResources:: excluded={}", excluded);
+
+    	List<String> allResources = Utils.extractResourcesFromRules(args.rulesFile);
     	
-    	resourcesFromRules.removeAll(resourcesFromAPI);
-    	resourcesFromAPI.addAll( resourcesFromRules );
-  
-    	resourcesFromAPI = resourcesFromAPI.stream().distinct()
-    						.map(APIModel::removePrefix)
-    						.filter(x -> (args.resource==null)||(x.equals(args.resource)))
-    						.collect(toList());
-  	
-    	LOG.debug("getResources:: {}", resourcesFromAPI);
+    	if(allResources.isEmpty()) {
+    		allResources.addAll(resourcesFromAPI);
+    	} else {
+    		allResources.removeAll(excluded);
+    	}
     	
-    	return resourcesFromAPI;
+    	LOG.debug("getResources:: allResources={}", allResources);
+    	
+    	return allResources;
     	
 	}
 
@@ -998,9 +1006,10 @@ public class DiagramGenerator
 			
 		JSONArray resourceAttributeExtension = extensions.optJSONArray(Extensions.RESOURCE_ATTRIBUTE_EXTENSION);
 		
-		LOG.debug("resourceAttributeExtension: {}", resourceAttributeExtension.toString());
+		if(resourceAttributeExtension!=null) {		
+			
+			LOG.debug("resourceAttributeExtension: {}", resourceAttributeExtension.toString());
 
-		if(resourceAttributeExtension!=null) {			
 			StreamSupport.stream(resourceAttributeExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
 		            .forEach(val -> {
