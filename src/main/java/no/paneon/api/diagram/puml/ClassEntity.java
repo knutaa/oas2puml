@@ -268,8 +268,7 @@ public class ClassEntity extends Entity {
 	    }
 	    
 	    if(classProperties.isEmpty() && customSimple.isEmpty() && !Config.includeDescription()) {
-		    res.append( BLANK_LINE );
-
+		    if(this.inline.isEmpty()) res.append( BLANK_LINE );
 	    }
 	    	
 	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();

@@ -122,6 +122,7 @@ public class ClassProperty extends Entity {
 			stype.append( lines.get(0) + "\n" );
 			lines.remove(0);
 			lines.stream()
+				.filter(p -> p.length()>0)
 				.map(p -> "{field} //" + indent + p + "//" )
 				.forEach(stype::append);
 
@@ -172,7 +173,7 @@ public class ClassProperty extends Entity {
 				int length = res.length();
 				
 				if(length+this.defaultValue.length()>maxLength) {
-					res = res + NEWLINE;
+					if(!res.isEmpty()) res = res + NEWLINE;
 					res = res + INDENT + "{field}" + "\"\"" + INDENT_SMALL + "\"\"";
 				}
 				res = res + " = " + this.defaultValue;
@@ -249,7 +250,7 @@ public class ClassProperty extends Entity {
 			if(pos>BLANKS.length()) pos=BLANKS.length();
 			
 			final String indent = BLANKS.substring(0,pos);
-			res = res + "\n";
+			if(!res.isEmpty()) res = res + NEWLINE;
 			res = res + values.stream().map(v -> "{field} //" + indent + v + "//").collect(Collectors.joining("\n"));
 		}		
 		

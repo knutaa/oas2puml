@@ -937,7 +937,7 @@ public class DiagramGenerator
 	private List<String> getResources(Common args) {
        	List<String> resourcesFromAPI = APIModel.getResources();
  	       
-    	Out.debug("getResources:: {}", resourcesFromAPI);
+    	LOG.debug("getResources:: {}", resourcesFromAPI);
 
     	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
     	
@@ -950,7 +950,7 @@ public class DiagramGenerator
     						.filter(x -> (args.resource==null)||args.resource.contains(x))
     						.toList();
   	
-    	Out.debug("getResources:: {}", resourcesFromAPI);
+    	LOG.debug("getResources:: {}", resourcesFromAPI);
     	
     	return resourcesFromAPI;
     	

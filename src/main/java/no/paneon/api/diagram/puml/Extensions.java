@@ -34,6 +34,9 @@ public class Extensions  {
 	public static final String EXTENSION_TYPE = "type";
 	public static final String EXTENSION_MOVED = "moved";
 
+	public static final String RESOURCE_OPERATION_EXTENSION = "resourceOperationExtension";
+	public static final String OPERATION_EXTENSION = "operationsExtension";
+
 	public static final String INHERITANCE_EXTENSION = "inheritance";
 
 	public static final String RESOURCE_INHERITANCE_EXTENSION = "resourceInheritance";
