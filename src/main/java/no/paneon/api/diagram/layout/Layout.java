@@ -231,7 +231,8 @@ public class Layout {
     	
         List<Node> nodesToProcess = getNodesToProcess(Utils.copyList(coreGraph), resourceNode).stream()
         								.filter(n -> !processed.contains(n))
-        								.collect(toList());
+        								.collect(toList())
+        								;
                 
         
     	LOG.debug("generateDiagram:: processing resource={} nodes={}", resourceNode, nodesToProcess);
@@ -397,13 +398,14 @@ public class Layout {
 		
 		Predicate<Node> notInheritance = n -> !CoreAPIGraph.isPatternInheritance(n);
 
-	    List<Node> coreGraph = layoutGraph.extractCoreGraph().stream().filter(notInheritance).collect(toList());
+	    List<Node> coreGraph = layoutGraph.extractCoreGraph().stream().filter(notInheritance).toList();
 
 	    List<Edge> edges = coreGraph.stream()
 	    						.map(n -> CoreAPIGraph.getOutboundEdges(this.apiGraph.getGraph(),n))
 	    						.flatMap(Set::stream)
 	    						.filter(e -> e.isInheritance())
-	    						.collect(toList());
+	    						.toList()
+	    						;
 	    		
     	List<Node> superClasses = edges.stream().map(Edge::getRelated).sorted().distinct().collect(toList());
     	
@@ -418,7 +420,8 @@ public class Layout {
         								.filter(notOneOf)
         								.filter(notDiscriminator)
         								.distinct()
-        								.collect(toList());
+        								.toList()
+        								;
                   
     	LOG.debug("processEdgesForInheritance:: nodesToProcess={}", nodesToProcess );
 
@@ -446,7 +449,8 @@ public class Layout {
 											.map(Edge::getRelated)
 											.sorted()
 											.distinct()
-											.collect(toList());
+											.toList()
+											;
             
 	    	LOG.debug("processEdgesForInheritance:: node={} superclasses={}", node, nodeSuperclasses );
 	    	
@@ -496,7 +500,8 @@ public class Layout {
         List<Node> nodesToProcess = graph.incomingEdgesOf(resourceNode).stream()
         								.filter(Edge::isAllOf)
         								.map( layoutGraph.apiGraph.getGraph()::getEdgeSource )
-        								.collect(toList());
+        								.toList()
+        								;
                
         nodesToProcess = nodesToProcess.stream()
         					.filter( n -> layoutGraph.apiGraph.getGraph().incomingEdgesOf(n).isEmpty() )
@@ -713,7 +718,8 @@ public class Layout {
 		List<Node> nodes = apiGraph.getGraphNodes().stream()
 				.filter(node -> !node.equals(resourceNode))
 				.sorted(Comparator.comparing(this::subGraphSize))
-				.collect(toList());
+				.collect(toList())
+				;
 		
 		
 		LOG.debug("processEdgesForRemainingNodes: #1 nodes={}", nodes);
@@ -745,7 +751,8 @@ public class Layout {
 	private Optional<Node> getNextNode(List<Node> nodesToProcess) {
 		List<Node> sorted = nodesToProcess.stream()
 					.sorted(Comparator.comparing(n -> - this.layoutGraph.getInboundEdgesFromPlaced(n) ))
-					.collect(toList());
+					.toList()
+					;
 		
 		LOG.debug("getNextNode: sorted={}", sorted);
 
@@ -790,7 +797,8 @@ public class Layout {
 		List<List<Node>> sortedCircles = circleMap.values().stream()
 												.flatMap(List::stream)
 												.sorted((xs1, xs2) -> xs2.size() - xs1.size())
-												.collect(toList());
+												.toList()
+												;
 
 						
  		if(!sortedCircles.isEmpty()) {
@@ -862,7 +870,8 @@ public class Layout {
 													.flatMap(List::stream)
 													.filter(hasOnlyMappedElement)
 													.sorted((xs1, xs2) -> xs2.size() - xs1.size())
-													.collect(toList());
+													.toList()
+													;
 
 		Predicate<List<Node>> hasMappedElement = nodeList -> nodeList.stream().map(Node::getName).anyMatch(isMapped);
 		
@@ -870,7 +879,8 @@ public class Layout {
 													.flatMap(List::stream)
 													.filter(hasMappedElement)
 													.sorted((xs1, xs2) -> xs2.size() - xs1.size())
-													.collect(toList());
+													.toList()
+													;
 
 		List<List<Node>> sortedCircles = new LinkedList<>();
 		
@@ -1263,8 +1273,9 @@ public class Layout {
 				List<Node> toRightLeft = layoutGraph.getPlacedNodes().stream()
 											.filter(n -> layoutGraph.isAtSameLevel(n,from))
 											.filter(n -> !n.equals(from))
-											.sorted(Comparator.comparingInt(this::xPositionOfNode))											
-											.collect(toList());
+											.sorted(Comparator.comparingInt(this::xPositionOfNode))	
+											.collect(toList())
+											;
 				
 				toRightLeft.removeAll(circle);
 				
@@ -1275,7 +1286,7 @@ public class Layout {
 						Collections.reverse(toRightLeft);
 					}
 					LOG.debug("placeCircleSegment: toRightLeft={}", toRightLeft);
-					LOG.debug("placeCircleSegment: toRightLeft={}", toRightLeft.stream().map(this::xPositionOfNode).collect(toList()));
+					LOG.debug("placeCircleSegment: toRightLeft={}", toRightLeft.stream().map(this::xPositionOfNode));
 
 					Node pivot = toRightLeft.get(0);
 					if(layoutGraph.isAtSameLevel(pivot, fromNode)) {
@@ -1462,7 +1473,8 @@ public class Layout {
 				.filter(n -> apiGraph.getNeighbours(n).size()==2)
 				// .filter(n -> graph.isCirclePath(n))
 				.filter(apiGraph::isCirclePath)
-				.collect(toList());
+				.toList()
+				;
 
 		LOG.debug("layoutBetweenCommonNode: node={} neighbours with circles: {}", node, neighboursWithCircle);
 
@@ -1497,7 +1509,8 @@ public class Layout {
 		
 		List<Node> inboundFromPlaced = apiGraph.getInboundNeighbours(node).stream()
 				.filter(layoutGraph::isPlaced)
-				.collect(toList());
+				.toList()
+				;
 			
 		LOG.debug("layoutInboundFromPlacedNodes:: inboundFromPlaced={}", inboundFromPlaced);
 
@@ -1579,7 +1592,8 @@ public class Layout {
 				.filter(n -> layoutGraph.isPlaced(n) && layoutGraph.isPlacedAt(n,Place.BELOW))
 				//.filter(node::equals)
 				.distinct()
-				.collect(toList());
+				.toList()
+				;
 
 		nodesBelow.add(nodeBelow);
 			
@@ -1722,7 +1736,8 @@ public class Layout {
 				.filter(n -> layoutGraph.isPlaced(n) && layoutGraph.isPlacedAt(n,Place.BELOW))
 				.filter(n -> !n.equals(node))
 				.distinct()
-				.collect(toList());
+				.toList()
+				;
 
 		Optional<Node> someNodePlacedRightOrLeft = nodesBelow.stream()
 				.filter(n -> layoutGraph.isPlacedAt(n,Place.LEFT) || layoutGraph.isPlacedAt(n,Place.RIGHT) )
@@ -1947,7 +1962,8 @@ public class Layout {
 		List<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.RIGHT).stream()
 				.filter(includeNodes::contains)
 				.sorted(Comparator.comparing(n -> apiGraph.getNeighbours(n).size()))
-				.collect(toList());
+				.toList()
+				;
 		
 		LOG.debug("layoutRight: node={} check for right - candidates={}", node, candidates);
 
@@ -1983,7 +1999,8 @@ public class Layout {
 		List<Node> candidates = edgeAnalyzer.getEdgesForPosition(Place.LEFT).stream()
 								.filter(includeNodes::contains)
 								.sorted(Comparator.comparing(n -> apiGraph.getNeighbours(n).size()))
-								.collect(toList());
+								.toList()
+								;
 						
 		int balanceIndex = layoutGraph.getBalancedIndex(node,0,-1);
 
@@ -2016,7 +2033,8 @@ public class Layout {
 		List<Node>candidates = apiGraph.getOutboundNeighbours(node).stream()
 				.filter(n -> !n.equals(node))
 				.filter(placed::contains)
-				.collect(toList());
+				.toList()
+				;
 
 		LOG.debug("layoutOutboundEdgesWithPlacedNodes: check for edges with already placed node={} candidates={}", node, candidates);
 
@@ -2036,7 +2054,8 @@ public class Layout {
 				.map( n -> layoutGraph.hasPlacedSomeOutboundNeighbours(n,node) )
 				.filter(Optional::isPresent) 
 				.map(Optional::get)
-				.distinct().collect(toList());
+				.distinct()
+				.toList();
 
 		LOG.debug("layoutOutboundToPlacedNodes: node={} process neighbours with outbound to placed neighbours: {}", node, candidates);
 
@@ -2046,7 +2065,8 @@ public class Layout {
 			
 			candidates = candidates.stream()
 					.sorted(Comparator.comparing(p -> apiGraph.getAdditionalNeighbours(p,cand)))
-					.collect(toList());		
+					.toList()
+					;		
 
 			Node prevNodeB=null;
 
@@ -2057,7 +2077,8 @@ public class Layout {
 				List<Node> optB = apiGraph.getOutboundNeighbours(n).stream()
 						.filter(p -> !p.equals(nodeA))
 						.filter(layoutGraph::isPlaced)
-						.collect(toList());
+						.toList()
+						;
 
 				LOG.debug("layoutOutboundToPlacedNodes: node={} candidate: {} optB: {}", node, n, optB);
 				LOG.debug("layoutOutboundToPlacedNodes: node={} nodeA: {}", node, nodeA);
@@ -2087,7 +2108,8 @@ public class Layout {
 				.map(n -> layoutGraph.hasAlreadyPlacedNeighbours(n,node) )
 				.filter(Optional::isPresent) 
 				.map(Optional::get)
-				.distinct().collect(toList());
+				.distinct()
+				.toList();
 
 		LOG.debug("layoutBetweenAlreadyPlacedNodes: node={} process neighbours with placed neighbours: {}", node, candidates);
 
@@ -2096,7 +2118,8 @@ public class Layout {
 				(apiGraph.getOutboundNeighbours(n).isEmpty() ||
 				(apiGraph.getOutboundNeighbours(n).size()==1 && 
 				apiGraph.isLeafNode(apiGraph.getOutboundNeighbours(n).iterator().next()))))
-				.collect(toList());
+				.toList()
+				;
 
 		LOG.debug("layoutBetweenAlreadyPlacedNodes: node={} process neighbours with placed neighbours: candidates={}", node, candidates);
 		LOG.debug("layoutBetweenAlreadyPlacedNodes: node={} candidates={}", node, candidates); 
@@ -2104,7 +2127,8 @@ public class Layout {
 		if(candidates.size()>1) { // NOTE - maybe only one non-simpe candidates ?
 			candidates = candidates.stream()
 					.sorted(Comparator.comparing(n -> apiGraph.getOutboundNeighbours(n).size()))
-					.collect(toList());
+					.toList()
+					;
 
 			LOG.debug("layoutBetweenAlreadyPlacedNodes: node={} SORTED candidates={}", node, candidates); 
 
@@ -2179,7 +2203,8 @@ public class Layout {
 								  	    		.filter(APIModel::isEnumType)
 								  	    		.filter(candidate -> !layoutGraph.isPlaced(candidate))
 								  	    		.filter(candidate -> !allRefs.contains(candidate))
-								  	    		.collect(toList());
+								  	    		.toList()
+								  	    		;
   	    
 	    for(String orphanEnum : allOrphanEnums ) {
 	    	Node node = this.apiGraph.getNode(orphanEnum);
@@ -2211,7 +2236,8 @@ public class Layout {
 			.map(Position::getY)
 			.sorted()
 			.distinct()
-			.collect(toList());
+			.toList()
+			;
 		
 		for(Integer y : ypos) {
 			Map<Node, Position> layer = layoutGraph.position.entrySet().stream()

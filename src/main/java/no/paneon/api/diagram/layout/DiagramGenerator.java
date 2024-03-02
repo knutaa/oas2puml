@@ -102,7 +102,7 @@ public class DiagramGenerator
 		this.coreGraph = new CoreAPIGraph(this.resources);
 
 		Set<String> allDefinitions = APIModel.getAllDefinitions().stream().collect(toSet());
-		List<String> invalidArguments = this.resources.stream().filter(r -> !allDefinitions.contains(r)).collect(toList());
+		List<String> invalidArguments = this.resources.stream().filter(r -> !allDefinitions.contains(r)).toList();
 		
 		for(String s : invalidArguments) {
 			Out.printAlways("... resource '" + s + "' not found in API - diagram not generated");
@@ -165,11 +165,11 @@ public class DiagramGenerator
 			
 			LOG.debug("generateDiagramGraph: messages={}", Utils.joining(messages, "\n"));
 
-			// messages = messages.stream().map(APIModel::getTypeByReference).collect(toList());
+			// messages = messages.stream().map(APIModel::getTypeByReference).toList();
 			
 			Predicate<String>  isRequestOr2xxReply = s -> !s.startsWith("204") && !s.startsWith("30") && !s.startsWith("40") && !s.startsWith("50");
 			
-			messages = messages.stream().filter(isRequestOr2xxReply).collect(toList());
+			messages = messages.stream().filter(isRequestOr2xxReply).toList();
 
 			LOG.debug("generateDiagramGraph: messages={}", messages);
 
@@ -195,7 +195,7 @@ public class DiagramGenerator
 
 			List<String> subGraphs = graphs.getSubGraphLabels(resource).stream()
 					                   .filter(r -> r.contentEquals(resource) || !allResources.contains(r))
-					                   .collect(toList());
+					                   .toList();
 			
 			LOG.debug("generateDiagramGraph: resource={} subGraphs={}", resource, Utils.joining(subGraphs,"\n"));
 			
@@ -935,31 +935,24 @@ public class DiagramGenerator
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private List<String> getResources(Common args) {
-		
-		List<String> excluded = new LinkedList<>();		
-		
-		List<String> resourcesFromAPI = APIModel.getResources();
+      List<String> resourcesFromAPI = APIModel.getResources();
+ 	       
+    	LOG.debug("getResources:: {}", resourcesFromAPI);
 
-		if(args.resource!=null) {
-			List<String> resourcesFromArgs = List.of(args.resource.split(","));
-					 	       
-			resourcesFromAPI.removeAll(resourcesFromArgs);
-			excluded.addAll(resourcesFromAPI);
-		}
-		    	
-    	LOG.debug("getResources:: excluded={}", excluded);
-
-    	List<String> allResources = Utils.extractResourcesFromRules(args.rulesFile);
+    	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
     	
-    	if(allResources.isEmpty()) {
-    		allResources.addAll(resourcesFromAPI);
-    	} else {
-    		allResources.removeAll(excluded);
-    	}
+    	resourcesFromRules.removeAll(resourcesFromAPI);
+    	resourcesFromAPI.addAll( resourcesFromRules );
+  
+    	resourcesFromAPI = resourcesFromAPI.stream().distinct()
+    						.map(APIModel::removePrefix)
+    						// .filter(x -> (args.resource==null)||(x.equals(args.resource)))
+    						.filter(x -> (args.resource==null)||args.resource.contains(x))
+    						.toList();
+  	
+    	LOG.debug("getResources:: {}", resourcesFromAPI);
     	
-    	LOG.debug("getResources:: allResources={}", allResources);
-    	
-    	return allResources;
+    	return resourcesFromAPI;
     	
 	}
 
@@ -984,7 +977,7 @@ public class DiagramGenerator
 			List<String> extendedResources = StreamSupport.stream(resourceExtension.spliterator(), false)
 		            .map(val -> (JSONObject) val)
 		            .map(val -> val.optString(Extensions.EXTENSION_NAME))
-		            .collect(Collectors.toList());
+		            .toList();
 			
 			LOG.debug("resourceExtension: {}", extendedResources);
 
@@ -1028,7 +1021,7 @@ public class DiagramGenerator
 //								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
 //							            .map(attr -> (JSONObject) attr)
 //							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
-//							            .collect(Collectors.toList());
+//							            .toList();
 //								
 //								LOG.debug("extendedAttributes: {}", extendedAttributes);
 //	
@@ -1046,7 +1039,7 @@ public class DiagramGenerator
 							            });
 								
 //							            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
-//							            .collect(Collectors.toList());
+//							            .toList();
 //								
 //								LOG.debug("extendedAttributes: {}", extendedAttributes);
 //	
@@ -1055,7 +1048,7 @@ public class DiagramGenerator
 								List<String> extendedAttributes = StreamSupport.stream(attributeExtension.spliterator(), false)
 									            .map(attr -> (JSONObject) attr)
 									            .map(attr -> attr.optString(Extensions.EXTENSION_NAME))
-									            .collect(Collectors.toList());
+									            .toList();
 								
 								APIGraph.getOutboundEdges(this.coreGraph.getCompleteGraph(), node).stream()
 								.filter(e -> extendedAttributes.contains(e.relation))
@@ -1115,7 +1108,7 @@ public class DiagramGenerator
 						if(discriminatorExtension!=null) {
 							
 							LOG.debug("discriminatorExtension: {}", discriminatorExtension);
-							List<String> discriminators = discriminatorExtension.toList().stream().map(Object::toString).collect(toList());
+							List<String> discriminators = discriminatorExtension.toList().stream().map(Object::toString).toList();
 									
 							node.setVendorDiscriminatorExtension(discriminators);
 							
@@ -1141,7 +1134,7 @@ public class DiagramGenerator
 						if(inheritanceExtension!=null) {
 							
 							LOG.debug("inheritanceExtension: node={} {}", resource, inheritanceExtension);
-							List<String> inheritance = inheritanceExtension.toList().stream().map(Object::toString).collect(toList());
+							List<String> inheritance = inheritanceExtension.toList().stream().map(Object::toString).toList();
 									
 							node.setVendorInheritanceExtension(inheritance);
 							

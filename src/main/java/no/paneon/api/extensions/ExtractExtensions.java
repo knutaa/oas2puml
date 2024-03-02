@@ -2,6 +2,7 @@ package no.paneon.api.extensions;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,6 +30,9 @@ public class ExtractExtensions extends GenerateCommon {
     static final Logger LOG = LogManager.getLogger(ExtractExtensions.class);
 
 	private ExtractExtension args;
+
+	private Map<String,List<String>> actualOperations;
+	private Map<String,List<String>> baseOperations;
 	
 	public ExtractExtensions(ExtractExtension args) {
 		super(args);
@@ -40,12 +44,18 @@ public class ExtractExtensions extends GenerateCommon {
 		
 		super.execute();
 		CoreAPIGraph actualAPI = new CoreAPIGraph();
-				
+		
+		this.actualOperations = APIModel.getOperationsForAllResources();
+		
+		APIModel.getOperationsByResource(null);
+		
 		APIModel.clean();
 		args.openAPIFile = args.baseSpecification;
 		GenerateCommon.loadAPI(args);
 
 		CoreAPIGraph baseAPI = new CoreAPIGraph();		
+		
+		this.baseOperations = APIModel.getOperationsForAllResources();
 		
 		JSONObject extensions = new JSONObject();
 		
@@ -66,6 +76,8 @@ public class ExtractExtensions extends GenerateCommon {
 		JSONArray resourceAttributeExtension = new JSONArray();
 		JSONArray resourceDiscriminatorExtension = new JSONArray();
 		JSONArray resourceInheritanceExtension = new JSONArray();
+
+		JSONArray resourceOperationsExtension = new JSONArray();
 
 		Out.printAlways("... extractExtensions");
 
@@ -154,7 +166,7 @@ public class ExtractExtensions extends GenerateCommon {
 					optProp = baseInheritedProperties.stream().filter(p -> p.getName().contentEquals(property.getName())).findFirst();
 					if(optProp.isPresent()) {
 						
-						Out.debug("node: {} MOVED property={}", node.getName(), property.getName());
+						LOG.debug("node: {} MOVED property={}", node.getName(), property.getName());
 
 						ext.put(Extensions.EXTENSION_MOVED, true);
 					}
@@ -202,12 +214,30 @@ public class ExtractExtensions extends GenerateCommon {
 			
 				resourceInheritanceExtension.put(inheritanceExtension);	
 			}
+
+			List<String> actualOperations = this.actualOperations.get(node.getName());
+			List<String> baseOperations   = this.baseOperations.get(node.getName());
 			
+			if(actualOperations!=null) {
+				if(baseOperations!=null) actualOperations.removeAll(baseOperations);
+				if(!actualOperations.isEmpty()) {
+					JSONObject operationExtension = new JSONObject();
+					operationExtension.put(Extensions.EXTENSION_NAME, node.getName());
+					operationExtension.put(Extensions.OPERATION_EXTENSION, actualOperations);
+			
+					resourceOperationsExtension.put(operationExtension);
+				
+				}
+			} 
+				
 		});
 
+		
 		extensions.put(Extensions.RESOURCE_ATTRIBUTE_EXTENSION, resourceAttributeExtension);
 		extensions.put(Extensions.RESOURCE_DISCRIMINATOR_EXTENSION, resourceDiscriminatorExtension);
 		extensions.put(Extensions.RESOURCE_INHERITANCE_EXTENSION, resourceInheritanceExtension);
+
+		extensions.put(Extensions.RESOURCE_OPERATION_EXTENSION, resourceOperationsExtension);
 
 		if(args.extensionLabel!=null) {
 			extensions.put(Extensions.LEGEND_LABEL, args.extensionLabel);

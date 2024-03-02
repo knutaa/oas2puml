@@ -268,8 +268,7 @@ public class ClassEntity extends Entity {
 	    }
 	    
 	    if(classProperties.isEmpty() && customSimple.isEmpty() && !Config.includeDescription()) {
-		    res.append( BLANK_LINE );
-
+		    if(this.inline.isEmpty()) res.append( BLANK_LINE );
 	    }
 	    	
 	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
@@ -312,7 +311,7 @@ public class ClassEntity extends Entity {
 	    List<String> nullableProperties = classProperties.stream()
 		    	.filter(ClassProperty::isNullable)
 				.map(ClassProperty::getName)
-		    	.collect(Collectors.toList());
+		    	.toList();
 	    
 	    LOG.debug("ClassEntity: node={} nullableProperties='{}'", this.name, nullableProperties);
 

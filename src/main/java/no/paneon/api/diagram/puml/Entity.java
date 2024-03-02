@@ -37,7 +37,7 @@ public class Entity extends Core {
 		StringBuilder res = new StringBuilder();
 		res.append("'sequence: " + this.seq);
 		res.append( NEWLINE );
-		for(Comment c : comments.stream().filter(c -> c.seq>=from && c.seq<=to).collect(toList())) {
+		for(Comment c : comments.stream().filter(c -> c.seq>=from && c.seq<=to).toList()) {
 			res.append( c.getComment() );
 			res.append( NEWLINE );
 		}

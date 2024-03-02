@@ -291,7 +291,7 @@ public class Diagram extends Entity {
 										.map(ClassEntity::getEdges)
 										.flatMap(List::stream)
 										.sorted(Comparator.comparingInt(Core::getSeq))
-										.collect(toList());
+										.toList();
 			
 		LOG.debug("getPumlForEdges:: {}", edges);
 		
@@ -344,7 +344,7 @@ public class Diagram extends Entity {
 	private List<ClassEntity> getClassEntitiesSortedBySequence() {
 		return classes.values().stream()
 			.sorted(Comparator.comparingInt(ClassEntity::getSeq))
-			.collect(toList());
+			.toList();
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)

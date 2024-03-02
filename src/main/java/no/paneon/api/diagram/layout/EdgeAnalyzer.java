@@ -460,11 +460,11 @@ public class EdgeAnalyzer {
 		if(relationship.isPresent()) {
 			Predicate<String> isSameRelationship = r -> r.contentEquals(relationship.get());
 			
-			List<String> inbound = apiGraph.getInboundEdges(to).stream().map(Edge::getRelationship).collect(toList());
+			List<String> inbound = apiGraph.getInboundEdges(to).stream().map(Edge::getRelationship).toList();
 			
 			res = inbound.stream()
 					.filter(isSameRelationship)
-					.collect(toList())
+					.toList()
 					.size()>2;	
 					
 			if(res) LOG.debug("notIfMultipleWithSameRelationship: from={} to={} relationship={} inboundTo={}",  from, to, relationship, inbound);
