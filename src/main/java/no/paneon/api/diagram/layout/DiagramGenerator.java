@@ -935,7 +935,7 @@ public class DiagramGenerator
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	private List<String> getResources(Common args) {
-       	List<String> resourcesFromAPI = APIModel.getResources();
+      List<String> resourcesFromAPI = APIModel.getResources();
  	       
     	LOG.debug("getResources:: {}", resourcesFromAPI);
 
