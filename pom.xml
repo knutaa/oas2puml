@@ -9,9 +9,8 @@
 	<properties>
 		<version.java>1.21</version.java>
 		<java.version>1.21</java.version>
-		<maven.compiler.target>1.21</maven.compiler.target>
-		<maven.compiler.source>1.21</maven.compiler.source>
 		<git-commit-id-plugin.version>4.0.4</git-commit-id-plugin.version>
+	    <maven.compiler.release>21</maven.compiler.release>
 	</properties>
 
 	<distributionManagement>
@@ -97,11 +96,11 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.8</version>
+				<version>1.15.0</version>
 				<configuration> 
-					<complianceLevel>11</complianceLevel> 
-					<source>11</source> 
-					<target>11</target> 
+					<complianceLevel>17</complianceLevel> 
+					<source>17</source> 
+					<target>17</target> 
 					<showWeaveInfo>true</showWeaveInfo> 
 					<verbose>true</verbose> 
 					<Xlint>ignore</Xlint> 
@@ -143,11 +142,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-
 			</plugin>
 
 			<!--This plugin's configuration is used to store Eclipse m2e settings 
