@@ -9,6 +9,9 @@
 	<properties>
 		<git-commit-id-plugin.version>4.0.4</git-commit-id-plugin.version>
 	    <maven.compiler.release>17</maven.compiler.release>
+	    
+    	<java.version>17</java.version>
+
 	</properties>
 
 	<distributionManagement>
