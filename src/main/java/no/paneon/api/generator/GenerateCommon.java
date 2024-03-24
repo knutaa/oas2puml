@@ -133,6 +133,11 @@ public class GenerateCommon {
 	public static void loadAPI(Common args) {
 		List<String> dirs = getDirectories(args.workingDirectory);
 		
+		if(args.openAPIFile==null) {
+			Out.println("... missing input file argument - try --help for usage information");
+			System.exit(0);
+		}
+		
 		try {
 			APIModel.loadAPI(args.openAPIFile, Utils.getSource(args.openAPIFile, dirs));
 		
