@@ -39,12 +39,14 @@ public class ClassProperty extends Entity {
 	public static Visibility HIDDEN = Visibility.HIDDEN;
 	
 	private static String ATTYPE = "@type";
-	
+	private static String DEPRECATED = "<s>%s</s>";
+
 	boolean vendorExtension = false;
 	boolean requiredExtension = false;
 	boolean typeExtension = false;
 	boolean cardinalityExtension = false;
-
+	boolean deprecated = false;
+	
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
 		
@@ -67,7 +69,8 @@ public class ClassProperty extends Entity {
 		this.requiredExtension = property.getRequiredExtension();
 		this.typeExtension = property.getTypeExtension();
 		this.cardinalityExtension = property.getCardinalityExtension();
-
+		this.deprecated = property.getDeprected();
+		
 		if(this.vendorExtension) LOG.debug("vendor extension: property {}", this.name);
 		
 	}
@@ -156,7 +159,11 @@ public class ClassProperty extends Entity {
 					this.name, this.required, useRequiredFormatting, format);
 			
 			res = (this.required && useRequiredFormatting) ? String.format(format,name) : name;
+						
+			res = (this.deprecated) ? String.format(DEPRECATED,res) : res;
 			
+			LOG.debug("ClassProperty::property: name={} deprecated={} res={}",  this.name, this.deprecated, res);
+
 			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
 				
 				String extensionFormat = "%s";
