@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.beust.jcommander.JCommander;
 
 import no.paneon.api.diagram.GenerateDiagram;
-
+import no.paneon.api.diagram.app.args.Version;
 import no.paneon.api.diagram.app.args.Diagram;
 import no.paneon.api.diagram.app.args.ExtractExtension;
 import no.paneon.api.diagram.app.args.GQLGraph;
@@ -26,24 +26,30 @@ public class App {
 		
 	JCommander commandLine;
 
+	Version				argsVersion;
 	Diagram            	argsDiagram;
 	GQLGraph  	        argsGQLGraph;
 	Usage  	        	argsUsage;
 	ExtractExtension  	argsExtractExtensions;
 	
 	App(String ... argv) {
-		     						
+		     	
 		argsDiagram           = new Diagram();
 		argsGQLGraph          = new GQLGraph();
 		argsUsage          	  = new Usage();
 		argsExtractExtensions = new ExtractExtension();
 		
+		argsVersion           = new Version();
+
 		commandLine = JCommander.newBuilder()
 		    .addCommand("diagrams",            argsDiagram )
 		    .addCommand("gqlgraph",            argsGQLGraph )
 		    .addCommand("extract-extensions",  argsExtractExtensions )
 		    .addCommand("--help",              argsUsage )
 		    .addCommand("help",                argsUsage )
+		    .addCommand("--version",           argsVersion )
+		    .addCommand("version",             argsVersion )
+
 		    .build();
 
 		try {
@@ -103,6 +109,10 @@ public class App {
 
     	switch(commandLine.getParsedCommand()) {
     
+    	case "--version":
+    	case "version":
+    		break;
+    		
     	case "--help":
     	case "help":
     		commandLine.usage();

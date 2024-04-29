@@ -58,4 +58,7 @@ public class Diagram extends Common {
 	@Parameter(names = { "--remove-legend" }, description = "Do not include the diagram legend")
 	public boolean removeLegend = false;
 
+	@Parameter(names = { "--image-format" }, description = "Image format to use - legal values are puml, svg, png. Default is svg")
+	public String imageFormat = "svg";
+	
 }

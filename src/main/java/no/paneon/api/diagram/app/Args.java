@@ -145,6 +145,10 @@ public class Args {
 
 		@Parameter(names = { "--remove-legend" }, description = "Do not include the diagram legend")
 		public boolean removeLegend = false;
+		
+		@Parameter(names = { "--image-format" }, description = "Format for image generation, e.g. png, svg")
+		public String imageFormat = "png";
+		
 	}
 
 	public class Usage {
@@ -153,7 +157,7 @@ public class Args {
 		public boolean help = false;
 
 	}
-
+	
 	public class ExtractExtensions extends Common {
 		@Parameter(names = { "--base" }, description = "Base OpenAPI specification")
 		public String baseSpecification = "";
