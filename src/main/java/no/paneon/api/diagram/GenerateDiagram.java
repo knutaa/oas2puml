@@ -1,7 +1,9 @@
 package no.paneon.api.diagram;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -10,8 +12,11 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import net.sourceforge.plantuml.FileFormat;
+import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.GeneratedImage;
 import net.sourceforge.plantuml.SourceFileReader;
+import net.sourceforge.plantuml.SourceStringReader;
 import no.paneon.api.diagram.app.args.Diagram;
 import no.paneon.api.diagram.layout.DiagramGenerator;
 import no.paneon.api.generator.GenerateCommon;
@@ -109,13 +114,13 @@ public class GenerateDiagram extends GenerateCommon {
     	LOG.debug("... generating image: ", args.generateImages);
 
 	    if(args.generateImages) {
-        	generateImage(args.targetDirectory, Utils.getFiles(".puml", args.targetDirectory));
+        	generateImage(args.targetDirectory, Utils.getFiles(".puml", args.targetDirectory), args.imageFormat);
 	    }
 		
 	}
 
 	   
-    public static void generateImage(String targetDirectory, List<String> baseFileNames) {
+    public static void generateImage(String targetDirectory, List<String> baseFileNames, String imageFormat) {
     	
     	String PLANTUML_LIMIT_SIZE = "PLANTUML_LIMIT_SIZE";
     	String HEADLESS = "java.awt.headless";
@@ -128,20 +133,51 @@ public class GenerateDiagram extends GenerateCommon {
     		System.setProperty(HEADLESS, "true");
     		System.setProperty(PLANTUML_LIMIT_SIZE, sizeLimit);
 	 	
-	        for(String base : baseFileNames) {
-		    	Out.debug("... generating image for {}", base);
-		    	try {
-		        	File source = new File(targetDirectory + "/" + base);
-			    	SourceFileReader reader = new SourceFileReader(source);
-			    	reader.getGeneratedImages();
-			    	// List<GeneratedImage> list = reader.getGeneratedImages();
-			    	// Generated files
-			    	// File png = list.get(0).getPngFile();
-			    	// Out.debug("... {} png={}", base, png.getName());
-		    	} catch(Exception ex) {
-		    		Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
-		    	}
-	        };	
+    		FileFormatOption fileFormat = new FileFormatOption(FileFormat.SVG);
+    		switch(imageFormat) {
+    		case "png":
+    			fileFormat = new FileFormatOption(FileFormat.PNG);
+    			break;
+    			
+    		default:
+    		}
+    		
+    		
+    		for(String base : baseFileNames) {
+    			Out.debug("... generating {} image for {}", imageFormat, base);
+    			try {
+    				String file = targetDirectory + "/" + base;
+    				String source = Utils.readFile(file); 
+    				SourceStringReader reader = new SourceStringReader(source);
+    				final ByteArrayOutputStream os = new ByteArrayOutputStream();
+    				String desc = reader.generateImage(os, 0, fileFormat);
+    				os.close();
+
+    				final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
+
+    				file = file.replace(".puml", ".svg");
+
+    				Utils.save(svg, file);
+
+    			} catch(Exception ex) {
+    				Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
+    			}
+    		}
+			    			
+//		        for(String base : baseFileNames) {
+//  			    	Out.debug("... generating {} image for {}", imageFormat, base);
+//			    	try {
+//			        	File source = new File(targetDirectory + "/" + base);
+//				    	SourceFileReader reader = new SourceFileReader(source);
+//				    	reader.getGeneratedImages();
+//				    	// List<GeneratedImage> list = reader.getGeneratedImages();
+//				    	// Generated files
+//				    	// File png = list.get(0).getPngFile();
+//				    	// Out.debug("... {} png={}", base, png.getName());
+//			    	} catch(Exception ex) {
+//			    		Out.printAlways("ERROR: {}", ex.getLocalizedMessage());
+//			    	}
+//		        };	
 			        
 	    	
 	    } catch(Exception e) {
