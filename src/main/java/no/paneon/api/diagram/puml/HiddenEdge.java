@@ -17,7 +17,7 @@ public class HiddenEdge extends EdgeEntity {
     boolean first=true;
     
 	public HiddenEdge(Node from, Place place, Node to) {
-		super(from, place, to, false);
+		super(from, place, to, false, false);
 		this.first=true;
 	}
 	
@@ -27,7 +27,7 @@ public class HiddenEdge extends EdgeEntity {
 	}
 
 	public HiddenEdge(Node from, Place place, Node to, boolean first) {
-		super(from, place, to, false);
+		super(from, place, to, false, false);
 		this.first=first;
 	}
 	

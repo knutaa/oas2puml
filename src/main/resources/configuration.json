@@ -13,6 +13,8 @@
 		"ShoppingCart": [ "ShoppingCart" , "Product", "Validation" ]
 	},
 		
+    "deprecatedFormatting": "[.line-through]#%s# ",
+    
     "showSubResourceProperties": true,
 	
 	"includeAsRequiredIfNotInPost": false,

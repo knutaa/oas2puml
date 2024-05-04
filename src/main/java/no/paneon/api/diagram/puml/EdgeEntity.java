@@ -8,6 +8,7 @@ import no.paneon.api.diagram.layout.Place;
 import no.paneon.api.graph.Edge;
 import no.paneon.api.graph.Node;
 import no.paneon.api.utils.Config;
+import no.paneon.api.utils.Out;
 import no.paneon.api.logging.LogMethod;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
@@ -20,6 +21,7 @@ public class EdgeEntity extends Entity {
 	Edge edge = null;
 	Place place = null;
 	boolean required = false;
+	boolean deprecated = false;
 
 	Entity containedIn;
 	
@@ -29,14 +31,14 @@ public class EdgeEntity extends Entity {
 	boolean cardinalityExtension = false;
 	boolean requiredExtension = false;
 
-	public EdgeEntity(Node from, Place place, Node to, boolean required) {
-		super();
-		this.from=from;
-		this.to=to;
-		this.place=place;
-		this.required=required;
-		this.containedIn = null;
-	}
+//	public EdgeEntity(Node from, Place place, Node to, boolean required) {
+//		super();
+//		this.from=from;
+//		this.to=to;
+//		this.place=place;
+//		this.required=required;
+//		this.containedIn = null;
+//	}
 
 	public EdgeEntity(Node from, Place place, Node to, boolean required, String id) {
 		super();
@@ -48,6 +50,16 @@ public class EdgeEntity extends Entity {
 		
 	}
 
+	public EdgeEntity(Node from, Place place, Node to, boolean required, boolean deprecated) {
+		super();
+		this.from=from;
+		this.to=to;
+		this.place=place;
+		this.required=required;
+		this.containedIn = null;
+		this.deprecated = deprecated;
+	}
+	
 	public EdgeEntity(Place place, Edge edge) {
 		super();
 		this.place=place;
@@ -58,7 +70,7 @@ public class EdgeEntity extends Entity {
 		this.vendorExtension = edge.getVendorExtension();
 		this.cardinalityExtension = edge.getCardinalityExtension();
 		this.requiredExtension = edge.getRequiredExtension();
-
+		this.deprecated = edge.isDeprecated();
 	}
 	
 	public EdgeEntity(Node from, Place place, Node to, boolean required, String id, String rule) {
@@ -102,6 +114,17 @@ public class EdgeEntity extends Entity {
 		if(required) {
 			String format = Config.getRequiredFormatting();
 			strLabel = String.format(format,strLabel);
+			
+		} else if(deprecated) {
+			
+			LOG.debug("EdgeEntity: label={} deprecated={}" , label, deprecated );
+
+			String format = "<s>%s</s>";
+			
+			strLabel = String.format(format,strLabel);
+			
+			LOG.debug("EdgeEntity: label={} strLabel={}" , label, strLabel );
+
 		} else {
 			strLabel = Utils.quote(strLabel);
 		}

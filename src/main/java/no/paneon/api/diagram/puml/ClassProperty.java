@@ -45,6 +45,8 @@ public class ClassProperty extends Entity {
 	boolean typeExtension = false;
 	boolean cardinalityExtension = false;
 
+	boolean deprecated = false;
+	
 	public ClassProperty(Property property, Visibility visibility) {
 		super();
 		
@@ -79,6 +81,8 @@ public class ClassProperty extends Entity {
 		this.type = property.getValue();
 		this.cardinality = "";
 		this.required = property.isRequired();
+		
+		// this.deprecated = property.isDeprecated();
 		
 		this.isNullable = property.isNullable();
 		this.values = new LinkedList<>();
@@ -156,7 +160,11 @@ public class ClassProperty extends Entity {
 					this.name, this.required, useRequiredFormatting, format);
 			
 			res = (this.required && useRequiredFormatting) ? String.format(format,name) : name;
-			
+						
+			res = (this.deprecated) ? String.format(DEPRECATED,res) : res;
+			 
+			LOG.debug("ClassProperty::property: name={} deprecated={} res={}",  this.name, this.deprecated, res);
+
 			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
 				
 				String extensionFormat = "%s";
