@@ -1,5 +1,6 @@
 package no.paneon.api.diagram.puml;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,12 +35,12 @@ public class ClassProperty extends Entity {
 		HIDDEN
 	}
 	
-	public static Visibility VISIBLE = Visibility.VISIBLE;
-	public static Visibility INHERITED = Visibility.INHERITED;
-	public static Visibility HIDDEN = Visibility.HIDDEN;
+	public static final Visibility VISIBLE = Visibility.VISIBLE;
+	public static final Visibility INHERITED = Visibility.INHERITED;
+	public static final Visibility HIDDEN = Visibility.HIDDEN;
 	
-	private static String ATTYPE = "@type";
-	private static String DEPRECATED = "<s>%s</s>";
+	private static final String ATTYPE = "@type";
+	private static final String DEPRECATED = "<s>%s";
 
 	boolean vendorExtension = false;
 	boolean requiredExtension = false;
@@ -73,6 +74,9 @@ public class ClassProperty extends Entity {
 		this.deprecated = property.getDeprected();
 		
 		if(this.vendorExtension) LOG.debug("vendor extension: property {}", this.name);
+		
+		LOG.debug("ClassProperty::property: name={} stype={} values={}",  this.name, this.type, this.values);
+
 		
 	}
 	
@@ -163,9 +167,9 @@ public class ClassProperty extends Entity {
 			
 			res = (this.required && useRequiredFormatting) ? String.format(format,name) : name;
 						
-			res = (this.deprecated) ? String.format(DEPRECATED,res) : res;
- 
-			LOG.debug("ClassProperty::property: name={} deprecated={} res={}",  this.name, this.deprecated, res);
+//			res = (this.deprecated) ? String.format(DEPRECATED,res) : res;
+// 
+//			Out.debug("ClassProperty::property: name={} deprecated={} res={}",  this.name, this.deprecated, res);
 
 			if(this.defaultValue==null || this.defaultValue.isEmpty() || Config.getBoolean("keepTypeForDefaultValue")) {
 				
@@ -204,6 +208,13 @@ public class ClassProperty extends Entity {
 			if(!format.isEmpty()) res = String.format(format,res);
 		}
 		
+		if(this.deprecated) {
+			List<String> resLines = Arrays.asList(res.split(NEWLINE)).stream().map(s -> String.format(DEPRECATED,s)).collect(Collectors.toList());
+			res = resLines.stream().collect(Collectors.joining(NEWLINE));
+			
+			LOG.debug("ClassProperty::property: name={} deprecated={} res={}",  this.name, this.deprecated, res);
+
+		}
 		
 		String cardinalityToShow = Config.showDefaultCardinality() ? this.cardinality : this.cardinality.replace(Config.getDefaultCardinality(),"");
 		
@@ -261,8 +272,15 @@ public class ClassProperty extends Entity {
 			
 			final String indent = BLANKS.substring(0,pos);
 			if(!res.isEmpty()) res = res + NEWLINE;
+			
+			if(this.deprecated) {
+				values = values.stream().map(s -> String.format(DEPRECATED,s)).collect(Collectors.toList());
+			}
+			
 			res = res + values.stream().map(v -> "{field} //" + indent + v + "//").collect(Collectors.joining("\n"));
+
 		}		
+		
 		
 		return res;
 	}
