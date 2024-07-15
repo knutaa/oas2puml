@@ -110,7 +110,7 @@ public class DiagramGenerator
 		
 		this.resources.retainAll(allDefinitions);
 		
-		LOG.debug("this.resources=" + this.resources);
+		LOG.debug("this.resources={}", this.resources);
 		
 		if(!args.subResourceConfig.isEmpty()) {
 			JSONObject subResourceConfig = Utils.readJSONOrYaml(args.subResourceConfig);
@@ -141,6 +141,8 @@ public class DiagramGenerator
 	@LogMethod(level=LogLevel.DEBUG)
 	public Map<String,String> generateDiagramGraph() {
 		
+		LOG.debug("generateDiagramGraph: resources={}", this.resources);
+
 		Map<String,String> diagramConfig = new LinkedHashMap<>();
 		
 		LOG.debug("generateDiagramGraph: coreGraph=\n...{}", coreGraph.getCompleteGraph().edgeSet().stream().map(Edge::toString).collect(Collectors.joining("\n... ")));
@@ -152,10 +154,12 @@ public class DiagramGenerator
 
 		JSONObject subResourceConfig = Config.getConfig("subResourceConfig");
 		
+		LOG.debug("generateDiagramGraph: #1");
 		List<String> allResources = APIModel.getResources();
 
-		LOG.debug("generateDiagramGraph: resources={} allResources={}", resources, allResources);
-		
+		LOG.debug("generateDiagramGraph: resources={}", this.resources);
+		LOG.debug("generateDiagramGraph: allResources={}", allResources);
+
 		ComplexityAdjustedAPIGraph graphs = new ComplexityAdjustedAPIGraph(coreGraph, args.keepTechnicalEdges);
   
 		List<String> resourcesToGenerate = new LinkedList<>(this.resources);
@@ -179,6 +183,8 @@ public class DiagramGenerator
 										
 		}
 		
+		LOG.debug("generateDiagramGraph: resourcesToGenerate={}", resourcesToGenerate);
+
 		this.resources = resourcesToGenerate;
 		
 		for(String resource : resourcesToGenerate) {
@@ -939,19 +945,26 @@ public class DiagramGenerator
  	       
     	LOG.debug("getResources:: {}", resourcesFromAPI);
 
-    	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
+    	if(Config.getBoolean("includeResourcesFromRules")) {
+    		
+        	LOG.debug("#1 getResources:: adding resources from rules");
+
+	    	List<String> resourcesFromRules = Utils.extractResourcesFromRules(args.rulesFile);
+	    	
+	    	resourcesFromRules.removeAll(resourcesFromAPI);
+	    	resourcesFromAPI.addAll( resourcesFromRules );
+	  
+	    	resourcesFromAPI = resourcesFromAPI.stream().distinct()
+	    						.map(APIModel::removePrefix)
+	    						// .filter(x -> (args.resource==null)||(x.equals(args.resource)))
+	    						.filter(x -> (args.resource==null)||args.resource.contains(x))
+	    						.toList();
+	  	
+	    	LOG.debug("getResources:: {}", resourcesFromAPI);
+    	}
     	
-    	resourcesFromRules.removeAll(resourcesFromAPI);
-    	resourcesFromAPI.addAll( resourcesFromRules );
-  
-    	resourcesFromAPI = resourcesFromAPI.stream().distinct()
-    						.map(APIModel::removePrefix)
-    						// .filter(x -> (args.resource==null)||(x.equals(args.resource)))
-    						.filter(x -> (args.resource==null)||args.resource.contains(x))
-    						.toList();
-  	
-    	LOG.debug("getResources:: {}", resourcesFromAPI);
-    	
+    	LOG.debug("#1 getResources:: {}", resourcesFromAPI);
+
     	return resourcesFromAPI;
     	
 	}

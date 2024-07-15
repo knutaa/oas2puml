@@ -186,7 +186,8 @@ public class GenerateDiagram extends GenerateCommon {
 	}
     
 	private void saveDiagramConfig(Map<String, String> diagramConfig, String target) {
-	    LOG.debug("saveDiagramConfig: diagramConfig={}",  diagramConfig);
+	    
+		LOG.debug("saveDiagramConfig: diagramConfig={}",  diagramConfig);
 	    
 	    JSONArray json = new JSONArray();
 	    diagramConfig.entrySet().stream().forEach(entry -> {
