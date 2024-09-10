@@ -296,11 +296,15 @@ public class ClassProperty extends Entity {
 		
 		boolean simpleEnding = simpleEndings.stream().anyMatch(ending -> this.type.endsWith(ending));
 		
-		return  simpleEnding 
+		boolean res =  simpleEnding 
 				|| APIModel.isSpecialSimpleType(this.type) 
 				|| APIModel.isSimpleType(this.type) 
 				|| Config.getSimpleTypes().contains(this.type) 
 				|| APIModel.isEnumType(this.type);
+		
+		LOG.debug("ClassProperty::isSimpleType type={} res={}", this.type, res);
+
+		return res;
 		
 	}
 	
