@@ -47,6 +47,8 @@ public class ClassEntity extends Entity {
 	Set<String> inheritance;
 	Set<String> actualInheritance;
 
+	Set<String> customFlatten;
+
 	Set<String> discriminatorMapping;
 	Set<String> inheritedDiscriminatorMapping;
 
@@ -72,6 +74,8 @@ public class ClassEntity extends Entity {
 		
 		this.inheritance = new HashSet<>();
 		this.actualInheritance = new HashSet<>();
+
+		this.customFlatten = new HashSet<>();
 
 		this.discriminatorMapping = new HashSet<>();
 		this.inheritedDiscriminatorMapping = new HashSet<>();
@@ -111,6 +115,8 @@ public class ClassEntity extends Entity {
 		this.inheritance.addAll(node.getInheritance());
 		this.actualInheritance.addAll(node.getActualInheritance());
 
+		this.customFlatten.addAll(node.getCustomFlatten());
+		
 		// this.discriminatorMapping.addAll(node.getDiscriminatorMapping());
 		this.discriminatorMapping.addAll(node.getLocalDiscriminators());
 		this.inheritedDiscriminatorMapping.addAll(node.getInheritedDiscriminatorMapping());
@@ -394,21 +400,45 @@ public class ClassEntity extends Entity {
 	private String generateInheritanceDecoration() {	
 		LOG.debug("inheritance: resource={} inheritance={} actual={}", this.name, this.inheritance, this.actualInheritance);	
 		
-		if(Config.getBoolean("keepInheritanceDecoractions")) {
-			StringBuilder res = new StringBuilder();
-			if(!this.inheritance.isEmpty()) {
+		StringBuilder res = new StringBuilder();
+		boolean addedExtends=false;
+		
+		if(!this.customFlatten.isEmpty() && Config.getBoolean("keepCustomFlattenDecoractions")) {
+		
+			if(!addedExtends) {
 				res.append(" <extends  ");
-				inheritance.stream().map(this::formatInheritance).forEach(res::append);
-				res.append(">");	
-			} else if(!this.actualInheritance.isEmpty()) {
-				res.append(" <extends  ");
-				actualInheritance.stream().map(this::formatInheritance).forEach(res::append);
-				res.append(">");
+				addedExtends=true;
 			}
-			return res.toString();
-		} else {
-			return "";
+			this.customFlatten.stream().map(this::formatInheritance).forEach(res::append);
+
 		}
+		
+		if(Config.getBoolean("keepInheritanceDecoractions")) {
+			
+			if(!this.inheritance.isEmpty()) {
+				
+				if(!addedExtends) {
+					res.append(" <extends  ");
+					addedExtends=true;
+				}
+				this.inheritance.stream().map(this::formatInheritance).forEach(res::append);
+				
+			} else if(!this.actualInheritance.isEmpty()) {
+				
+				if(!addedExtends) {
+					res.append(" <extends  ");
+					addedExtends=true;
+				}				
+				this.actualInheritance.stream().map(this::formatInheritance).forEach(res::append);
+			}
+		} 
+		
+		if(!res.isEmpty()) {
+			res.append(">");
+		}
+		
+		return res.toString();
+
 	}
 
 	
