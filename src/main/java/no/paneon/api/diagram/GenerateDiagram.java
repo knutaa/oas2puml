@@ -2,6 +2,8 @@ package no.paneon.api.diagram;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -149,15 +151,43 @@ public class GenerateDiagram extends GenerateCommon {
     				String file = targetDirectory + "/" + base;
     				String source = Utils.readFile(file); 
     				SourceStringReader reader = new SourceStringReader(source);
-    				final ByteArrayOutputStream os = new ByteArrayOutputStream();
-    				String desc = reader.generateImage(os, 0, fileFormat);
-    				os.close();
+    				
+    				String extension = "." + imageFormat;
+    				
+    				String targetFile = file.replace(".puml", extension);
 
-    				final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
+    				
+    				switch(imageFormat) {
+    				case "png":
+    					OutputStream output = new FileOutputStream(targetFile);
+    					String desc = reader.outputImage(output).getDescription();
+    					output.close();
+    					break;
 
-    				file = file.replace(".puml", ".svg");
+    				case "svg":
+    				default:
+        				final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        				// String desc = reader.generateImage(os, 0, fileFormat);
+        				desc = reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+        				os.close();
 
-    				Utils.save(svg, file);
+        				final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
+        				Utils.save(svg, targetFile);
+        			        				
+    				}
+//    				final ByteArrayOutputStream os = new ByteArrayOutputStream();
+//    				String desc = reader.generateImage(os, 0, fileFormat);
+//    				String desc = reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+//
+//    				os.close();
+
+//    				final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
+//
+//    				String extension = "." + imageFormat;
+//    				
+//    				file = file.replace(".puml", extension);
+
+//    				Utils.save(svg, file);
 
     			} catch(Exception ex) {
     				Out.printAlways("ERROR: {}", ex.getLocalizedMessage());

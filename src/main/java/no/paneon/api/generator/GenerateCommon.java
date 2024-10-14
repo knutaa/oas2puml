@@ -145,7 +145,8 @@ public class GenerateCommon {
 			
 		} catch(Exception ex) {
 			Out.println("... unable to read API specification from " + args.openAPIFile);
-			ex.printStackTrace();
+			Out.println("... app error: " + ex.getLocalizedMessage());	
+			// ex.printStackTrace();
 			System.exit(0);
 		}
 		
