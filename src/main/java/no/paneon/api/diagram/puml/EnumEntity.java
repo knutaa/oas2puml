@@ -10,6 +10,9 @@ import no.paneon.api.logging.LogMethod;
 import no.paneon.api.logging.AspectLogger.LogLevel;
 
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
+
+import no.paneon.api.utils.Out;
 
 public class EnumEntity extends Entity {
 
@@ -41,7 +44,10 @@ public class EnumEntity extends Entity {
 	
 	@LogMethod(level=LogLevel.DEBUG)
 	public void addValue(Collection<String> valueList) {	
-		this.values.addAll(valueList.stream().filter(v -> !this.values.contains(v)).collect(toSet()));
+		this.values.addAll(valueList.stream().filter(v -> !this.values.contains(v)).collect(toList()));
+		
+		LOG.debug("EnumEntity:addValue type={} values={}", type, values);
+
 	}
 
 	@LogMethod(level=LogLevel.DEBUG)
@@ -55,9 +61,29 @@ public class EnumEntity extends Entity {
 		res.append( "class " + this.type + " <<Enumeration>> {");
 		res.append( NEWLINE );
 	    
-	    for(String v : values) {	
+		
+		int count = values.size();
+		if(Config.getBoolean("truncateLargeEnums")) {	
+			count = Math.min(count, Config.getInteger("truncateEnumsCount",30));
+			if(count+1==values.size()) count = values.size();
+		}
+		boolean truncated = count != values.size();
+		
+	    for(String v : values.subList(0, count)) {	
 	    	res.append( INDENT + v);
 	    	res.append( NEWLINE );
+	    }
+	    
+	    if(truncated) {
+	    	String truncatedMessage = Config.getString("truncatedMessage");
+	    	if(truncatedMessage.isEmpty()) truncatedMessage = "{field}<color:red>.. truncated .. %1$s of %2$s";
+	    		
+	    	truncatedMessage = String.format(truncatedMessage, count, values.size());
+	    	
+	    	res.append( INDENT + truncatedMessage);
+	    	res.append( NEWLINE );
+	    	
+	    	Out.printOnce("... truncated presentation of list of enums for type {} - showing first {} enums", type, count);
 	    }
 	    
 	    if(this.nullable) {

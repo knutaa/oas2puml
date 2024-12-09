@@ -50,6 +50,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static no.paneon.api.model.APIModel.isExcludedResourceExtensions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -323,12 +324,13 @@ public class DiagramGenerator
 
 	private void removeMVOFVONodes(String pivot, APIGraph graph) {
 		if(!Config.getBoolean("keepMVOFVOResources")) {
-			Predicate<Node> MVO_or_FVO = s -> s.getName().endsWith("_FVO") || s.getName().endsWith("_MVO");
+			// Predicate<Node> MVO_or_FVO = s -> isExcludedResourceExtensions(s);
+
 			
-			Set<Node> toRemove = graph.getGraphNodes().stream().filter(MVO_or_FVO).collect(toSet());
+			Set<Node> toRemove = graph.getGraphNodes().stream().filter(s -> isExcludedResourceExtensions(s.getName())).collect(toSet());
 			
 			if(!toRemove.isEmpty()) {
-				Predicate<String>  notMVOFVO = s -> !s.endsWith("_FVO") && !s.endsWith("_MVO");
+				Predicate<String>  notMVOFVO = s -> !isExcludedResourceExtensions(s);
 				boolean notAll_MVO_FVO = toRemove.stream().map(Node::getName).anyMatch(notMVOFVO);
 				if(notAll_MVO_FVO) Out.debug("... removing from {} {}", pivot, toRemove);
 			}

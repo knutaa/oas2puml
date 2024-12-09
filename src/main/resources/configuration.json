@@ -289,6 +289,12 @@
     
     "mergeAllOfs": false,
     
-    "minimumGraphSize": 3
+    "minimumGraphSize": 3,
+    
+    "excludedResourceExtensions": [ ],
+    
+    "truncateLargeEnums": true,
+    
+    "truncateEnumsCount": 10
 
 }

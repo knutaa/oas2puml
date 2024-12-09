@@ -279,7 +279,7 @@ public class ClassEntity extends Entity {
 	    	
 	    Set<String> discriminatorsToShow = getDiscriminatorsToShow();
 	    
-    	LOG.debug("ClassEntity:: node={} discriminatorsToShow={}", name, discriminatorsToShow);
+    	LOG.debug("## ClassEntity:: node={} discriminatorsToShow={}", name, discriminatorsToShow);
 
 	    if(!discriminatorsToShow.isEmpty() && !Config.getBoolean("keepDefaultValueForAtType")) {
 	    	classProperties.stream()
@@ -382,7 +382,8 @@ public class ClassEntity extends Entity {
 
     	    boolean showDiscriminator = this.discriminatorMapping.size()==1 && Config.getBoolean(SHOW_ALL_DISCRIMINATORS);
     	    showDiscriminator = showDiscriminator || this.discriminatorMapping.size()>1;
-    	    
+    	    showDiscriminator = showDiscriminator || (this.discriminatorMapping.size()==1 && !this.discriminatorMapping.contains(this.name));
+
     	    LOG.debug("ClassEntity: getDiscriminatorsToShow={} showDiscriminator={}", this.name, discriminators, showDiscriminator);
 
     	    if(!showDiscriminator) discriminators.clear();
