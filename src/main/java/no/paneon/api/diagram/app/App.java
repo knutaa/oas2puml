@@ -18,6 +18,7 @@ import no.paneon.api.extensions.ExtractExtensions;
 import no.paneon.api.gql.GenerateGQLGraph;
 import no.paneon.api.utils.Out;
 import no.paneon.api.utils.Timestamp;
+import no.paneon.api.utils.Utils;
 
 	
 public class App {
@@ -119,6 +120,9 @@ public class App {
     		break;
     		
     	case "diagrams":
+    		
+			Out.debug("... API source: {}", Utils.getBaseFileName(argsDiagram.openAPIFile));
+
     		GenerateDiagram diagram = new GenerateDiagram(argsDiagram);
     		diagram.execute();
     		break;
@@ -134,6 +138,9 @@ public class App {
     		break;
     		
        	case "extract-extensions":
+       		
+			Out.debug("... API source: {}", Utils.getBaseFileName(argsExtractExtensions.openAPIFile));
+
        		ExtractExtensions extensions = new ExtractExtensions(argsExtractExtensions);
        		extensions.execute();
 			break;

@@ -85,7 +85,7 @@ public class GenerateDiagram extends GenerateCommon {
 		super.execute();
 			
 	    processArgs(args);
-        
+
 		LOG.debug("execute ... resources={}", APIModel.getResources());
 
 		String file = getAPISource(args);
