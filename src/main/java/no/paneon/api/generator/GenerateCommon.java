@@ -43,6 +43,10 @@ public class GenerateCommon {
 			setTrustManager();
 		}
 		
+		if(!Config.getBoolean("configlater")) {
+			Config.setConfigSources(common.configs);
+		}
+		
 		loadAPI(common);
 		
 		Out.silentMode = common.silentMode;
